@@ -1,0 +1,40 @@
+schema: umicom.application.v1
+
+application:
+  id: org.umicom.trader
+  name: Umicom Trader
+  short_name: Trader
+  version: 0.1.0
+  executable: umicom-trader-console
+  aliases: [utrader, trader]
+
+framework:
+  minimum_version: 0.9.0
+  compatible_major: 0
+
+frontends:
+  - console
+
+entry:
+  kind: financial
+  taskbar_group: trading
+  pinned_by_default: false
+
+capabilities:
+  - context-links
+  - structured-selection
+  - model-selection-providers
+  - trading-workbench-profile
+  - framework-trading-services
+
+source_layout:
+  product_root: src
+  composition_root: src
+  console_frontend: src/console
+
+boundaries:
+  owns_market_data_engine: false
+  owns_order_execution_engine: false
+  owns_risk_engine: false
+  owns_persistence: false
+  consumes_framework_services: true
