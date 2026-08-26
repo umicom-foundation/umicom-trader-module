@@ -43,6 +43,10 @@ if(NOT TARGET Umicom::application)
     message(FATAL_ERROR
         "Umicom Trader requires Framework target Umicom::application")
 endif()
+if(NOT TARGET Umicom::trading_ui)
+    message(FATAL_ERROR
+        "Umicom Trader requires Framework target Umicom::trading_ui")
+endif()
 
 if(NOT COMMAND umicom_apply_warnings)
     function(umicom_apply_warnings target)
@@ -82,6 +86,7 @@ target_link_libraries(umicom_trader_module PUBLIC
     Umicom::Framework
     Umicom::workbench_selection_provider
     Umicom::application
+    Umicom::trading_ui
 )
 umicom_apply_warnings(umicom_trader_module)
 umicom_apply_sanitizers(umicom_trader_module)
@@ -148,6 +153,19 @@ if(BUILD_TESTING)
     add_test(
         NAME trader.module.readiness_runtime
         COMMAND trader-readiness-runtime-test
+    )
+
+    add_executable(trader-framework-views-test
+        tests/test_framework_views.c
+    )
+    target_link_libraries(trader-framework-views-test PRIVATE
+        Umicom::trader_module
+    )
+    umicom_apply_warnings(trader-framework-views-test)
+    umicom_apply_sanitizers(trader-framework-views-test)
+    add_test(
+        NAME trader.module.framework_views
+        COMMAND trader-framework-views-test
     )
 
 endif()
