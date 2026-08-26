@@ -68,6 +68,9 @@ endif()
 add_library(umicom_trader_module STATIC
     src/workbench_profile.c
     src/experience.c
+    src/runtime.c
+    src/readiness.c
+    src/workspace_commands.c
 )
 add_library(Umicom::trader_module ALIAS umicom_trader_module)
 
@@ -120,6 +123,33 @@ if(BUILD_TESTING)
         NAME trader.module.experience
         COMMAND trader-experience-test
     )
+
+    add_executable(trader-runtime-test
+        tests/test_runtime.c
+    )
+    target_link_libraries(trader-runtime-test PRIVATE
+        umicom_trader_module
+    )
+    umicom_apply_warnings(trader-runtime-test)
+    umicom_apply_sanitizers(trader-runtime-test)
+    add_test(
+        NAME trader.module.runtime
+        COMMAND trader-runtime-test
+    )
+
+    add_executable(trader-readiness-runtime-test
+        tests/test_readiness_runtime.c
+    )
+    target_link_libraries(trader-readiness-runtime-test PRIVATE
+        umicom_trader_module
+    )
+    umicom_apply_warnings(trader-readiness-runtime-test)
+    umicom_apply_sanitizers(trader-readiness-runtime-test)
+    add_test(
+        NAME trader.module.readiness_runtime
+        COMMAND trader-readiness-runtime-test
+    )
+
 endif()
 
 install(TARGETS umicom_trader_module
