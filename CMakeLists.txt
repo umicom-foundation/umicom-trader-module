@@ -4,7 +4,7 @@
 #
 # PURPOSE:
 #   Build the thin Umicom Trader application composition over Framework-owned
-#   linked-workbench, selection-provider and context contracts.
+#   linked-workbench, selection-provider, context and experience contracts.
 #
 # Created by: Sammy Hegab
 # Organisation: Umicom Foundation
@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 3.24)
 
 project(
     UmicomTraderModule
-    VERSION 0.1.0
+    VERSION 0.2.0
     DESCRIPTION "Thin Umicom Trader workbench composition"
     LANGUAGES C
 )
@@ -24,7 +24,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
 option(UMICOM_TRADER_BUILD_CONSOLE
-       "Build the native Trader verification console"
+       "Build the native Umicom Trader verification console"
        ON)
 
 include(CTest)
@@ -38,6 +38,10 @@ if(NOT TARGET Umicom::workbench_selection_provider)
     message(FATAL_ERROR
         "Umicom Trader requires Framework target "
         "Umicom::workbench_selection_provider")
+endif()
+if(NOT TARGET Umicom::application)
+    message(FATAL_ERROR
+        "Umicom Trader requires Framework target Umicom::application")
 endif()
 
 if(NOT COMMAND umicom_apply_warnings)
@@ -63,6 +67,7 @@ endif()
 
 add_library(umicom_trader_module STATIC
     src/workbench_profile.c
+    src/experience.c
 )
 add_library(Umicom::trader_module ALIAS umicom_trader_module)
 
@@ -73,6 +78,7 @@ target_include_directories(umicom_trader_module PUBLIC
 target_link_libraries(umicom_trader_module PUBLIC
     Umicom::Framework
     Umicom::workbench_selection_provider
+    Umicom::application
 )
 umicom_apply_warnings(umicom_trader_module)
 umicom_apply_sanitizers(umicom_trader_module)
@@ -89,17 +95,30 @@ if(UMICOM_TRADER_BUILD_CONSOLE)
 endif()
 
 if(BUILD_TESTING)
-    add_executable(umicom-trader-workbench-profile-test
+    add_executable(trader-workbench-profile-test
         tests/test_workbench_profile.c
     )
-    target_link_libraries(umicom-trader-workbench-profile-test PRIVATE
+    target_link_libraries(trader-workbench-profile-test PRIVATE
         Umicom::trader_module
     )
-    umicom_apply_warnings(umicom-trader-workbench-profile-test)
-    umicom_apply_sanitizers(umicom-trader-workbench-profile-test)
+    umicom_apply_warnings(trader-workbench-profile-test)
+    umicom_apply_sanitizers(trader-workbench-profile-test)
     add_test(
         NAME trader.module.workbench_profile
-        COMMAND umicom-trader-workbench-profile-test
+        COMMAND trader-workbench-profile-test
+    )
+
+    add_executable(trader-experience-test
+        tests/test_experience.c
+    )
+    target_link_libraries(trader-experience-test PRIVATE
+        Umicom::trader_module
+    )
+    umicom_apply_warnings(trader-experience-test)
+    umicom_apply_sanitizers(trader-experience-test)
+    add_test(
+        NAME trader.module.experience
+        COMMAND trader-experience-test
     )
 endif()
 
@@ -119,4 +138,4 @@ install(FILES application.umicom.yaml README.md LICENSE
     DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/applications/trader)
 
 message(STATUS "Umicom Trader Module version: ${PROJECT_VERSION}")
-message(STATUS "Umicom Trader Framework workbench profile enabled")
+message(STATUS "Umicom Trader Framework workbench and experience profiles enabled")

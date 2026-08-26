@@ -4,7 +4,7 @@ application:
   id: org.umicom.trader
   name: Umicom Trader
   short_name: Trader
-  version: 0.1.0
+  version: 0.2.0
   executable: umicom-trader-console
   aliases: [utrader, trader]
 
@@ -19,6 +19,7 @@ entry:
   kind: financial
   taskbar_group: trading
   pinned_by_default: false
+  default_layout: trading
 
 capabilities:
   - context-links
@@ -26,6 +27,7 @@ capabilities:
   - model-selection-providers
   - trading-workbench-profile
   - framework-trading-services
+  - umicom.application.experience
 
 source_layout:
   product_root: src
