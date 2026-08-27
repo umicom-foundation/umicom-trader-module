@@ -75,6 +75,10 @@ add_library(umicom_trader_module STATIC
     src/runtime.c
     src/readiness.c
     src/workspace_commands.c
+    src/production_profile.c
+    src/production_panels.c
+    src/production_commands.c
+    src/production_readiness.c
 )
 add_library(Umicom::trader_module ALIAS umicom_trader_module)
 
@@ -195,3 +199,35 @@ umicom_add_application_productisation_contribution(
     TARGET "umicom_trader_productisation"
     SOURCE "src/productisation_contribution.c"
     TEST_SOURCE "tests/test_productisation_contribution.c")
+target_link_libraries(umicom_trader_module PUBLIC
+    umicom_trader_productisation)
+
+if(BUILD_TESTING)
+    foreach(UMICOM_TRADER_PRODUCTION_TEST
+            production_profile
+            production_panels
+            production_commands
+            production_readiness)
+        string(REPLACE "_" "-"
+            UMICOM_TRADER_PRODUCTION_TEST_SUFFIX
+            "${UMICOM_TRADER_PRODUCTION_TEST}")
+        add_executable(
+            "umicom-trader-${UMICOM_TRADER_PRODUCTION_TEST_SUFFIX}-test"
+            "tests/test_${UMICOM_TRADER_PRODUCTION_TEST}.c")
+        target_link_libraries(
+            "umicom-trader-${UMICOM_TRADER_PRODUCTION_TEST_SUFFIX}-test"
+            PRIVATE Umicom::trader_module)
+        umicom_apply_warnings(
+            "umicom-trader-${UMICOM_TRADER_PRODUCTION_TEST_SUFFIX}-test")
+        umicom_apply_sanitizers(
+            "umicom-trader-${UMICOM_TRADER_PRODUCTION_TEST_SUFFIX}-test")
+        add_test(
+            NAME "trader.${UMICOM_TRADER_PRODUCTION_TEST}"
+            COMMAND
+                "umicom-trader-${UMICOM_TRADER_PRODUCTION_TEST_SUFFIX}-test")
+        if(COMMAND umicom_register_validation_target)
+            umicom_register_validation_target(
+                "umicom-trader-${UMICOM_TRADER_PRODUCTION_TEST_SUFFIX}-test")
+        endif()
+    endforeach()
+endif()
