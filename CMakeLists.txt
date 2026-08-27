@@ -83,6 +83,7 @@ add_library(umicom_trader_module STATIC
     src/production_panels.c
     src/production_commands.c
     src/production_readiness.c
+    src/experience_acceptance.c
 )
 add_library(Umicom::trader_module ALIAS umicom_trader_module)
 
@@ -294,4 +295,17 @@ if(BUILD_TESTING)
                 "umicom-trader-${UMICOM_TRADER_PRODUCTION_TEST_SUFFIX}-test")
         endif()
     endforeach()
+
+    add_executable(umicom-trader-experience-acceptance-test
+        tests/test_experience_acceptance.c)
+    target_link_libraries(umicom-trader-experience-acceptance-test
+        PRIVATE Umicom::trader_module)
+    umicom_apply_warnings(umicom-trader-experience-acceptance-test)
+    umicom_apply_sanitizers(umicom-trader-experience-acceptance-test)
+    add_test(NAME trader.experience_acceptance
+        COMMAND umicom-trader-experience-acceptance-test)
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(
+            umicom-trader-experience-acceptance-test)
+    endif()
 endif()

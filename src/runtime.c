@@ -86,5 +86,23 @@ UmiStatus umi_trader_runtime_create_panel_view(
         return umi_trading_ui_portfolio_risk_view_create(panel_id, workspace, out_view);
     if (strcmp(panel_id, "account") == 0)
         return umi_trading_ui_dashboard_view_create(panel_id, workspace, out_view);
+    if (strcmp(panel_id, "scanner") == 0)
+        return umi_trading_ui_scanner_view_create(panel_id, workspace, out_view);
+    if (strcmp(panel_id, "predictive-lab") == 0)
+        return umi_trading_ui_predictive_lab_view_create(panel_id, workspace,
+                                                          out_view);
+    if (strcmp(panel_id, "news") == 0)
+        return umi_trading_ui_news_view_create(panel_id, workspace, out_view);
+    if (strcmp(panel_id, "context-inspector") == 0)
+        return umi_trading_ui_context_inspector_view_create(
+            panel_id, workspace, out_view);
+    if (strcmp(panel_id, "strategy") == 0)
+        return umi_trading_ui_strategy_view_create(panel_id, workspace,
+                                                    out_view);
+    if (strcmp(panel_id, "replay") == 0)
+        return umi_trading_ui_replay_view_create(panel_id, workspace, out_view);
+    if (strcmp(panel_id, "output") == 0)
+        return umi_trading_ui_research_output_view_create(
+            panel_id, workspace, out_view);
     return UMI_STATUS_NOT_IMPLEMENTED;
 }
