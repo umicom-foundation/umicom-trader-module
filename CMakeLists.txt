@@ -4,7 +4,8 @@
 #
 # PURPOSE:
 #   Build the thin Umicom Trader application composition over Framework-owned
-#   linked-workbench, selection-provider, context and experience contracts.
+#   linked-workbench, selection-provider, context, experience and GTK4 layout
+#   rendering contracts.
 #
 # Created by: Sammy Hegab
 # Organisation: Umicom Foundation
@@ -25,6 +26,9 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 option(UMICOM_TRADER_BUILD_CONSOLE
        "Build the native Umicom Trader verification console"
+       ON)
+option(UMICOM_TRADER_BUILD_GTK4
+       "Build the Framework-rendered GTK4 Umicom Trader workstation"
        ON)
 
 include(CTest)
@@ -106,6 +110,38 @@ if(UMICOM_TRADER_BUILD_CONSOLE)
     umicom_apply_sanitizers(umicom-trader-console)
 endif()
 
+# Trader remains a thin product. The executable and this small adapter own only
+# product lifecycle/composition; all layout, GTK rendering and trading state
+# stay in Framework targets.
+if(UMICOM_TRADER_BUILD_GTK4 AND TARGET Umicom::ui_gtk4)
+    add_library(umicom_trader_gtk STATIC
+        src/gtk/workstation.c
+    )
+    add_library(Umicom::trader_gtk ALIAS umicom_trader_gtk)
+    target_include_directories(umicom_trader_gtk PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    )
+    target_link_libraries(umicom_trader_gtk PUBLIC
+        Umicom::trader_module
+        Umicom::ui_gtk4
+    )
+    umicom_apply_warnings(umicom_trader_gtk)
+    umicom_apply_sanitizers(umicom_trader_gtk)
+
+    add_executable(umicom-trader
+        src/gtk/main.c
+    )
+    target_link_libraries(umicom-trader PRIVATE
+        Umicom::trader_gtk
+    )
+    umicom_apply_warnings(umicom-trader)
+    umicom_apply_sanitizers(umicom-trader)
+elseif(UMICOM_TRADER_BUILD_GTK4)
+    message(STATUS
+        "Umicom Trader GTK4 workstation disabled because Umicom::ui_gtk4 is unavailable")
+endif()
+
 if(BUILD_TESTING)
     add_executable(trader-workbench-profile-test
         tests/test_workbench_profile.c
@@ -172,6 +208,22 @@ if(BUILD_TESTING)
         COMMAND trader-framework-views-test
     )
 
+    if(TARGET Umicom::trader_gtk)
+        add_executable(trader-gtk-workstation-test
+            tests/test_gtk_workstation.c
+        )
+        target_link_libraries(trader-gtk-workstation-test PRIVATE
+            Umicom::trader_gtk
+        )
+        umicom_apply_warnings(trader-gtk-workstation-test)
+        umicom_apply_sanitizers(trader-gtk-workstation-test)
+        add_test(
+            NAME trader.module.gtk_workstation
+            COMMAND trader-gtk-workstation-test
+        )
+        set_tests_properties(trader.module.gtk_workstation PROPERTIES
+            LABELS "trader;gtk4;layout;workstation;smoke")
+    endif()
 endif()
 
 install(TARGETS umicom_trader_module
@@ -180,8 +232,20 @@ install(TARGETS umicom_trader_module
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+if(TARGET umicom_trader_gtk)
+    install(TARGETS umicom_trader_gtk
+        EXPORT UmicomTraderModuleTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+endif()
 if(TARGET umicom-trader-console)
     install(TARGETS umicom-trader-console
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
+if(TARGET umicom-trader)
+    install(TARGETS umicom-trader
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 install(DIRECTORY include/
