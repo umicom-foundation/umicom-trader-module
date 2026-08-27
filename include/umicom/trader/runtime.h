@@ -1,9 +1,9 @@
 /*-----------------------------------------------------------------------------
  * Umicom Trader Module
- * File: include/umicom/trader/runtime.h
+ * File: applications/trader/include/umicom/trader/runtime.h
  *
  * PURPOSE:
- *   Bind the thin product to the Framework-owned application workspace runtime without duplicating services.
+ *   Bind the thin Trader product to Framework application runtime, trading views and canonical suite layouts.
  *
  * Created by: Sammy Hegab
  * Organisation: Umicom Foundation
@@ -14,6 +14,7 @@
 #define UMICOM_TRADER_RUNTIME_H
 
 #include "umicom/application/runtime/runtime.h"
+#include "umicom/application/suite_layout/suite_layout.h"
 #include "umicom/trading/workspace.h"
 #include "umicom/ui/view_model.h"
 
@@ -28,6 +29,11 @@ UmiStatus umi_trader_runtime_health(
     void *user_data,
     UmiApplicationRuntimeHealth *out_health);
 const UmiApplicationExperienceDefinition *umi_trader_runtime_experience(void);
+UmiStatus umi_trader_runtime_layout_default(
+    UmiUiWorkspaceLayout *out_layout);
+UmiStatus umi_trader_runtime_layout_select(
+    const char *layout_id,
+    UmiUiWorkspaceLayout *out_layout);
 /* Resolve Trader panel identifiers to the existing Framework trading view
  * factories. The application only chooses composition; trading logic remains Framework-owned. */
 UmiStatus umi_trader_runtime_create_panel_view(
@@ -38,5 +44,4 @@ UmiStatus umi_trader_runtime_create_panel_view(
 #ifdef __cplusplus
 }
 #endif
-
 #endif

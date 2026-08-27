@@ -1,9 +1,9 @@
 /*-----------------------------------------------------------------------------
  * Umicom Trader Module
- * File: src/runtime.c
+ * File: applications/trader/src/runtime.c
  *
  * PURPOSE:
- *   Initialise the product through canonical Framework application runtime contracts.
+ *   Initialise Trader through canonical Framework application, layout and trading-view runtime contracts.
  *
  * Created by: Sammy Hegab
  * Organisation: Umicom Foundation
@@ -28,6 +28,25 @@ UmiStatus umi_trader_runtime_init(UmiApplicationWorkspaceRuntime *out_runtime)
         umi_trader_runtime_experience();
     if (experience == NULL) return UMI_STATUS_NOT_FOUND;
     return umi_application_workspace_runtime_init(experience, out_runtime);
+}
+
+UmiStatus umi_trader_runtime_layout_default(
+    UmiUiWorkspaceLayout *out_layout)
+{
+    return umi_application_suite_layout_project_default(
+        "org.umicom.trader", out_layout);
+}
+
+UmiStatus umi_trader_runtime_layout_select(
+    const char *layout_id,
+    UmiUiWorkspaceLayout *out_layout)
+{
+    const UmiApplicationExperienceDefinition *experience =
+        umi_trader_runtime_experience();
+    if (layout_id == NULL || out_layout == NULL)
+        return UMI_STATUS_INVALID_ARGUMENT;
+    if (experience == NULL) return UMI_STATUS_NOT_FOUND;
+    return umi_application_suite_layout_project(experience, layout_id, out_layout);
 }
 
 UmiStatus umi_trader_runtime_health(
