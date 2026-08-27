@@ -84,6 +84,7 @@ add_library(umicom_trader_module STATIC
     src/production_commands.c
     src/production_readiness.c
     src/experience_acceptance.c
+    src/test_readiness_contribution.c
 )
 add_library(Umicom::trader_module ALIAS umicom_trader_module)
 
@@ -208,6 +209,19 @@ if(BUILD_TESTING)
         NAME trader.module.framework_views
         COMMAND trader-framework-views-test
     )
+
+    add_executable(trader-test-readiness-contribution-test
+        tests/test_test_readiness_contribution.c)
+    target_link_libraries(trader-test-readiness-contribution-test PRIVATE
+        Umicom::trader_module)
+    umicom_apply_warnings(trader-test-readiness-contribution-test)
+    umicom_apply_sanitizers(trader-test-readiness-contribution-test)
+    add_test(NAME trader.module.test_readiness_contribution
+        COMMAND trader-test-readiness-contribution-test)
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(
+            trader-test-readiness-contribution-test)
+    endif()
 
     if(TARGET Umicom::trader_gtk)
         add_executable(trader-gtk-workstation-test
