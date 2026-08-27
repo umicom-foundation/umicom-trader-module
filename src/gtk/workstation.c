@@ -3,8 +3,9 @@
  * File: applications/trader/src/gtk/workstation.c
  *
  * PURPOSE:
- *   Compose the runnable Trader GTK4 workstation entirely from Framework-owned
- *   suite layouts, safe trading workspace state and reusable view renderers.
+ *   Keep Trader a thin product composition: create the canonical trading
+ *   workspace and delegate all GTK4 interaction, simulation, panel rendering
+ *   and suite-layout behaviour to Umicom Framework.
  *
  * Created by: Sammy Hegab
  * Organisation: Umicom Foundation
@@ -20,6 +21,7 @@
 
 struct UmiTraderGtkWorkstation {
     UmiTradingWorkspace *trading;
+	UmiGtk4TradingSuiteWorkstation *framework_workstation;
     UmiApplicationSuiteGtk4Workstation *suite;
     guint pending_refresh;
 };
@@ -120,6 +122,10 @@ UmiStatus umi_trader_gtk_workstation_create(
         &trading_config, &workstation->trading);
     if (status != UMI_STATUS_OK) goto fail;
 
+    /* Framework defaults intentionally provide a populated simulation market,
+     * animated evidence and no live-environment access. Broker readiness and
+     * explicit live arming remain separate capabilities for a later adapter. */
+
     (void)memset(&suite_config, 0, sizeof(suite_config));
     suite_config.application_id = "org.umicom.trader";
     suite_config.title = "Umicom Trader";
@@ -173,7 +179,20 @@ UmiApplicationSuiteGtk4WorkstationSnapshot
 umi_trader_gtk_workstation_snapshot(
     const UmiTraderGtkWorkstation *workstation)
 {
-    return workstation != NULL
-        ? umi_application_suite_gtk4_workstation_snapshot(workstation->suite)
-        : (UmiApplicationSuiteGtk4WorkstationSnapshot){0};
+    UmiGtk4TradingSuiteWorkstationSnapshot snapshot;
+    if (workstation == NULL || workstation->framework_workstation == NULL)
+        return (UmiApplicationSuiteGtk4WorkstationSnapshot){0};
+    snapshot = umi_gtk4_trading_suite_workstation_snapshot(
+        workstation->framework_workstation);
+    return snapshot.layout;
+}
+
+UmiStatus umi_trader_gtk_workstation_trading_snapshot(
+    UmiTraderGtkWorkstation *workstation,
+    UmiTradingWorkspaceSnapshot *out_snapshot)
+{
+    if (workstation == NULL || workstation->trading == NULL ||
+        out_snapshot == NULL)
+        return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_trading_workspace_snapshot(workstation->trading, out_snapshot);
 }

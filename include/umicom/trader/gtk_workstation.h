@@ -3,8 +3,8 @@
  * File: applications/trader/include/umicom/trader/gtk_workstation.h
  *
  * PURPOSE:
- *   Expose the thin Trader GTK4 workstation composition over Framework-owned
- *   trading state, view models and canonical Application Suite layouts.
+ *   Expose the thin Trader GTK4 product composition over the Framework-owned
+ *   interactive trading suite workstation and canonical application layouts.
  *
  * Created by: Sammy Hegab
  * Organisation: Umicom Foundation
@@ -17,6 +17,7 @@
 
 #include "umicom/application/suite_layout/gtk4_workstation.h"
 #include "umicom/trader/runtime.h"
+#include "umicom/trading_ui/gtk4/trading_suite_workstation.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,6 +37,9 @@ UmiStatus umi_trader_gtk_workstation_select_layout(
 UmiApplicationSuiteGtk4WorkstationSnapshot
 umi_trader_gtk_workstation_snapshot(
     const UmiTraderGtkWorkstation *workstation);
+UmiStatus umi_trader_gtk_workstation_trading_snapshot(
+    UmiTraderGtkWorkstation *workstation,
+    UmiTradingWorkspaceSnapshot *out_snapshot);
 
 #ifdef __cplusplus
 }

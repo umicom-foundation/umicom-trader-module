@@ -20,6 +20,7 @@ int main(void)
 {
     UmiTraderGtkWorkstation *workstation = NULL;
     UmiApplicationSuiteGtk4WorkstationSnapshot snapshot;
+    UmiTradingWorkspaceSnapshot trading;
     UmiStatus status;
 
     if (!gtk_init_check()) {
@@ -31,6 +32,15 @@ int main(void)
     assert(status == UMI_STATUS_OK);
     assert(workstation != NULL);
     assert(umi_trader_gtk_workstation_widget(workstation) != NULL);
+
+    assert(umi_trader_gtk_workstation_trading_snapshot(
+               workstation, &trading) == UMI_STATUS_OK);
+    assert(trading.environment == UMI_TRADING_SIMULATION);
+    assert(trading.watchlist_count ==
+           UMI_TRADING_SIMULATION_MARKET_DEFAULT_INSTRUMENTS);
+    assert(trading.visible_instrument_count == trading.watchlist_count);
+    assert(trading.market_data_ready);
+    assert(trading.has_selected_instrument);
 
     snapshot = umi_trader_gtk_workstation_snapshot(workstation);
     assert(strcmp(snapshot.application_id, "org.umicom.trader") == 0);
