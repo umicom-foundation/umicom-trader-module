@@ -187,3 +187,11 @@ install(FILES application.umicom.yaml README.md LICENSE
 
 message(STATUS "Umicom Trader Module version: ${PROJECT_VERSION}")
 message(STATUS "Umicom Trader Framework workbench and experience profiles enabled")
+
+include(
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../framework/cmake/UmicomApplicationProductisationContribution.cmake")
+umicom_add_application_productisation_contribution(
+    NAME "trader"
+    TARGET "umicom_trader_productisation"
+    SOURCE "src/productisation_contribution.c"
+    TEST_SOURCE "tests/test_productisation_contribution.c")
