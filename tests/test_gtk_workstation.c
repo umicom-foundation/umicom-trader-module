@@ -19,9 +19,14 @@
 int main(void)
 {
     UmiTraderGtkWorkstation *workstation = NULL;
-    UmiApplicationSuiteGtk4WorkstationSnapshot snapshot;
+    UmiApplicationSuiteGtk4WorkstationSnapshot snapshot =
+        umi_trader_gtk_workstation_snapshot(NULL);
     UmiTradingWorkspaceSnapshot trading;
     UmiStatus status;
+
+    assert(snapshot.application_id[0] == '\0');
+    assert(snapshot.active_layout_id[0] == '\0');
+    assert(snapshot.layout_count == 0U);
 
     if (!gtk_init_check()) {
         (void)printf("GTK4 display unavailable; Trader workstation smoke test skipped.\n");
