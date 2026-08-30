@@ -41,6 +41,31 @@ GtkWidget *umi_trader_gtk_workstation_widget(
 UmiStatus umi_trader_gtk_workstation_select_layout(
     UmiTraderGtkWorkstation *workstation,
     const char *layout_id);
+UmiStatus umi_trader_gtk_workstation_begin_layout_edit(
+    UmiTraderGtkWorkstation *workstation);
+UmiStatus umi_trader_gtk_workstation_commit_layout_edit(
+    UmiTraderGtkWorkstation *workstation);
+UmiStatus umi_trader_gtk_workstation_cancel_layout_edit(
+    UmiTraderGtkWorkstation *workstation);
+UmiStatus umi_trader_gtk_workstation_open_window(
+    UmiTraderGtkWorkstation *workstation,
+    const char *tool_id,
+    const char *region_id,
+    int floating,
+    uint64_t opened_at_ms,
+    char *out_window_id,
+    size_t out_window_id_capacity);
+UmiStatus umi_trader_gtk_workstation_move_window(
+    UmiTraderGtkWorkstation *workstation,
+    const char *window_id,
+    const char *region_id,
+    double x,
+    double y,
+    double width,
+    double height);
+UmiStatus umi_trader_gtk_workstation_close_window(
+    UmiTraderGtkWorkstation *workstation,
+    const char *window_id);
 UmiApplicationSuiteGtk4WorkstationSnapshot
 umi_trader_gtk_workstation_snapshot(
     const UmiTraderGtkWorkstation *workstation);

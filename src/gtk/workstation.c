@@ -120,6 +120,79 @@ UmiStatus umi_trader_gtk_workstation_trading_snapshot(
     return umi_trading_workspace_snapshot(workstation->trading, out_snapshot);
 }
 
+UmiStatus umi_trader_gtk_workstation_begin_layout_edit(
+    UmiTraderGtkWorkstation *workstation)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_begin_layout_edit(
+        workstation->framework_workstation);
+}
+
+UmiStatus umi_trader_gtk_workstation_commit_layout_edit(
+    UmiTraderGtkWorkstation *workstation)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_commit_layout_edit(
+        workstation->framework_workstation);
+}
+
+UmiStatus umi_trader_gtk_workstation_cancel_layout_edit(
+    UmiTraderGtkWorkstation *workstation)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_cancel_layout_edit(
+        workstation->framework_workstation);
+}
+
+UmiStatus umi_trader_gtk_workstation_open_window(
+    UmiTraderGtkWorkstation *workstation,
+    const char *tool_id,
+    const char *region_id,
+    int floating,
+    uint64_t opened_at_ms,
+    char *out_window_id,
+    size_t out_window_id_capacity)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_open_window(
+        workstation->framework_workstation,
+        tool_id,
+        region_id,
+        floating,
+        opened_at_ms,
+        out_window_id,
+        out_window_id_capacity);
+}
+
+UmiStatus umi_trader_gtk_workstation_move_window(
+    UmiTraderGtkWorkstation *workstation,
+    const char *window_id,
+    const char *region_id,
+    double x,
+    double y,
+    double width,
+    double height)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_move_window(
+        workstation->framework_workstation,
+        window_id,
+        region_id,
+        x,
+        y,
+        width,
+        height);
+}
+
+UmiStatus umi_trader_gtk_workstation_close_window(
+    UmiTraderGtkWorkstation *workstation,
+    const char *window_id)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_close_window(
+        workstation->framework_workstation, window_id);
+}
+
 UmiStatus umi_trader_gtk_workstation_application_surface_snapshot(
     const UmiTraderGtkWorkstation *workstation,
     UmiApplicationPresentationSurfaceSnapshot *out_snapshot)
