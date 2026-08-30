@@ -6,9 +6,12 @@
  *   Compose the Trader workbench entirely from Framework-owned groups,
  *   endpoints and context-source definitions.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 
 #include "umicom/trader/workbench_profile.h"

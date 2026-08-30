@@ -6,9 +6,12 @@
  *   Launch the runnable GTK4 Umicom Trader desktop workstation while leaving
  *   reusable layout, trading, panel and rendering behaviour in Framework.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #include <gtk/gtk.h>
 #include <stdio.h>

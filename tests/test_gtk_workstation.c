@@ -6,9 +6,12 @@
  *   Smoke-test the real Framework-rendered Trader GTK4 workstation and its
  *   canonical Trading, Research and Strategy Development layout switching.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #include <assert.h>
 #include <stdio.h>

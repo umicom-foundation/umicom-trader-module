@@ -5,9 +5,12 @@
  * PURPOSE:
  *   Verify Trader composes existing Framework trading views instead of duplicating them.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #include <assert.h>
 #include <stddef.h>

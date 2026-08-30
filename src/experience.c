@@ -5,9 +5,12 @@
  * PURPOSE:
  *   Bind the existing workbench composition to the canonical Framework application experience.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 
 #include "umicom/trader/experience.h"

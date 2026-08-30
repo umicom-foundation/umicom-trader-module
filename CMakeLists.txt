@@ -7,9 +7,12 @@
 #   linked-workbench, selection-provider, context, experience and GTK4 layout
 #   rendering contracts.
 #
-# Created by: Sammy Hegab
-# Organisation: Umicom Foundation
-# Licence: MIT
+# AUTHOR AND ORGANISATION:
+#   Sammy Hegab
+#   Umicom Foundation
+#
+# LICENCE:
+#   MIT
 #-----------------------------------------------------------------------------
 cmake_minimum_required(VERSION 3.24)
 

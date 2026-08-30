@@ -1,3 +1,18 @@
+/*-----------------------------------------------------------------------------
+ * Umicom Trader Module
+ * File: tests/test_production_readiness.c
+ *
+ * PURPOSE:
+ *   Verify the test production readiness behavior for
+ *   Umicom Trader Module.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
+ *---------------------------------------------------------------------------*/
 /* Umicom Trader production control-plane test | Sammy Hegab | Umicom Foundation | MIT */
 #include <assert.h>
 #include <stdlib.h>

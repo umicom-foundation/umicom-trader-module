@@ -6,9 +6,12 @@
  *   Verify Trader consumes the Framework-owned linked-workbench profile without
  *   duplicating panel or colour-group definitions in the application module.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 
 #include <assert.h>

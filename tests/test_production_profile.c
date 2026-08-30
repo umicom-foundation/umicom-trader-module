@@ -1,3 +1,18 @@
+/*-----------------------------------------------------------------------------
+ * Umicom Trader Module
+ * File: tests/test_production_profile.c
+ *
+ * PURPOSE:
+ *   Verify the test production profile behavior for
+ *   Umicom Trader Module.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
+ *---------------------------------------------------------------------------*/
 /* Umicom Trader production control-plane test | Sammy Hegab | Umicom Foundation | MIT */
 #include <assert.h>
 #include "umicom/trader/production_profile.h"

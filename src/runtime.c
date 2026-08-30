@@ -5,9 +5,12 @@
  * PURPOSE:
  *   Initialise Trader through canonical Framework application, layout and trading-view runtime contracts.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 
 #include "umicom/trader/runtime.h"

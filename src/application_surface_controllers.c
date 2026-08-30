@@ -81,23 +81,7 @@ UmiStatus umi_trader_application_surface_controllers_register(
     UmiApplicationPresentationSurfaceRuntime *runtime,
     void *context)
 {
-    static const char *const COMPONENTS[] = {
-        "umicom.trading.chart",
-        "umicom.trading.watchlist",
-        "umicom.trading.market-depth",
-        "umicom.trading.order-ticket",
-        "umicom.trading.orders",
-        "umicom.trading.executions",
-        "umicom.trading.portfolio",
-        "umicom.trading.risk",
-        "umicom.trading.strategy"};
-    size_t index;
     if (runtime == NULL) return UMI_STATUS_INVALID_ARGUMENT;
-    for (index = 0U; index < sizeof(COMPONENTS) / sizeof(COMPONENTS[0]); ++index) {
-        UmiStatus status =
-            umi_application_presentation_surface_runtime_register_controller(
-                runtime, COMPONENTS[index], trader_controller, context);
-        if (status != UMI_STATUS_OK) return status;
-    }
-    return UMI_STATUS_OK;
+    return umi_application_presentation_surface_runtime_register_controller_for_all(
+        runtime, trader_controller, context);
 }

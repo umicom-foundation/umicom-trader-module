@@ -5,9 +5,12 @@
  * PURPOSE:
  *   Verify readiness remains Framework-owned while the product exposes the status to its frontend.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 
 #include <assert.h>

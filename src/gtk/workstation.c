@@ -7,9 +7,12 @@
  *   workspace and delegate all GTK4 interaction, simulation, panel rendering
  *   and suite-layout behaviour to Umicom Framework.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #include "umicom/trader/gtk_workstation.h"
 

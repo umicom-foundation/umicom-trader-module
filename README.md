@@ -19,7 +19,7 @@ Current composition:
 - Trade Blotter
 - Context Inspector
 
-Trader also starts the Framework-owned standard presentation recipe with chart,
+Trader also starts Framework-owned learning, standard or focus presentation recipes with chart,
 watchlist, depth, order, execution, portfolio, risk and strategy components.
 The order helper prepares simulation state only; it cannot submit a live order.
 See [the Trader application surface guide](docs/APPLICATION_SURFACE_GUIDE.md).
