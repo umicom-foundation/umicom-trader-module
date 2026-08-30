@@ -14,6 +14,7 @@ framework:
 
 frontends:
   - console
+  - gtk
 
 entry:
   kind: financial
@@ -28,6 +29,8 @@ capabilities:
   - trading-workbench-profile
   - framework-trading-services
   - umicom.application.experience
+  - application-presentation-surface
+  - workspace-recipes
 
 source_layout:
   product_root: src

@@ -18,6 +18,7 @@
 struct UmiTraderGtkWorkstation {
     UmiTradingWorkspace *trading;
     UmiGtk4TradingSuiteWorkstation *framework_workstation;
+    UmiTraderApplicationSurface *application_surface;
 };
 
 UmiStatus umi_trader_gtk_workstation_create(
@@ -47,6 +48,13 @@ UmiStatus umi_trader_gtk_workstation_create(
         &framework_config, &workstation->framework_workstation);
     if (status != UMI_STATUS_OK) goto fail;
 
+    /* Keep the canonical component/presentation session beside the existing
+     * Framework GTK4 trading workstation. This is additive: native trading
+     * widgets and simulation state remain owned by their established paths. */
+    status = umi_trader_application_surface_create(
+        &workstation->application_surface);
+    if (status != UMI_STATUS_OK) goto fail;
+
     *out_workstation = workstation;
     return UMI_STATUS_OK;
 
@@ -59,6 +67,8 @@ void umi_trader_gtk_workstation_destroy(
     UmiTraderGtkWorkstation *workstation)
 {
     if (workstation == NULL) return;
+    umi_trader_application_surface_destroy(workstation->application_surface);
+    workstation->application_surface = NULL;
     umi_gtk4_trading_suite_workstation_destroy(
         workstation->framework_workstation);
     workstation->framework_workstation = NULL;
@@ -105,4 +115,15 @@ UmiStatus umi_trader_gtk_workstation_trading_snapshot(
         out_snapshot == NULL)
         return UMI_STATUS_INVALID_ARGUMENT;
     return umi_trading_workspace_snapshot(workstation->trading, out_snapshot);
+}
+
+UmiStatus umi_trader_gtk_workstation_application_surface_snapshot(
+    const UmiTraderGtkWorkstation *workstation,
+    UmiApplicationPresentationSurfaceSnapshot *out_snapshot)
+{
+    if (workstation == NULL || workstation->application_surface == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    return umi_trader_application_surface_snapshot(
+        workstation->application_surface, out_snapshot);
 }

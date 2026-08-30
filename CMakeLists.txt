@@ -74,6 +74,9 @@ if(NOT COMMAND umicom_apply_sanitizers)
 endif()
 
 add_library(umicom_trader_module STATIC
+    src/application_surface.c
+    src/application_surface_controllers.c
+    src/application_surface_commands.c
     src/workbench_profile.c
     src/experience.c
     src/runtime.c
@@ -322,4 +325,28 @@ if(BUILD_TESTING)
         umicom_register_validation_target(
             umicom-trader-experience-acceptance-test)
     endif()
+
+    # Product-level application surface tests are headless and verify the
+    # canonical recipe, controller coverage and safe command preparation path.
+    foreach(UMICOM_TRADER_APPLICATION_SURFACE_TEST
+            application_surface
+            application_surface_commands
+            application_surface_controllers)
+        string(REPLACE "_" "-" UMICOM_TRADER_APPLICATION_SURFACE_TARGET
+            "${UMICOM_TRADER_APPLICATION_SURFACE_TEST}")
+        add_executable(
+            "umicom-trader-${UMICOM_TRADER_APPLICATION_SURFACE_TARGET}-test"
+            "tests/test_${UMICOM_TRADER_APPLICATION_SURFACE_TEST}.c")
+        target_link_libraries(
+            "umicom-trader-${UMICOM_TRADER_APPLICATION_SURFACE_TARGET}-test"
+            PRIVATE Umicom::trader_module)
+        umicom_apply_warnings(
+            "umicom-trader-${UMICOM_TRADER_APPLICATION_SURFACE_TARGET}-test")
+        umicom_apply_sanitizers(
+            "umicom-trader-${UMICOM_TRADER_APPLICATION_SURFACE_TARGET}-test")
+        add_test(
+            NAME "trader.${UMICOM_TRADER_APPLICATION_SURFACE_TEST}"
+            COMMAND
+                "umicom-trader-${UMICOM_TRADER_APPLICATION_SURFACE_TARGET}-test")
+    endforeach()
 endif()

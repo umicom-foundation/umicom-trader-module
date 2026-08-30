@@ -40,6 +40,12 @@ UmiStatus umi_trader_runtime_create_panel_view(
     const char *panel_id,
     UmiTradingWorkspace *workspace,
     UmiUiViewModel **out_view);
+/* Bridge canonical presentation component identities to the retained Trader
+ * panel-id compatibility API. Unsupported future components remain explicit. */
+UmiStatus umi_trader_runtime_create_component_view(
+    const char *component_id,
+    UmiTradingWorkspace *workspace,
+    UmiUiViewModel **out_view);
 
 #ifdef __cplusplus
 }

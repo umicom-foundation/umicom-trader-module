@@ -106,3 +106,32 @@ UmiStatus umi_trader_runtime_create_panel_view(
             panel_id, workspace, out_view);
     return UMI_STATUS_NOT_IMPLEMENTED;
 }
+
+UmiStatus umi_trader_runtime_create_component_view(
+    const char *component_id,
+    UmiTradingWorkspace *workspace,
+    UmiUiViewModel **out_view)
+{
+    const char *panel_id = NULL;
+    if (component_id == NULL || workspace == NULL || out_view == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    if (strcmp(component_id, "umicom.trading.watchlist") == 0)
+        panel_id = "watchlist";
+    else if (strcmp(component_id, "umicom.trading.chart") == 0)
+        panel_id = "chart";
+    else if (strcmp(component_id, "umicom.trading.market-depth") == 0)
+        panel_id = "depth";
+    else if (strcmp(component_id, "umicom.trading.order-ticket") == 0)
+        panel_id = "order-entry";
+    else if (strcmp(component_id, "umicom.trading.orders") == 0)
+        panel_id = "blotter";
+    else if (strcmp(component_id, "umicom.trading.portfolio") == 0)
+        panel_id = "positions";
+    else if (strcmp(component_id, "umicom.trading.risk") == 0)
+        panel_id = "risk";
+    else if (strcmp(component_id, "umicom.trading.strategy") == 0)
+        panel_id = "strategy";
+    if (panel_id == NULL) return UMI_STATUS_NOT_IMPLEMENTED;
+    return umi_trader_runtime_create_panel_view(panel_id, workspace, out_view);
+}

@@ -19,6 +19,11 @@ Current composition:
 - Trade Blotter
 - Context Inspector
 
-Future Trader batches can add product-specific presentation and broker adapters,
-while canonical instruments, accounts, trades, risk and context routing remain
-Framework responsibilities.
+Trader also starts the Framework-owned standard presentation recipe with chart,
+watchlist, depth, order, execution, portfolio, risk and strategy components.
+The order helper prepares simulation state only; it cannot submit a live order.
+See [the Trader application surface guide](docs/APPLICATION_SURFACE_GUIDE.md).
+
+Future Trader work can add product-specific presentation and broker adapters,
+while canonical instruments, accounts, trades, risk, safeguards and context
+routing remain Framework responsibilities.

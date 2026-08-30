@@ -16,6 +16,7 @@
 #include <gtk/gtk.h>
 
 #include "umicom/application/suite_layout/gtk4_workstation.h"
+#include "umicom/trader/application_surface.h"
 #include "umicom/trader/runtime.h"
 #include "umicom/trading_ui/gtk4/trading_suite_workstation.h"
 
@@ -40,6 +41,9 @@ umi_trader_gtk_workstation_snapshot(
 UmiStatus umi_trader_gtk_workstation_trading_snapshot(
     UmiTraderGtkWorkstation *workstation,
     UmiTradingWorkspaceSnapshot *out_snapshot);
+UmiStatus umi_trader_gtk_workstation_application_surface_snapshot(
+    const UmiTraderGtkWorkstation *workstation,
+    UmiApplicationPresentationSurfaceSnapshot *out_snapshot);
 
 #ifdef __cplusplus
 }
