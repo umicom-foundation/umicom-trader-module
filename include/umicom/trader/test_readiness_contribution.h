@@ -2,9 +2,12 @@
  * Umicom Trader
  * File: include/umicom/trader/test_readiness_contribution.h
  * PURPOSE: Place Framework test-readiness commands and panel inside Trader.
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #ifndef UMICOM_TRADER_TEST_READINESS_CONTRIBUTION_H
 #define UMICOM_TRADER_TEST_READINESS_CONTRIBUTION_H

@@ -5,9 +5,12 @@
  * PURPOSE:
  *   Project Framework-owned executable journey evidence into this thin product.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #ifndef TRADER_EXPERIENCE_ACCEPTANCE_H
 #define TRADER_EXPERIENCE_ACCEPTANCE_H

@@ -34,6 +34,14 @@ option(UMICOM_TRADER_BUILD_GTK4
 include(CTest)
 include(GNUInstallDirs)
 
+if(COMMAND umicom_register_header_governance_test AND
+   CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    umicom_register_header_governance_test(
+        trader.sdk.public_headers
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "Umicom Trader")
+endif()
+
 if(NOT TARGET Umicom::Framework)
     find_package(UmicomFramework CONFIG REQUIRED)
 endif()

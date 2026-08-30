@@ -6,9 +6,12 @@
  *   Expose the thin Trader GTK4 product composition over the Framework-owned
  *   interactive trading suite workstation and canonical application layouts.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #ifndef UMICOM_TRADER_GTK_WORKSTATION_H
 #define UMICOM_TRADER_GTK_WORKSTATION_H

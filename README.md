@@ -27,6 +27,10 @@ The [Trader runtime behavior and safety guide](docs/RUNTIME_BEHAVIOR_AND_TRADING
 explains full-rate market panels, guarded order commands, shared instrument
 context and frequent workspace checkpoints.
 
+Trader's public module headers now use the same complete file comment and
+unique-guard audit as Framework and Studio, keeping the product SDK predictable
+for future frontend and broker adapters.
+
 Future Trader work can add product-specific presentation and broker adapters,
 while canonical instruments, accounts, trades, risk, safeguards and context
 routing remain Framework responsibilities.

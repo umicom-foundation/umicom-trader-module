@@ -5,9 +5,12 @@
  * PURPOSE:
  *   Bind the thin Trader product to Framework application runtime, trading views and canonical suite layouts.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 
 #ifndef UMICOM_TRADER_RUNTIME_H

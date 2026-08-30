@@ -6,9 +6,12 @@
  *   Expose Trader's thin application composition over the Framework-owned
  *   linked-workbench trading profile.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 
 #ifndef UMICOM_TRADER_WORKBENCH_PROFILE_H
