@@ -23,6 +23,9 @@ Trader also starts the Framework-owned standard presentation recipe with chart,
 watchlist, depth, order, execution, portfolio, risk and strategy components.
 The order helper prepares simulation state only; it cannot submit a live order.
 See [the Trader application surface guide](docs/APPLICATION_SURFACE_GUIDE.md).
+The [Trader runtime behavior and safety guide](docs/RUNTIME_BEHAVIOR_AND_TRADING_SAFETY.md)
+explains full-rate market panels, guarded order commands, shared instrument
+context and frequent workspace checkpoints.
 
 Future Trader work can add product-specific presentation and broker adapters,
 while canonical instruments, accounts, trades, risk, safeguards and context

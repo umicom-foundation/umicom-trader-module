@@ -127,3 +127,49 @@ UmiStatus umi_trader_gtk_workstation_application_surface_snapshot(
     return umi_trader_application_surface_snapshot(
         workstation->application_surface, out_snapshot);
 }
+
+UmiStatus umi_trader_gtk_workstation_advance(
+    UmiTraderGtkWorkstation *workstation,
+    uint32_t elapsed_seconds)
+{
+    if (workstation == NULL || workstation->application_surface == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    return umi_trader_application_surface_policy_advance(
+        workstation->application_surface, elapsed_seconds);
+}
+
+UmiStatus umi_trader_gtk_workstation_set_background(
+    UmiTraderGtkWorkstation *workstation,
+    int background)
+{
+    if (workstation == NULL || workstation->application_surface == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    return umi_trader_application_surface_policy_set_background(
+        workstation->application_surface, background);
+}
+
+UmiStatus umi_trader_gtk_workstation_context_changed(
+    UmiTraderGtkWorkstation *workstation,
+    const char *component_id,
+    const char *context_value)
+{
+    if (workstation == NULL || workstation->application_surface == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    return umi_trader_application_surface_policy_context_changed(
+        workstation->application_surface, component_id, context_value);
+}
+
+int umi_trader_gtk_workstation_checkpoint_due(
+    const UmiTraderGtkWorkstation *workstation,
+    uint32_t elapsed_since_checkpoint_seconds,
+    int changed)
+{
+    return workstation != NULL && workstation->application_surface != NULL
+        ? umi_trader_application_surface_policy_checkpoint_due(
+              workstation->application_surface,
+              elapsed_since_checkpoint_seconds, changed)
+        : 0;
+}

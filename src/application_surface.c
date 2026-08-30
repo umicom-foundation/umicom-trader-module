@@ -112,3 +112,10 @@ umi_trader_application_surface_runtime(UmiTraderApplicationSurface *surface)
 {
     return surface != NULL ? &surface->runtime : NULL;
 }
+
+const UmiApplicationPresentationSurfaceRuntime *
+umi_trader_application_surface_runtime_const(
+    const UmiTraderApplicationSurface *surface)
+{
+    return surface != NULL ? &surface->runtime : NULL;
+}

@@ -77,6 +77,7 @@ add_library(umicom_trader_module STATIC
     src/application_surface.c
     src/application_surface_controllers.c
     src/application_surface_commands.c
+    src/application_surface_policy.c
     src/workbench_profile.c
     src/experience.c
     src/runtime.c
@@ -331,7 +332,8 @@ if(BUILD_TESTING)
     foreach(UMICOM_TRADER_APPLICATION_SURFACE_TEST
             application_surface
             application_surface_commands
-            application_surface_controllers)
+            application_surface_controllers
+            application_surface_policy)
         string(REPLACE "_" "-" UMICOM_TRADER_APPLICATION_SURFACE_TARGET
             "${UMICOM_TRADER_APPLICATION_SURFACE_TEST}")
         add_executable(

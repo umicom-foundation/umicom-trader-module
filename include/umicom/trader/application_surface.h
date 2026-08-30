@@ -44,6 +44,9 @@ UmiStatus umi_trader_application_surface_snapshot(
     UmiApplicationPresentationSurfaceSnapshot *out_snapshot);
 UmiApplicationPresentationSurfaceRuntime *
 umi_trader_application_surface_runtime(UmiTraderApplicationSurface *surface);
+const UmiApplicationPresentationSurfaceRuntime *
+umi_trader_application_surface_runtime_const(
+    const UmiTraderApplicationSurface *surface);
 
 #ifdef __cplusplus
 }
