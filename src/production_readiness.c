@@ -41,7 +41,7 @@ UmiStatus umi_trader_production_readiness_build(
     out_readiness->risk_ready = feature_at_least(
         runtime, "trader.risk", UMI_EXPERIENCE_FEATURE_IMPLEMENTED);
     out_readiness->paper_adapter_ready = feature_at_least(
-        runtime, "trader.ibkr-paper", UMI_EXPERIENCE_FEATURE_IMPLEMENTED);
+        runtime, "trader.paper-adapter", UMI_EXPERIENCE_FEATURE_IMPLEMENTED);
     out_readiness->paper_execution_ready =
         runtime->acceptance.accepted && out_readiness->market_data_ready &&
         out_readiness->oms_ready && out_readiness->risk_ready &&
