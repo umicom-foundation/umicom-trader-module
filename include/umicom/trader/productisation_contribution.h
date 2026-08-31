@@ -17,6 +17,7 @@
 #define UMICOM_TRADER_PRODUCTISATION_CONTRIBUTION_H
 
 #include "umicom/application/productisation/session.h"
+#include "umicom/application/productisation/workspace_guide.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,6 +29,9 @@ UmiStatus umi_trader_productisation_snapshot(
     UmiProductApplicationAdoptionSnapshot *out_snapshot);
 UmiStatus umi_trader_product_session_init(
     UmiProductApplicationSession *out_session);
+/* Build welcome-screen workspace choices from the canonical Framework profile. */
+UmiStatus umi_trader_product_workspace_guide(
+    UmiProductWorkspaceGuide *out_guide);
 
 #ifdef __cplusplus
 }
