@@ -5,7 +5,8 @@ application:
   name: Umicom Trader
   short_name: Trader
   version: 0.2.0
-  executable: umicom-trader-console
+  executable: umicom-trader
+  console_executable: umicom-trader-console
   aliases: [utrader, trader]
 
 framework:
@@ -43,3 +44,8 @@ boundaries:
   owns_risk_engine: false
   owns_persistence: false
   consumes_framework_services: true
+
+installation:
+  component: Trader
+  selected_by_default: true
+  show_in_application_launcher: true

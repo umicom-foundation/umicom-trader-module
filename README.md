@@ -36,3 +36,7 @@ for future frontend and broker adapters.
 Future Trader work can add product-specific presentation and broker adapters,
 while canonical instruments, accounts, trades, risk, safeguards and context
 routing remain Framework responsibilities.
+
+The Windows suite installer exposes Trader as the optional **Trader**
+component. Its graphical executable is registered with Umicom Desk, allowing
+Trader and Studio or another installed product to run side by side.
