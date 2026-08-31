@@ -100,6 +100,8 @@ add_library(umicom_trader_module STATIC
     src/production_readiness.c
     src/experience_acceptance.c
     src/test_readiness_contribution.c
+    # Capability Centre remains a thin projection of Framework-owned truth.
+    src/capability_centre.c
 )
 add_library(Umicom::trader_module ALIAS umicom_trader_module)
 
@@ -160,6 +162,17 @@ elseif(UMICOM_TRADER_BUILD_GTK4)
 endif()
 
 if(BUILD_TESTING)
+    # This focused test keeps planned and foundational trading work visible.
+    add_executable(trader-capability-centre-test
+        tests/test_capability_centre.c)
+    target_link_libraries(trader-capability-centre-test PRIVATE
+        Umicom::trader_module)
+    umicom_apply_warnings(trader-capability-centre-test)
+    umicom_apply_sanitizers(trader-capability-centre-test)
+    add_test(
+        NAME trader.module.capability_centre
+        COMMAND trader-capability-centre-test)
+
     add_executable(trader-workbench-profile-test
         tests/test_workbench_profile.c
     )

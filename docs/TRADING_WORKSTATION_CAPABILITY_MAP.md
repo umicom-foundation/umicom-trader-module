@@ -60,9 +60,9 @@ The status words are intentionally strict:
 | Scanner | **Foundation** | Canonical scanner views exist; saved and scheduled scans remain. |
 | News and research | **Foundation** | Provider-aware empty states exist; no external source is silently assumed. |
 | Alerts | **Planned** | Reuse Framework notification, policy and scheduling contracts. |
-| Time and sales | **Planned** | Add a bounded, sequence-checked trade tape with filters and pause/resume. |
+| Time and sales | **Foundation** | A canonical movable panel and feature contract now exist; add a bounded, sequence-checked trade tape with filters and pause/resume. |
 | Options analysis | **Planned** | Model expiries, strikes, calls, puts, sensitivities and reviewed multi-leg orders. |
-| Price ladder | **Planned** | Build on market depth and guarded order actions with configurable permissions. |
+| Price ladder | **Foundation** | A critical movable panel contract now exists; build its gestures on market depth and guarded order actions with configurable permissions. |
 | Portfolio rebalance | **Planned** | Separate targets, proposals, review evidence and explicit submission. |
 
 ## The three identities on every panel
@@ -92,6 +92,7 @@ is shared by Studio, TMS, Bank, media applications and future Umicom products.
 1. Complete the semantic persistence bridge and crash recovery.
 2. Add keyboard docking, visible drop targets and screen-reader announcements.
 3. Finish detached windows and monitor recovery.
-4. Complete alerts, time and sales, options, ladder and rebalance models.
+4. Complete alerts, time and sales, options, ladder and rebalance models behind
+   the new canonical panel identities.
 5. Add provider adapters behind capability, safety and reconciliation gates.
 6. Validate every live-capable action independently of the layout system.
