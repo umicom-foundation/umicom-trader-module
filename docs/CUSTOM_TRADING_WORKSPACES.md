@@ -17,15 +17,9 @@ MIT
 # Custom Trading Workspaces
 
 Umicom Trader now consumes the Framework-owned custom workspace controls. The
-goal is the same useful workflow described in the official TWS Mosaic guides:
-choose a layout, unlock it, add the trading windows needed for the task, arrange
-them, and lock the layout when finished.
-
-This is original Umicom functionality inspired by public product behaviour in
-the [TWS getting-started guide](https://www.ibkrguides.com/traderworkstation/getting-started.htm),
-[Mosaic layout guide](https://www.ibkrguides.com/traderworkstation/mosaic-layout.htm),
-[custom layout guide](https://www.ibkrguides.com/traderworkstation/custom-layouts.htm)
-and [linked-panel guide](https://www.ibkrguides.com/traderworkstation/color-grouping-linked-panels.htm).
+goal is a familiar professional workflow: choose a layout, unlock it, add the
+trading windows needed for the task, arrange them, and lock the layout when
+finished. The implementation and terminology are owned by Umicom Framework.
 
 ## What a user can do
 
@@ -60,9 +54,10 @@ The intended default trading link is an Instrument group:
 - Chart, Quote Details, News and Order Entry can be destinations.
 - A panel can be bidirectional only when its behaviour truly supports it.
 
-Later work will put the reusable colour selector in every trading panel header.
-The underlying Framework already supports coloured source, destination and
-bidirectional link roles.
+The reusable panel header now carries an independent linked-context identity.
+The underlying Framework supports coloured source, destination and
+bidirectional link roles; the visual colour chooser remains a separate native
+interaction so it is not confused with panel placement.
 
 ## Product roadmap
 
