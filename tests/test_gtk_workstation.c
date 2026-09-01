@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "umicom/application/experience_catalogue.h"
 #include "umicom/trader/gtk_workstation.h"
 
 int main(void)
@@ -27,6 +28,8 @@ int main(void)
         umi_trader_gtk_workstation_snapshot(NULL);
     UmiTradingWorkspaceSnapshot trading;
     UmiUiWorkspaceImportReport import_report;
+    const UmiApplicationExperienceDefinition *experience;
+    const UmiExperienceLayoutDefinition *layout;
     char saved_layout[UMI_UI_LAYOUT_ENCODED_CAPACITY];
     UmiStatus status;
 
@@ -44,6 +47,12 @@ int main(void)
     UMI_TEST_REQUIRE(workstation != NULL);
     UMI_TEST_REQUIRE(umi_trader_gtk_workstation_widget(workstation) != NULL);
 
+    /* The canonical experience is the source of truth for the layouts that
+     * the thin Trader application must expose through its GTK workstation. */
+    experience = umi_application_experience_catalogue_find(
+        "org.umicom.trader");
+    UMI_TEST_REQUIRE(experience != NULL);
+
     UMI_TEST_REQUIRE(umi_trader_gtk_workstation_trading_snapshot(
                workstation, &trading) == UMI_STATUS_OK);
     UMI_TEST_REQUIRE(trading.environment == UMI_TRADING_SIMULATION);
@@ -56,8 +65,10 @@ int main(void)
     snapshot = umi_trader_gtk_workstation_snapshot(workstation);
     UMI_TEST_REQUIRE(strcmp(snapshot.application_id, "org.umicom.trader") == 0);
     UMI_TEST_REQUIRE(strcmp(snapshot.active_layout_id, "trading") == 0);
-    UMI_TEST_REQUIRE(snapshot.layout_count == 6U);
-    UMI_TEST_REQUIRE(snapshot.rendered_panel_count == 8U);
+    UMI_TEST_REQUIRE(snapshot.layout_count == experience->layout_count);
+    layout = umi_application_experience_layout_find(experience, "trading");
+    UMI_TEST_REQUIRE(layout != NULL);
+    UMI_TEST_REQUIRE(snapshot.rendered_panel_count == layout->panel_count);
     UMI_TEST_REQUIRE(snapshot.context_group_count >= 3U);
     UMI_TEST_REQUIRE(!snapshot.has_saved_layout);
 
@@ -117,7 +128,9 @@ int main(void)
     UMI_TEST_REQUIRE(status == UMI_STATUS_OK);
     snapshot = umi_trader_gtk_workstation_snapshot(workstation);
     UMI_TEST_REQUIRE(strcmp(snapshot.active_layout_id, "research") == 0);
-    UMI_TEST_REQUIRE(snapshot.rendered_panel_count == 6U);
+    layout = umi_application_experience_layout_find(experience, "research");
+    UMI_TEST_REQUIRE(layout != NULL);
+    UMI_TEST_REQUIRE(snapshot.rendered_panel_count == layout->panel_count);
     /* Scanner, predictive research, news and context inspection now render
      * through Framework view models instead of placeholder panels. */
     UMI_TEST_REQUIRE(snapshot.placeholder_count == 0U);
@@ -127,7 +140,10 @@ int main(void)
     UMI_TEST_REQUIRE(status == UMI_STATUS_OK);
     snapshot = umi_trader_gtk_workstation_snapshot(workstation);
     UMI_TEST_REQUIRE(strcmp(snapshot.active_layout_id, "market-analysis") == 0);
-    UMI_TEST_REQUIRE(snapshot.rendered_panel_count == 7U);
+    layout = umi_application_experience_layout_find(
+        experience, "market-analysis");
+    UMI_TEST_REQUIRE(layout != NULL);
+    UMI_TEST_REQUIRE(snapshot.rendered_panel_count == layout->panel_count);
     UMI_TEST_REQUIRE(snapshot.placeholder_count == 0U);
 
     status = umi_trader_gtk_workstation_select_layout(
@@ -135,7 +151,10 @@ int main(void)
     UMI_TEST_REQUIRE(status == UMI_STATUS_OK);
     snapshot = umi_trader_gtk_workstation_snapshot(workstation);
     UMI_TEST_REQUIRE(strcmp(snapshot.active_layout_id, "strategy-development") == 0);
-    UMI_TEST_REQUIRE(snapshot.rendered_panel_count == 6U);
+    layout = umi_application_experience_layout_find(
+        experience, "strategy-development");
+    UMI_TEST_REQUIRE(layout != NULL);
+    UMI_TEST_REQUIRE(snapshot.rendered_panel_count == layout->panel_count);
     UMI_TEST_REQUIRE(snapshot.placeholder_count == 0U);
 
     umi_trader_gtk_workstation_destroy(workstation);

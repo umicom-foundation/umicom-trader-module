@@ -32,6 +32,7 @@ typedef struct UmiTraderProductionPanelCatalogue {
     size_t risk_sensitive_count;
     size_t read_only_count;
 } UmiTraderProductionPanelCatalogue;
+/** Project runtime panel bindings with trading risk and read-only metadata. */
 UmiStatus umi_trader_production_panels_build(
     const UmiApplicationProductionRuntime *runtime,
     UmiTraderProductionPanelCatalogue *out_catalogue);

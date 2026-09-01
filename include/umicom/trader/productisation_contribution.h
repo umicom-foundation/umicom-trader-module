@@ -23,13 +23,16 @@
 extern "C" {
 #endif
 
+/** Return Trader's immutable identity and availability contribution. */
 const UmiProductApplicationAdoption *
 umi_trader_productisation_contribution(void);
+/** Rebuild Trader readiness from the current Framework catalogues. */
 UmiStatus umi_trader_productisation_snapshot(
     UmiProductApplicationAdoptionSnapshot *out_snapshot);
+/** Initialise a Framework-owned product session for Trader. */
 UmiStatus umi_trader_product_session_init(
     UmiProductApplicationSession *out_session);
-/* Build welcome-screen workspace choices from the canonical Framework profile. */
+/** Build welcome-screen workspace choices from the canonical Framework profile. */
 UmiStatus umi_trader_product_workspace_guide(
     UmiProductWorkspaceGuide *out_guide);
 

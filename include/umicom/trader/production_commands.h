@@ -29,6 +29,7 @@ typedef struct UmiTraderProductionCommandCatalogue {
     size_t count;
     size_t live_safe_count;
 } UmiTraderProductionCommandCatalogue;
+/** Project shared production commands and their live-session safety policy. */
 UmiStatus umi_trader_production_commands_build(
     UmiTraderProductionCommandCatalogue *out_catalogue);
 #ifdef __cplusplus

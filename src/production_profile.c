@@ -15,6 +15,8 @@
  *---------------------------------------------------------------------------*/
 #include "umicom/trader/production_profile.h"
 #include <string.h>
+
+/* Build a small Trader-specific view over the canonical production binding. */
 UmiStatus umi_trader_production_profile_build(
     UmiTraderProductionProfile *out_profile)
 {

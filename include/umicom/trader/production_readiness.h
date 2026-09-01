@@ -31,6 +31,7 @@ typedef struct UmiTraderProductionReadiness {
     size_t open_adapter_feature_count;
     unsigned readiness_percent;
 } UmiTraderProductionReadiness;
+/** Summarise market, order, risk and execution readiness from Framework. */
 UmiStatus umi_trader_production_readiness_build(
     const UmiApplicationProductionRuntime *runtime,
     UmiTraderProductionReadiness *out_readiness);

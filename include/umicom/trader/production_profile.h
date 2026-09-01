@@ -25,6 +25,7 @@ typedef struct UmiTraderProductionProfile {
     const char *primary_workspace_id;
     const char *risk_context_group_id;
 } UmiTraderProductionProfile;
+/** Resolve Trader's canonical experience into a thin production binding. */
 UmiStatus umi_trader_production_profile_build(
     UmiTraderProductionProfile *out_profile);
 #ifdef __cplusplus
