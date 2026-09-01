@@ -27,7 +27,9 @@ int main(void)
     static const char *const panel_ids[] = {
         "watchlist", "chart", "depth", "order-entry", "blotter",
         "positions", "risk", "account", "scanner", "predictive-lab",
-        "news", "context-inspector", "strategy", "replay", "output"
+        "news", "context-inspector", "strategy", "replay", "output",
+        "time-and-sales", "economic-calendar", "fundamentals",
+        "strategy-analysis", "trade-performance", "price-ladder"
     };
     size_t index;
     for (index = 0U; index < sizeof(panel_ids) / sizeof(panel_ids[0]); ++index) {

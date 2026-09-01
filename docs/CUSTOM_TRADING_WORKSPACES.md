@@ -33,6 +33,8 @@ finished. The implementation and terminology are owned by Umicom Framework.
    singleton again moves the existing panel instead of creating a duplicate.
 6. Select **Apply and Lock**, or select **Cancel** to restore the previous locked
    arrangement.
+7. Select **Save** to create a recovery checkpoint for the current session.
+   Select **Restore** to return to that committed checkpoint.
 
 Each panel header also provides Move, Context and Settings actions. These open
 one shared editor where the user can select a region, choose a linked context,
@@ -40,9 +42,16 @@ enable auto-hide where supported, and apply the complete change atomically. If
 one part is not allowed, no partial arrangement is kept.
 
 The New Window catalogue also contains Framework capabilities shared with other
-applications. If Trader has no specialised renderer for one of them yet, the
-workspace shows an honest placeholder. The catalogue contract exists; the
-missing product renderer remains visible development work.
+applications. Scanner, predictive research, news, context inspection, strategy,
+replay, time-and-sales readiness, economic-event readiness, fundamentals and
+research output now have reusable Framework view models. A view which needs an
+external provider shows an honest unavailable state instead of invented rows.
+Options analysis remains visible unfinished work and may still render a clear
+placeholder.
+
+Trader also exposes portable layout text through thin wrapper functions. The
+Framework validates tools, linked groups and conflict policy, then replaces a
+known canonical layout atomically. Trader does not parse or repair layout text.
 
 ## Safety rules
 
@@ -66,9 +75,11 @@ meaning remain separate fields even though one editor presents both choices.
 
 ## Product roadmap
 
-- Persist user layouts and restore them at login.
-- Replace remaining honest placeholder panels with complete dense native views
-  for time and sales, scanners, options, research and performance analysis.
+- Connect the Framework checkpoint text to durable user settings and restore it
+  at login.
+- Attach accepted public-trade, economic-event and fundamental-data providers
+  to the existing honest capability views.
+- Complete the options analysis model and dense native table renderer.
 - Render floating panels as native detached windows and recover monitor changes.
 - Add multi-monitor window recovery and “bring all windows to front”.
 - Add named window groups and group-level minimize/restore.

@@ -47,6 +47,23 @@ UmiStatus umi_trader_gtk_workstation_commit_layout_edit(
     UmiTraderGtkWorkstation *workstation);
 UmiStatus umi_trader_gtk_workstation_cancel_layout_edit(
     UmiTraderGtkWorkstation *workstation);
+/* Expose portable Framework layout persistence without Trader-owned parsing. */
+UmiStatus umi_trader_gtk_workstation_export_layout(
+    const UmiTraderGtkWorkstation *workstation,
+    uint64_t saved_at_ns,
+    char *out_text,
+    size_t capacity);
+UmiStatus umi_trader_gtk_workstation_import_layout(
+    UmiTraderGtkWorkstation *workstation,
+    const char *text,
+    int activate,
+    UmiUiWorkspaceImportReport *out_report);
+/* Expose the session recovery checkpoint for tests and alternate frontends. */
+UmiStatus umi_trader_gtk_workstation_save_checkpoint(
+    UmiTraderGtkWorkstation *workstation,
+    uint64_t saved_at_ns);
+UmiStatus umi_trader_gtk_workstation_restore_checkpoint(
+    UmiTraderGtkWorkstation *workstation);
 UmiStatus umi_trader_gtk_workstation_open_window(
     UmiTraderGtkWorkstation *workstation,
     const char *tool_id,

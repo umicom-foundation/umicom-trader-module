@@ -144,6 +144,63 @@ UmiStatus umi_trader_gtk_workstation_cancel_layout_edit(
         workstation->framework_workstation);
 }
 
+/* Trader forwards portable export to its Framework trading composition. */
+UmiStatus umi_trader_gtk_workstation_export_layout(
+    const UmiTraderGtkWorkstation *workstation,
+    uint64_t saved_at_ns,
+    char *out_text,
+    size_t capacity)
+{
+    if (workstation == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    return umi_gtk4_trading_suite_workstation_export_layout(
+        workstation->framework_workstation,
+        saved_at_ns,
+        out_text,
+        capacity);
+}
+
+/* Trader forwards portable import and receives the Framework result report. */
+UmiStatus umi_trader_gtk_workstation_import_layout(
+    UmiTraderGtkWorkstation *workstation,
+    const char *text,
+    int activate,
+    UmiUiWorkspaceImportReport *out_report)
+{
+    if (workstation == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    return umi_gtk4_trading_suite_workstation_import_layout(
+        workstation->framework_workstation,
+        text,
+        activate,
+        out_report);
+}
+
+/* Trader forwards checkpoint save so its thin shell owns no layout buffer. */
+UmiStatus umi_trader_gtk_workstation_save_checkpoint(
+    UmiTraderGtkWorkstation *workstation,
+    uint64_t saved_at_ns)
+{
+    if (workstation == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    return umi_gtk4_trading_suite_workstation_save_checkpoint(
+        workstation->framework_workstation, saved_at_ns);
+}
+
+/* Trader forwards checkpoint restore to the shared suite workstation. */
+UmiStatus umi_trader_gtk_workstation_restore_checkpoint(
+    UmiTraderGtkWorkstation *workstation)
+{
+    if (workstation == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    return umi_gtk4_trading_suite_workstation_restore_checkpoint(
+        workstation->framework_workstation);
+}
+
 UmiStatus umi_trader_gtk_workstation_open_window(
     UmiTraderGtkWorkstation *workstation,
     const char *tool_id,

@@ -43,7 +43,7 @@ The status words are intentionally strict:
 | Tab stacks | **Available** | `stack_id` identifies visual tab grouping independently of placement. |
 | Linked market context | **Available** | `context_group_id` and `UmiUiWindowGroupStore` share typed subjects without changing panel placement. |
 | Pin, maximise, float and close actions | **Available** | Shared panel chrome publishes toolkit-neutral actions and the GTK host routes supported actions into the active layout. |
-| Save and restore compatibility | **Available** | Layout schema 3 stores placement, stack, linked context, pinned and resizable state while reading schema 2 files. |
+| Save and restore compatibility | **Available** | Layout schema 3 stores placement, stack, linked context, pinned and resizable state while reading schema 2 files. Import is dependency-checked and atomic. The GTK workstation has a session checkpoint; durable user-settings storage remains the next integration. |
 | Multi-monitor recovery | **Foundation** | The semantic layout service owns monitor topology and recovery; native detached-window integration remains. |
 | Appearance and density | **Foundation** | Reusable theme and density contracts exist; complete table-column profiles remain. |
 
@@ -57,10 +57,12 @@ The status words are intentionally strict:
 | Order entry | **Available in simulation** | Guarded order ticket and controller; visibility never enables live routing. |
 | Orders and executions | **Foundation** | Order, execution and history projections exist; complete filtering and drill-down remain. |
 | Portfolio and risk | **Foundation** | Positions, profit and loss, portfolio and risk projections exist; reconciliation remains. |
-| Scanner | **Foundation** | Canonical scanner views exist; saved and scheduled scans remain. |
+| Scanner | **Available** | The canonical scanner view renders in GTK with filters, coverage and data-quality state; saved and scheduled scans remain an extension. |
 | News and research | **Foundation** | Provider-aware empty states exist; no external source is silently assumed. |
 | Alerts | **Planned** | Reuse Framework notification, policy and scheduling contracts. |
-| Time and sales | **Foundation** | A canonical movable panel and feature contract now exist; add a bounded, sequence-checked trade tape with filters and pause/resume. |
+| Time and sales | **Foundation** | A canonical movable Framework view now reports linked context and provider readiness without confusing account executions with public trades; add a bounded, sequence-checked feed, filters and pause/resume. |
+| Economic calendar | **Foundation** | A reusable provider-neutral view reports linked context and an honest unavailable state until an accepted event adapter is configured. |
+| Fundamentals | **Foundation** | The view shows canonical instrument and market identity now; company accounts and classification data wait behind an accepted provider adapter. |
 | Options analysis | **Planned** | Model expiries, strikes, calls, puts, sensitivities and reviewed multi-leg orders. |
 | Price ladder | **Foundation** | A critical movable panel contract now exists; build its gestures on market depth and guarded order actions with configurable permissions. |
 | Portfolio rebalance | **Planned** | Separate targets, proposals, review evidence and explicit submission. |
@@ -89,7 +91,7 @@ is shared by Studio, TMS, Bank, media applications and future Umicom products.
 
 ## Recommended delivery order
 
-1. Complete the semantic persistence bridge and crash recovery.
+1. Connect portable checkpoint text to durable settings and crash recovery.
 2. Add keyboard docking, visible drop targets and screen-reader announcements.
 3. Finish detached windows and monitor recovery.
 4. Complete alerts, time and sales, options, ladder and rebalance models behind

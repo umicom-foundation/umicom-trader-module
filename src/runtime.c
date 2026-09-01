@@ -73,8 +73,8 @@ UmiStatus umi_trader_runtime_create_panel_view(
     if (panel_id == NULL || workspace == NULL || out_view == NULL)
         return UMI_STATUS_INVALID_ARGUMENT;
 
-    /* Map only panels that already have canonical Framework trading factories.
-     * Planned research/news/scanner views remain unimplemented instead of being duplicated here. */
+    /* Map only panels that have canonical Framework trading factories. Trader
+     * contributes identifiers and never duplicates their data projections. */
     if (strcmp(panel_id, "watchlist") == 0)
         return umi_trading_ui_watchlist_view_create(panel_id, workspace, out_view);
     if (strcmp(panel_id, "chart") == 0)
@@ -106,6 +106,26 @@ UmiStatus umi_trader_runtime_create_panel_view(
         return umi_trading_ui_replay_view_create(panel_id, workspace, out_view);
     if (strcmp(panel_id, "output") == 0)
         return umi_trading_ui_research_output_view_create(
+            panel_id, workspace, out_view);
+    if (strcmp(panel_id, "time-and-sales") == 0)
+        return umi_trading_ui_time_and_sales_view_create(
+            panel_id, workspace, out_view);
+    if (strcmp(panel_id, "economic-calendar") == 0)
+        return umi_trading_ui_economic_calendar_view_create(
+            panel_id, workspace, out_view);
+    if (strcmp(panel_id, "fundamentals") == 0)
+        return umi_trading_ui_fundamentals_view_create(
+            panel_id, workspace, out_view);
+    /* Analysis and performance panels reuse established strategy and research
+     * projections until their specialised engines contribute richer evidence. */
+    if (strcmp(panel_id, "strategy-analysis") == 0)
+        return umi_trading_ui_strategy_view_create(
+            panel_id, workspace, out_view);
+    if (strcmp(panel_id, "trade-performance") == 0)
+        return umi_trading_ui_research_output_view_create(
+            panel_id, workspace, out_view);
+    if (strcmp(panel_id, "price-ladder") == 0)
+        return umi_trading_ui_depth_view_create(
             panel_id, workspace, out_view);
     return UMI_STATUS_NOT_IMPLEMENTED;
 }
