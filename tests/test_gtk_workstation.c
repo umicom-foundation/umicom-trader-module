@@ -27,6 +27,7 @@ int main(void)
     UmiApplicationSuiteGtk4WorkstationSnapshot snapshot =
         umi_trader_gtk_workstation_snapshot(NULL);
     UmiTradingWorkspaceSnapshot trading;
+    UmiUiAppearanceProfile appearance;
     UmiUiWorkspaceImportReport import_report;
     const UmiApplicationExperienceDefinition *experience;
     const UmiExperienceLayoutDefinition *layout;
@@ -65,6 +66,19 @@ int main(void)
     snapshot = umi_trader_gtk_workstation_snapshot(workstation);
     UMI_TEST_REQUIRE(strcmp(snapshot.application_id, "org.umicom.trader") == 0);
     UMI_TEST_REQUIRE(strcmp(snapshot.active_layout_id, "trading") == 0);
+    /* The thin Trader shell receives its readable name and contrast-aware SVG
+     * from the same Framework identity used by every suite workstation. */
+    UMI_TEST_REQUIRE(strcmp(snapshot.identity.application_id,
+                            "org.umicom.trader") == 0);
+    UMI_TEST_REQUIRE(strcmp(snapshot.identity.title, "Umicom Trader") == 0);
+    UMI_TEST_REQUIRE(strcmp(snapshot.identity.mode_badge, "Simulation") == 0);
+    UMI_TEST_REQUIRE(strcmp(snapshot.identity.subtitle,
+                            snapshot.active_layout_name) == 0);
+    UMI_TEST_REQUIRE(umi_trader_gtk_workstation_active_appearance(
+                         workstation, &appearance) == UMI_STATUS_OK);
+    UMI_TEST_REQUIRE(strcmp(snapshot.identity.icon_resource,
+                            appearance.icon_resource) == 0);
+    UMI_TEST_REQUIRE(strstr(snapshot.identity.icon_resource, ".svg") != NULL);
     UMI_TEST_REQUIRE(snapshot.layout_count == experience->layout_count);
     layout = umi_application_experience_layout_find(experience, "trading");
     UMI_TEST_REQUIRE(layout != NULL);
@@ -128,6 +142,8 @@ int main(void)
     UMI_TEST_REQUIRE(status == UMI_STATUS_OK);
     snapshot = umi_trader_gtk_workstation_snapshot(workstation);
     UMI_TEST_REQUIRE(strcmp(snapshot.active_layout_id, "research") == 0);
+    UMI_TEST_REQUIRE(strcmp(snapshot.identity.subtitle,
+                            snapshot.active_layout_name) == 0);
     layout = umi_application_experience_layout_find(experience, "research");
     UMI_TEST_REQUIRE(layout != NULL);
     UMI_TEST_REQUIRE(snapshot.rendered_panel_count == layout->panel_count);
