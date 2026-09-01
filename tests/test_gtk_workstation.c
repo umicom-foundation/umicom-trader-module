@@ -74,6 +74,14 @@ int main(void)
     UMI_TEST_REQUIRE(strcmp(snapshot.identity.mode_badge, "Simulation") == 0);
     UMI_TEST_REQUIRE(strcmp(snapshot.identity.subtitle,
                             snapshot.active_layout_name) == 0);
+    /* Trader inherits a searchable catalogue of real Framework layout and
+     * window actions rather than maintaining a product-specific command bar. */
+    UMI_TEST_REQUIRE(snapshot.command_bar.item_count >=
+                     snapshot.layout_count + 4U);
+    UMI_TEST_REQUIRE(snapshot.command_bar.result_count ==
+                     snapshot.command_bar.item_count);
+    UMI_TEST_REQUIRE(snapshot.command_bar.presentation ==
+                     UMI_WS_COMMAND_BAR_PRESENTATION_COMPACT);
     UMI_TEST_REQUIRE(umi_trader_gtk_workstation_active_appearance(
                          workstation, &appearance) == UMI_STATUS_OK);
     UMI_TEST_REQUIRE(strcmp(snapshot.identity.icon_resource,
