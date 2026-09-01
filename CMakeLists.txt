@@ -156,6 +156,21 @@ if(UMICOM_TRADER_BUILD_GTK4 AND TARGET Umicom::ui_gtk4)
     )
     umicom_apply_warnings(umicom-trader)
     umicom_apply_sanitizers(umicom-trader)
+    if(NOT COMMAND umicom_apply_application_branding)
+        include(
+            "${CMAKE_CURRENT_SOURCE_DIR}/../../framework/cmake/UmicomApplicationBranding.cmake")
+    endif()
+    umicom_apply_application_branding(
+        TARGET umicom-trader
+        PRODUCT_NAME "Umicom Trader"
+        INTERNAL_NAME "umicom-trader"
+        APPLICATION_ID "org.umicom.trader"
+        VERSION_MAJOR ${PROJECT_VERSION_MAJOR}
+        VERSION_MINOR ${PROJECT_VERSION_MINOR}
+        VERSION_PATCH ${PROJECT_VERSION_PATCH}
+        RESOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../framework/resources"
+        DESKTOP_ENTRY
+        WINDOWS_GUI)
 elseif(UMICOM_TRADER_BUILD_GTK4)
     message(STATUS
         "Umicom Trader GTK4 workstation disabled because Umicom::ui_gtk4 is unavailable")

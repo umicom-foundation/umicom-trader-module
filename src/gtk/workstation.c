@@ -98,6 +98,42 @@ UmiStatus umi_trader_gtk_workstation_select_layout(
         workstation->framework_workstation, layout_id);
 }
 
+/* Trader forwards presentation choices and keeps product code free of CSS. */
+UmiStatus umi_trader_gtk_workstation_select_appearance(
+    UmiTraderGtkWorkstation *workstation,
+    const char *profile_id)
+{
+    if (workstation == NULL || profile_id == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    return umi_gtk4_trading_suite_workstation_select_appearance(
+        workstation->framework_workstation, profile_id);
+}
+
+/* Custom visual preferences use the same Framework validation as the menu. */
+UmiStatus umi_trader_gtk_workstation_apply_custom_appearance(
+    UmiTraderGtkWorkstation *workstation,
+    const UmiUiAppearanceProfile *profile)
+{
+    if (workstation == NULL || profile == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    return umi_gtk4_trading_suite_workstation_apply_custom_appearance(
+        workstation->framework_workstation, profile);
+}
+
+/* Return a copied value suitable for settings pages and tests. */
+UmiStatus umi_trader_gtk_workstation_active_appearance(
+    const UmiTraderGtkWorkstation *workstation,
+    UmiUiAppearanceProfile *out_profile)
+{
+    if (workstation == NULL || out_profile == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    return umi_gtk4_trading_suite_workstation_active_appearance(
+        workstation->framework_workstation, out_profile);
+}
+
 UmiApplicationSuiteGtk4WorkstationSnapshot
 umi_trader_gtk_workstation_snapshot(
     const UmiTraderGtkWorkstation *workstation)

@@ -26,8 +26,18 @@ See [the Trader application surface guide](docs/APPLICATION_SURFACE_GUIDE.md).
 The [Trader runtime behavior and safety guide](docs/RUNTIME_BEHAVIOR_AND_TRADING_SAFETY.md)
 explains full-rate market panels, guarded order commands, shared instrument
 context and frequent workspace checkpoints.
-The [Trader workstation capability map](docs/TRADING_WORKSTATION_CAPABILITY_MAP.md)
+The [workstation capability map](docs/TRADING_WORKSTATION_CAPABILITY_MAP.md)
 separates available, foundational and planned workstation behaviour.
+
+The graphical workstation uses the Framework appearance editor. A user can
+choose dark, light, high-contrast, retro or neo styling, or create a custom
+profile with their own fonts, text scale, control density and semantic
+colours. The window remains resizable and layout editing continues to control
+docking, floating, grouping and linked panel context independently of theme.
+
+The executable, taskbar entry and installed desktop entry use the canonical
+Umicom `<>` icon. The product name remains native text, so it stays clear and
+accessible at different display scales.
 
 Trader's public module headers now use the same complete file comment and
 unique-guard audit as Framework and Studio, keeping the product SDK predictable

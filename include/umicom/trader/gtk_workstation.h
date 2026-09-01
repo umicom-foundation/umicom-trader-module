@@ -45,6 +45,18 @@ GtkWidget *umi_trader_gtk_workstation_widget(
 UmiStatus umi_trader_gtk_workstation_select_layout(
     UmiTraderGtkWorkstation *workstation,
     const char *layout_id);
+/** Select a Framework appearance such as dark, light, retro or neo. */
+UmiStatus umi_trader_gtk_workstation_select_appearance(
+    UmiTraderGtkWorkstation *workstation,
+    const char *profile_id);
+/** Apply user-defined fonts, scale, density and semantic colours. */
+UmiStatus umi_trader_gtk_workstation_apply_custom_appearance(
+    UmiTraderGtkWorkstation *workstation,
+    const UmiUiAppearanceProfile *profile);
+/** Copy the active appearance without exposing Framework-owned widgets. */
+UmiStatus umi_trader_gtk_workstation_active_appearance(
+    const UmiTraderGtkWorkstation *workstation,
+    UmiUiAppearanceProfile *out_profile);
 /** Begin a reversible layout customisation transaction. */
 UmiStatus umi_trader_gtk_workstation_begin_layout_edit(
     UmiTraderGtkWorkstation *workstation);
