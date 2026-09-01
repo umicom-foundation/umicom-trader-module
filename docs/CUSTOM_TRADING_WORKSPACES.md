@@ -28,11 +28,16 @@ finished. The implementation and terminology are owned by Umicom Framework.
 3. Open **New Window** and search the Framework catalogue.
 4. Choose Centre, Left, Right, Bottom or Top. A panel may also be marked as
    floating.
-5. Add another Chart, Watchlist, Order Entry or other multi-instance tool. If a
-   tool permits only one instance, choosing it again moves the existing panel
-   to the selected region instead of creating a duplicate.
+5. Add another Chart, Watchlist, Scanner or Time and Sales window. Guarded
+   Order Entry, risk and account controls remain singletons. Choosing a
+   singleton again moves the existing panel instead of creating a duplicate.
 6. Select **Apply and Lock**, or select **Cancel** to restore the previous locked
    arrangement.
+
+Each panel header also provides Move, Context and Settings actions. These open
+one shared editor where the user can select a region, choose a linked context,
+enable auto-hide where supported, and apply the complete change atomically. If
+one part is not allowed, no partial arrangement is kept.
 
 The New Window catalogue also contains Framework capabilities shared with other
 applications. If Trader has no specialised renderer for one of them yet, the
@@ -54,18 +59,17 @@ The intended default trading link is an Instrument group:
 - Chart, Quote Details, News and Order Entry can be destinations.
 - A panel can be bidirectional only when its behaviour truly supports it.
 
-The reusable panel header now carries an independent linked-context identity.
-The underlying Framework supports coloured source, destination and
-bidirectional link roles; the visual colour chooser remains a separate native
-interaction so it is not confused with panel placement.
+The reusable panel header carries an independent linked-context identity. The
+Framework derives available groups from Trader's experience definition and
+supports source, destination and bidirectional link roles. Placement and linked
+meaning remain separate fields even though one editor presents both choices.
 
 ## Product roadmap
 
 - Persist user layouts and restore them at login.
-- Add a complete categorized Trader New Window catalogue: watchlists, charts,
-  market depth, time and sales, scanners, options tools, order management,
-  portfolio/risk, research, news and education.
-- Add panel-header placement, detach, close and colour-link controls.
+- Replace remaining honest placeholder panels with complete dense native views
+  for time and sales, scanners, options, research and performance analysis.
+- Render floating panels as native detached windows and recover monitor changes.
 - Add multi-monitor window recovery and “bring all windows to front”.
 - Add named window groups and group-level minimize/restore.
 - Add account, instrument and order context histories.

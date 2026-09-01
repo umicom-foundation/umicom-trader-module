@@ -66,6 +66,10 @@ UmiStatus umi_trader_gtk_workstation_move_window(
 UmiStatus umi_trader_gtk_workstation_close_window(
     UmiTraderGtkWorkstation *workstation,
     const char *window_id);
+/* Keep Trader thin by forwarding complete panel edits to Framework. */
+UmiStatus umi_trader_gtk_workstation_apply_panel_settings(
+    UmiTraderGtkWorkstation *workstation,
+    const UmiUiWorkspacePanelSettings *settings);
 UmiApplicationSuiteGtk4WorkstationSnapshot
 umi_trader_gtk_workstation_snapshot(
     const UmiTraderGtkWorkstation *workstation);

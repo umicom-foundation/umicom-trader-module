@@ -4,7 +4,7 @@
  *
  * PURPOSE:
  *   Smoke-test the real Framework-rendered Trader GTK4 workstation and its
- *   canonical Trading, Research and Strategy Development layout switching.
+ *   canonical professional trading layout switching and panel customisation.
  *
  * AUTHOR AND ORGANISATION:
  * Sammy Hegab
@@ -14,6 +14,7 @@
  * MIT
  *---------------------------------------------------------------------------*/
 #include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -53,8 +54,38 @@ int main(void)
     snapshot = umi_trader_gtk_workstation_snapshot(workstation);
     assert(strcmp(snapshot.application_id, "org.umicom.trader") == 0);
     assert(strcmp(snapshot.active_layout_id, "trading") == 0);
-    assert(snapshot.layout_count == 3U);
+    assert(snapshot.layout_count == 6U);
     assert(snapshot.rendered_panel_count == 8U);
+    assert(snapshot.context_group_count >= 3U);
+
+    /* Trader remains thin: panel movement, floating and context policy are
+     * delegated to the shared Framework workstation. */
+    assert(umi_trader_gtk_workstation_begin_layout_edit(workstation) ==
+           UMI_STATUS_OK);
+    {
+        UmiUiWorkspacePanelSettings settings =
+            umi_ui_workspace_panel_settings_default("watchlist");
+        char second_chart[UMI_UI_WORKSPACE_LAYOUT_ID_CAPACITY];
+
+        settings.placement_id = "right";
+        settings.stack_id = "market-tools";
+        settings.context_group_id = "trading.red";
+        assert(umi_trader_gtk_workstation_apply_panel_settings(
+                   workstation, &settings) == UMI_STATUS_OK);
+        /* Trader requests another analytical panel through the thin wrapper;
+         * Framework owns capability checks and collision-free instance IDs. */
+        assert(umi_trader_gtk_workstation_open_window(
+                   workstation,
+                   "chart",
+                   "centre",
+                   0,
+                   UINT64_C(1000),
+                   second_chart,
+                   sizeof(second_chart)) == UMI_STATUS_OK);
+        assert(strcmp(second_chart, "chart-2") == 0);
+    }
+    assert(umi_trader_gtk_workstation_cancel_layout_edit(workstation) ==
+           UMI_STATUS_OK);
 
     status = umi_trader_gtk_workstation_select_layout(workstation, "research");
     assert(status == UMI_STATUS_OK);

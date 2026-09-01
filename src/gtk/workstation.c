@@ -193,6 +193,20 @@ UmiStatus umi_trader_gtk_workstation_close_window(
         workstation->framework_workstation, window_id);
 }
 
+/* Forward panel settings from the Trader shell to its Framework workstation. */
+UmiStatus umi_trader_gtk_workstation_apply_panel_settings(
+    UmiTraderGtkWorkstation *workstation,
+    const UmiUiWorkspacePanelSettings *settings)
+{
+    if (workstation == NULL || settings == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    /* Trader owns no docking policy; the shared workstation applies the same
+     * atomic request used by every other Umicom application. */
+    return umi_gtk4_trading_suite_workstation_apply_panel_settings(
+        workstation->framework_workstation, settings);
+}
+
 UmiStatus umi_trader_gtk_workstation_application_surface_snapshot(
     const UmiTraderGtkWorkstation *workstation,
     UmiApplicationPresentationSurfaceSnapshot *out_snapshot)
