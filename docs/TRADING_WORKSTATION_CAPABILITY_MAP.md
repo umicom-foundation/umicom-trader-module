@@ -59,7 +59,7 @@ The status words are intentionally strict:
 | Portfolio and risk | **Foundation** | Positions, profit and loss, portfolio and risk projections exist; reconciliation remains. |
 | Scanner | **Available** | The canonical scanner view renders in GTK with filters, coverage and data-quality state; saved and scheduled scans remain an extension. |
 | News and research | **Foundation** | Provider-aware empty states exist; no external source is silently assumed. |
-| Alerts | **Planned** | Reuse Framework notification, policy and scheduling contracts. |
+| Alerts | **Available** | Framework owns bounded price rules, directional crossing detection, quote-driven activation, pause, resume, acknowledgement, removal and occurrence history. The native panel exposes the complete lifecycle for the selected instrument and never submits orders. |
 | Time and sales | **Foundation** | A canonical movable Framework view now reports linked context and provider readiness without confusing account executions with public trades; add a bounded, sequence-checked feed, filters and pause/resume. |
 | Economic calendar | **Foundation** | A reusable provider-neutral view reports linked context and an honest unavailable state until an accepted event adapter is configured. |
 | Fundamentals | **Foundation** | The view shows canonical instrument and market identity now; company accounts and classification data wait behind an accepted provider adapter. |
@@ -94,7 +94,8 @@ is shared by Studio, TMS, Bank, media applications and future Umicom products.
 1. Connect portable checkpoint text to durable settings and crash recovery.
 2. Add keyboard docking, visible drop targets and screen-reader announcements.
 3. Finish detached windows and monitor recovery.
-4. Complete alerts, time and sales, options, ladder and rebalance models behind
-   the new canonical panel identities.
+4. Extend time and sales, options, ladder and rebalance models behind the new
+   canonical panel identities, then add indicator and drawing alert providers
+   to the existing price-alert lifecycle.
 5. Add provider adapters behind capability, safety and reconciliation gates.
 6. Validate every live-capable action independently of the layout system.

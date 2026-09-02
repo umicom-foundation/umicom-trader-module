@@ -33,7 +33,7 @@ int main(void)
         "positions", "risk", "account", "scanner", "predictive-lab",
         "news", "context-inspector", "strategy", "replay", "output",
         "time-and-sales", "economic-calendar", "fundamentals",
-        "strategy-analysis", "trade-performance", "price-ladder"
+        "strategy-analysis", "trade-performance", "price-ladder", "alerts"
     };
     size_t index;
     /* Visit each bounded item once so every record receives the same rule. */

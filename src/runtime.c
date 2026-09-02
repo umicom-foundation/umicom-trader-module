@@ -172,6 +172,10 @@ UmiStatus umi_trader_runtime_create_panel_view(
     if (strcmp(panel_id, "fundamentals") == 0)
         return umi_trading_ui_fundamentals_view_create(
             panel_id, workspace, out_view);
+    /* Alerts use the reusable Framework projection and never own order logic. */
+    if (strcmp(panel_id, "alerts") == 0)
+        return umi_trading_ui_alerts_view_create(
+            panel_id, workspace, out_view);
     /* Analysis and performance panels reuse established strategy and research
      * projections until their specialised engines contribute richer evidence. */
     if (strcmp(panel_id, "strategy-analysis") == 0)
@@ -222,6 +226,8 @@ UmiStatus umi_trader_runtime_create_component_view(
         panel_id = "risk";
     else /* Use the stable identifier comparison to choose the matching record or policy. */ if (strcmp(component_id, "umicom.trading.strategy") == 0)
         panel_id = "strategy";
+    else if (strcmp(component_id, "umicom.trading.alerts") == 0)
+        panel_id = "alerts";
     /*
      * Protect caller-owned memory by checking that required state is available before it is
      * used.
