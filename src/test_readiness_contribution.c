@@ -11,6 +11,10 @@
  *---------------------------------------------------------------------------*/
 #include "umicom/trader/test_readiness_contribution.h"
 
+/*
+ * Provide the trader test readiness contribution operation used by this module and its
+ * client applications.
+ */
 const UmiTraderTestReadinessContribution *
 umi_trader_test_readiness_contribution(void)
 {

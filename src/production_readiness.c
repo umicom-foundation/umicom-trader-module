@@ -15,6 +15,7 @@
  *---------------------------------------------------------------------------*/
 #include "umicom/trader/production_readiness.h"
 #include <string.h>
+/* Provide the feature at least operation used by this module and its client applications. */
 static int feature_at_least(
     const UmiApplicationProductionRuntime *runtime, const char *feature_id,
     UmiExperienceFeatureState state)
@@ -24,10 +25,18 @@ static int feature_at_least(
             &runtime->features, feature_id);
     return binding != NULL && binding->feature->state >= state;
 }
+/*
+ * Provide the trader production readiness build operation used by this module and its
+ * client applications.
+ */
 UmiStatus umi_trader_production_readiness_build(
     const UmiApplicationProductionRuntime *runtime,
     UmiTraderProductionReadiness *out_readiness)
 {
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (runtime == NULL || out_readiness == NULL || !runtime->initialised ||
         strcmp(runtime->binding.experience->application_id,
                "org.umicom.trader") != 0)

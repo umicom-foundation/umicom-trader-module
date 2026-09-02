@@ -30,6 +30,9 @@
 extern "C" {
 #endif
 
+/**
+ * Represent the trader gtk workstation data shared with callers of this public contract.
+ */
 typedef struct UmiTraderGtkWorkstation UmiTraderGtkWorkstation;
 
 /** Create Trader's thin GTK adapter over the shared suite workstation. */

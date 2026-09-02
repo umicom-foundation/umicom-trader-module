@@ -25,6 +25,10 @@
 extern "C" {
 #endif
 
+/**
+ * Represent the trader application surface policy snapshot data shared with callers of
+ * this public contract.
+ */
 typedef struct UmiTraderApplicationSurfacePolicySnapshot {
     const char *recipe_id;
     const char *startup_policy;
@@ -41,19 +45,39 @@ typedef struct UmiTraderApplicationSurfacePolicySnapshot {
     int allow_background_commands;
 } UmiTraderApplicationSurfacePolicySnapshot;
 
+/**
+ * Provide the trader application surface policy snapshot operation used by this module and
+ * its client applications.
+ */
 UmiStatus umi_trader_application_surface_policy_snapshot(
     const UmiTraderApplicationSurface *surface,
     UmiTraderApplicationSurfacePolicySnapshot *out_snapshot);
+/**
+ * Provide the trader application surface policy advance operation used by this module and
+ * its client applications.
+ */
 UmiStatus umi_trader_application_surface_policy_advance(
     UmiTraderApplicationSurface *surface,
     uint32_t elapsed_seconds);
+/**
+ * Provide the trader application surface policy set background operation used by this
+ * module and its client applications.
+ */
 UmiStatus umi_trader_application_surface_policy_set_background(
     UmiTraderApplicationSurface *surface,
     int background);
+/**
+ * Provide the trader application surface policy context changed operation used by this
+ * module and its client applications.
+ */
 UmiStatus umi_trader_application_surface_policy_context_changed(
     UmiTraderApplicationSurface *surface,
     const char *component_id,
     const char *context_value);
+/**
+ * Provide the trader application surface policy checkpoint due operation used by this
+ * module and its client applications.
+ */
 int umi_trader_application_surface_policy_checkpoint_due(
     const UmiTraderApplicationSurface *surface,
     uint32_t elapsed_since_checkpoint_seconds,

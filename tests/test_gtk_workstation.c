@@ -21,6 +21,10 @@
 #include "umicom/application/experience_catalogue.h"
 #include "umicom/trader/gtk_workstation.h"
 
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void)
 {
     UmiTraderGtkWorkstation *workstation = NULL;
@@ -38,6 +42,7 @@ int main(void)
     UMI_TEST_REQUIRE(snapshot.active_layout_id[0] == '\0');
     UMI_TEST_REQUIRE(snapshot.layout_count == 0U);
 
+    /* Apply this branch only when its contract condition is satisfied. */
     if (!gtk_init_check()) {
         (void)printf("GTK4 display unavailable; Trader workstation smoke test skipped.\n");
         return 0;

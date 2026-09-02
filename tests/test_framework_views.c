@@ -17,6 +17,10 @@
 
 #include "umicom/trader/runtime.h"
 
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void)
 {
     UmiTradingWorkspaceConfig config = umi_trading_workspace_config_default();
@@ -32,6 +36,7 @@ int main(void)
         "strategy-analysis", "trade-performance", "price-ladder"
     };
     size_t index;
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U; index < sizeof(panel_ids) / sizeof(panel_ids[0]); ++index) {
         assert(umi_trader_runtime_create_panel_view(
                    panel_ids[index], workspace, &view) == UMI_STATUS_OK);

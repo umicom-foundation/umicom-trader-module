@@ -37,6 +37,7 @@ option(UMICOM_TRADER_BUILD_GTK4
 include(CTest)
 include(GNUInstallDirs)
 
+# Use the shared build helper when it is available from the parent composition.
 if(COMMAND umicom_register_header_governance_test AND
    CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     umicom_register_header_governance_test(
@@ -45,28 +46,37 @@ if(COMMAND umicom_register_header_governance_test AND
         "Umicom Trader")
 endif()
 
+# Load the dependency only when the parent build has not already provided its target.
 if(NOT TARGET Umicom::Framework)
     find_package(UmicomFramework CONFIG REQUIRED)
 endif()
 
+# Load the dependency only when the parent build has not already provided its target.
 if(NOT TARGET Umicom::workbench_selection_provider)
     message(FATAL_ERROR
         "Umicom Trader requires Framework target "
         "Umicom::workbench_selection_provider")
 endif()
+# Load the dependency only when the parent build has not already provided its target.
 if(NOT TARGET Umicom::application)
     message(FATAL_ERROR
         "Umicom Trader requires Framework target Umicom::application")
 endif()
+# Load the dependency only when the parent build has not already provided its target.
 if(NOT TARGET Umicom::trading_ui)
     message(FATAL_ERROR
         "Umicom Trader requires Framework target Umicom::trading_ui")
 endif()
 
+# Define the local fallback only when the parent build did not provide the shared helper.
 if(NOT COMMAND umicom_apply_warnings)
+    # Define the apply warnings build helper so parent and application projects apply one
+    # consistent rule.
     function(umicom_apply_warnings target)
+        # Select the warning options understood by the active compiler.
         if(MSVC)
             target_compile_options(${target} PRIVATE /W4)
+        # Use this fallback path when the earlier condition does not apply.
         else()
             target_compile_options(${target} PRIVATE
                 -Wall
@@ -79,7 +89,10 @@ if(NOT COMMAND umicom_apply_warnings)
     endfunction()
 endif()
 
+# Define the local fallback only when the parent build did not provide the shared helper.
 if(NOT COMMAND umicom_apply_sanitizers)
+    # Define the apply sanitizers build helper so parent and application projects apply one
+    # consistent rule.
     function(umicom_apply_sanitizers target)
     endfunction()
 endif()
@@ -118,6 +131,7 @@ target_link_libraries(umicom_trader_module PUBLIC
 umicom_apply_warnings(umicom_trader_module)
 umicom_apply_sanitizers(umicom_trader_module)
 
+# Create this optional product surface only when its build option is enabled.
 if(UMICOM_TRADER_BUILD_CONSOLE)
     add_executable(umicom-trader-console
         src/console/main.c
@@ -156,6 +170,7 @@ if(UMICOM_TRADER_BUILD_GTK4 AND TARGET Umicom::ui_gtk4)
     )
     umicom_apply_warnings(umicom-trader)
     umicom_apply_sanitizers(umicom-trader)
+    # Define the local fallback only when the parent build did not provide the shared helper.
     if(NOT COMMAND umicom_apply_application_branding)
         include(
             "${CMAKE_CURRENT_SOURCE_DIR}/../../framework/cmake/UmicomApplicationBranding.cmake")
@@ -171,11 +186,13 @@ if(UMICOM_TRADER_BUILD_GTK4 AND TARGET Umicom::ui_gtk4)
         RESOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../framework/resources"
         DESKTOP_ENTRY
         WINDOWS_GUI)
+# Apply this branch only when its contract condition is satisfied.
 elseif(UMICOM_TRADER_BUILD_GTK4)
     message(STATUS
         "Umicom Trader GTK4 workstation disabled because Umicom::ui_gtk4 is unavailable")
 endif()
 
+# Register verification targets only when the developer has enabled testing.
 if(BUILD_TESTING)
     # This focused test keeps planned and foundational trading work visible.
     add_executable(trader-capability-centre-test
@@ -261,11 +278,13 @@ if(BUILD_TESTING)
     umicom_apply_sanitizers(trader-test-readiness-contribution-test)
     add_test(NAME trader.module.test_readiness_contribution
         COMMAND trader-test-readiness-contribution-test)
+    # Use the shared build helper when it is available from the parent composition.
     if(COMMAND umicom_register_validation_target)
         umicom_register_validation_target(
             trader-test-readiness-contribution-test)
     endif()
 
+    # Configure the optional target only when its feature has created it.
     if(TARGET Umicom::trader_gtk)
         add_executable(trader-gtk-workstation-test
             tests/test_gtk_workstation.c
@@ -290,6 +309,7 @@ install(TARGETS umicom_trader_module
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+# Configure the optional target only when its feature has created it.
 if(TARGET umicom_trader_gtk)
     install(TARGETS umicom_trader_gtk
         EXPORT UmicomTraderModuleTargets
@@ -298,10 +318,12 @@ if(TARGET umicom_trader_gtk)
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 endif()
+# Configure the optional target only when its feature has created it.
 if(TARGET umicom-trader-console)
     install(TARGETS umicom-trader-console
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
+# Configure the optional target only when its feature has created it.
 if(TARGET umicom-trader)
     install(TARGETS umicom-trader
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -324,7 +346,9 @@ umicom_add_application_productisation_contribution(
 target_link_libraries(umicom_trader_module PUBLIC
     umicom_trader_productisation)
 
+# Register verification targets only when the developer has enabled testing.
 if(BUILD_TESTING)
+    # Visit each bounded item once so every record receives the same rule.
     foreach(UMICOM_TRADER_PRODUCTION_TEST
             production_profile
             production_panels
@@ -347,6 +371,7 @@ if(BUILD_TESTING)
             NAME "trader.${UMICOM_TRADER_PRODUCTION_TEST}"
             COMMAND
                 "umicom-trader-${UMICOM_TRADER_PRODUCTION_TEST_SUFFIX}-test")
+        # Use the shared build helper when it is available from the parent composition.
         if(COMMAND umicom_register_validation_target)
             umicom_register_validation_target(
                 "umicom-trader-${UMICOM_TRADER_PRODUCTION_TEST_SUFFIX}-test")
@@ -361,6 +386,7 @@ if(BUILD_TESTING)
     umicom_apply_sanitizers(umicom-trader-experience-acceptance-test)
     add_test(NAME trader.experience_acceptance
         COMMAND umicom-trader-experience-acceptance-test)
+    # Use the shared build helper when it is available from the parent composition.
     if(COMMAND umicom_register_validation_target)
         umicom_register_validation_target(
             umicom-trader-experience-acceptance-test)

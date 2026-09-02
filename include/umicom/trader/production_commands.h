@@ -19,11 +19,19 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ * Represent the trader production command contribution data shared with callers of this
+ * public contract.
+ */
 typedef struct UmiTraderProductionCommandContribution {
     const UmiApplicationProductionControlCommand *command;
     const char *menu_path;
     int allowed_during_live_session;
 } UmiTraderProductionCommandContribution;
+/**
+ * Represent the trader production command catalogue data shared with callers of this
+ * public contract.
+ */
 typedef struct UmiTraderProductionCommandCatalogue {
     UmiTraderProductionCommandContribution entries[32];
     size_t count;

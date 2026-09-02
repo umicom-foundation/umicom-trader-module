@@ -16,6 +16,10 @@
 /* Umicom Trader production control-plane test | Sammy Hegab | Umicom Foundation | MIT */
 #include "umicom/test_runtime/check.h"
 #include "umicom/trader/production_profile.h"
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void) {
     UmiTraderProductionProfile profile;
     UMI_TEST_REQUIRE(umi_trader_production_profile_build(&profile) == UMI_STATUS_OK);

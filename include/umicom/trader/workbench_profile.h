@@ -28,8 +28,15 @@ extern "C" {
 
 #define UMI_TRADER_WORKBENCH_PROFILE_API_VERSION 1U
 
+/**
+ * Represent the trader workbench profile data shared with callers of this public contract.
+ */
 typedef struct UmiTraderWorkbenchProfile UmiTraderWorkbenchProfile;
 
+/**
+ * Represent the trader workbench profile snapshot data shared with callers of this public
+ * contract.
+ */
 typedef struct UmiTraderWorkbenchProfileSnapshot {
     uint32_t struct_size;
     uint32_t api_version;
@@ -43,10 +50,22 @@ typedef struct UmiTraderWorkbenchProfileSnapshot {
     uint64_t revision;
 } UmiTraderWorkbenchProfileSnapshot;
 
+/**
+ * Initialise trader workbench profile from caller-provided values so later operations
+ * receive a known state.
+ */
 UmiStatus umi_trader_workbench_profile_create(
     UmiTraderWorkbenchProfile **out_profile);
+/**
+ * Release or reset state held by trader workbench profile so the same storage can be
+ * reused safely.
+ */
 void umi_trader_workbench_profile_destroy(
     UmiTraderWorkbenchProfile *profile);
+/**
+ * Provide the trader workbench profile snapshot operation used by this module and its
+ * client applications.
+ */
 UmiStatus umi_trader_workbench_profile_snapshot(
     const UmiTraderWorkbenchProfile *profile,
     UmiTraderWorkbenchProfileSnapshot *out_snapshot);
@@ -58,6 +77,10 @@ UmiStatus umi_trader_workbench_profile_snapshot(
 const UmiWorkbenchContextHostProfile *
 umi_trader_workbench_profile_context_host(
     const UmiTraderWorkbenchProfile *profile);
+/**
+ * Provide the trader workbench profile context sources operation used by this module and
+ * its client applications.
+ */
 const UmiWorkbenchContextSourceTradingProfile *
 umi_trader_workbench_profile_context_sources(
     const UmiTraderWorkbenchProfile *profile);

@@ -18,10 +18,15 @@
 
 #include "umicom/trader/gtk_workstation.h"
 
+/*
+ * Provide the workstation destroy notify operation used by this module and its client
+ * applications.
+ */
 static void workstation_destroy_notify(gpointer data) {
   umi_trader_gtk_workstation_destroy((UmiTraderGtkWorkstation *)data);
 }
 
+/* Provide the on activate operation used by this module and its client applications. */
 static void on_activate(GtkApplication *application, gpointer user_data) {
   UmiTraderGtkWorkstation *workstation = NULL;
   GtkWidget *content;
@@ -30,12 +35,17 @@ static void on_activate(GtkApplication *application, gpointer user_data) {
   (void)user_data;
 
   status = umi_trader_gtk_workstation_create(&workstation);
+  /* Preserve the original failure result so the caller can respond to the correct cause. */
   if (status != UMI_STATUS_OK) {
     (void)fprintf(stderr, "Unable to create Umicom Trader: %s\n", umi_status_text(status));
     g_application_quit(G_APPLICATION(application));
     return;
   }
   content = umi_trader_gtk_workstation_widget(workstation);
+  /*
+   * Protect caller-owned memory by checking that required state is available before it is
+   * used.
+   */
   if (content == NULL) {
     umi_trader_gtk_workstation_destroy(workstation);
     g_application_quit(G_APPLICATION(application));
@@ -54,6 +64,10 @@ static void on_activate(GtkApplication *application, gpointer user_data) {
   gtk_window_present(window);
 }
 
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(int argc, char **argv) {
   GtkApplication *application;
   int result;
@@ -62,6 +76,10 @@ int main(int argc, char **argv) {
    * systems can resolve the canonical Umicom icon instead of a GTK icon. */
   g_set_prgname("umicom-trader");
   application = gtk_application_new("org.umicom.trader", G_APPLICATION_DEFAULT_FLAGS);
+  /*
+   * Protect caller-owned memory by checking that required state is available before it is
+   * used.
+   */
   if (application == NULL)
     return 1;
   g_signal_connect(application, "activate", G_CALLBACK(on_activate), NULL);

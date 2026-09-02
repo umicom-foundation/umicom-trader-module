@@ -23,6 +23,10 @@ struct UmiTraderApplicationSurface {
     UmiApplicationPresentationProductSurface product;
 };
 
+/*
+ * Initialise trader application surface from caller-provided values so later operations
+ * receive a known state.
+ */
 UmiStatus umi_trader_application_surface_create(
     UmiTraderApplicationSurface **out_surface)
 {
@@ -30,15 +34,27 @@ UmiStatus umi_trader_application_surface_create(
         UMI_APPLICATION_COMPONENT_RECIPE_AUDIENCE_STANDARD, out_surface);
 }
 
+/*
+ * Provide the trader application surface create for audience operation used by this module
+ * and its client applications.
+ */
 UmiStatus umi_trader_application_surface_create_for_audience(
     UmiApplicationComponentRecipeAudience audience,
     UmiTraderApplicationSurface **out_surface)
 {
     UmiTraderApplicationSurface *surface;
     UmiStatus status;
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (out_surface == NULL) return UMI_STATUS_INVALID_ARGUMENT;
     *out_surface = NULL;
     surface = calloc(1U, sizeof(*surface));
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (surface == NULL) return UMI_STATUS_OUT_OF_MEMORY;
     status = umi_application_presentation_product_surface_init_for_audience(
         UMI_TRADER_APPLICATION_ID,
@@ -46,6 +62,7 @@ UmiStatus umi_trader_application_surface_create_for_audience(
         umi_trader_application_surface_controllers_register,
         surface,
         &surface->product);
+    /* Preserve the original failure result so the caller can respond to the correct cause. */
     if (status != UMI_STATUS_OK) {
         umi_trader_application_surface_destroy(surface);
         return status;
@@ -54,14 +71,26 @@ UmiStatus umi_trader_application_surface_create_for_audience(
     return UMI_STATUS_OK;
 }
 
+/*
+ * Release or reset state held by trader application surface so the same storage can be
+ * reused safely.
+ */
 void umi_trader_application_surface_destroy(
     UmiTraderApplicationSurface *surface)
 {
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (surface == NULL) return;
     umi_application_presentation_product_surface_dispose(&surface->product);
     free(surface);
 }
 
+/*
+ * Provide the trader application surface refresh operation used by this module and its
+ * client applications.
+ */
 UmiStatus umi_trader_application_surface_refresh(
     UmiTraderApplicationSurface *surface)
 {
@@ -71,6 +100,10 @@ UmiStatus umi_trader_application_surface_refresh(
         : UMI_STATUS_INVALID_ARGUMENT;
 }
 
+/*
+ * Provide the trader application surface activate operation used by this module and its
+ * client applications.
+ */
 UmiStatus umi_trader_application_surface_activate(
     UmiTraderApplicationSurface *surface,
     const char *component_id)
@@ -81,6 +114,10 @@ UmiStatus umi_trader_application_surface_activate(
         : UMI_STATUS_INVALID_ARGUMENT;
 }
 
+/*
+ * Provide the trader application surface deactivate operation used by this module and its
+ * client applications.
+ */
 UmiStatus umi_trader_application_surface_deactivate(
     UmiTraderApplicationSurface *surface,
     const char *component_id)
@@ -91,6 +128,10 @@ UmiStatus umi_trader_application_surface_deactivate(
         : UMI_STATUS_INVALID_ARGUMENT;
 }
 
+/*
+ * Provide the trader application surface focus operation used by this module and its
+ * client applications.
+ */
 UmiStatus umi_trader_application_surface_focus(
     UmiTraderApplicationSurface *surface,
     const char *component_id)
@@ -101,6 +142,10 @@ UmiStatus umi_trader_application_surface_focus(
         : UMI_STATUS_INVALID_ARGUMENT;
 }
 
+/*
+ * Provide the trader application surface command operation used by this module and its
+ * client applications.
+ */
 UmiStatus umi_trader_application_surface_command(
     UmiTraderApplicationSurface *surface,
     const char *component_id,
@@ -112,6 +157,10 @@ UmiStatus umi_trader_application_surface_command(
         : UMI_STATUS_INVALID_ARGUMENT;
 }
 
+/*
+ * Provide the trader application surface context changed operation used by this module and
+ * its client applications.
+ */
 UmiStatus umi_trader_application_surface_context_changed(
     UmiTraderApplicationSurface *surface,
     const char *component_id,
@@ -123,6 +172,10 @@ UmiStatus umi_trader_application_surface_context_changed(
         : UMI_STATUS_INVALID_ARGUMENT;
 }
 
+/*
+ * Provide the trader application surface advance operation used by this module and its
+ * client applications.
+ */
 UmiStatus umi_trader_application_surface_advance(
     UmiTraderApplicationSurface *surface,
     uint32_t elapsed_seconds)
@@ -133,6 +186,10 @@ UmiStatus umi_trader_application_surface_advance(
         : UMI_STATUS_INVALID_ARGUMENT;
 }
 
+/*
+ * Provide the trader application surface set background operation used by this module and
+ * its client applications.
+ */
 UmiStatus umi_trader_application_surface_set_background(
     UmiTraderApplicationSurface *surface,
     int background)
@@ -143,6 +200,10 @@ UmiStatus umi_trader_application_surface_set_background(
         : UMI_STATUS_INVALID_ARGUMENT;
 }
 
+/*
+ * Provide the trader application surface snapshot operation used by this module and its
+ * client applications.
+ */
 UmiStatus umi_trader_application_surface_snapshot(
     const UmiTraderApplicationSurface *surface,
     UmiApplicationPresentationSurfaceSnapshot *out_snapshot)
@@ -153,6 +214,10 @@ UmiStatus umi_trader_application_surface_snapshot(
         : UMI_STATUS_INVALID_ARGUMENT;
 }
 
+/*
+ * Provide the trader application surface runtime operation used by this module and its
+ * client applications.
+ */
 UmiApplicationPresentationSurfaceRuntime *
 umi_trader_application_surface_runtime(UmiTraderApplicationSurface *surface)
 {
@@ -162,6 +227,10 @@ umi_trader_application_surface_runtime(UmiTraderApplicationSurface *surface)
         : NULL;
 }
 
+/*
+ * Provide the trader application surface runtime const operation used by this module and
+ * its client applications.
+ */
 const UmiApplicationPresentationSurfaceRuntime *
 umi_trader_application_surface_runtime_const(
     const UmiTraderApplicationSurface *surface)

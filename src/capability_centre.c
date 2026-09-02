@@ -28,6 +28,10 @@ static UmiStatus set_string(
 {
     UmiUiValue value;
     UmiStatus status;
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (view == NULL || key == NULL || text == NULL) {
         return UMI_STATUS_INVALID_ARGUMENT;
     }
@@ -44,6 +48,7 @@ static UmiStatus set_count(
 {
     UmiUiValue value;
     UmiStatus status;
+    /* Keep the operation inside its valid bounds before reading, writing or adding data. */
     if (count > (size_t)INT64_MAX) return UMI_STATUS_CAPACITY_EXCEEDED;
     status = umi_ui_value_set_integer(&value, (int64_t)count);
     return status == UMI_STATUS_OK
@@ -69,6 +74,10 @@ UmiStatus umi_trader_capability_centre_snapshot(
     };
     size_t index;
     UmiStatus status;
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (out_snapshot == NULL || out_engine_report == NULL) {
         return UMI_STATUS_INVALID_ARGUMENT;
     }
@@ -79,6 +88,7 @@ UmiStatus umi_trader_capability_centre_snapshot(
     out_snapshot->panel_count = experience->panel_count;
     out_snapshot->layout_count = experience->layout_count;
     out_snapshot->feature_count = experience->feature_count;
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U; index < experience->feature_count; ++index) {
         /* Every state has a dedicated count so planned work cannot disappear. */
         switch (experience->features[index].state) {
@@ -101,6 +111,7 @@ UmiStatus umi_trader_capability_centre_snapshot(
     status = umi_engine_catalogue_validate(
         requirements, sizeof(requirements) / sizeof(requirements[0]),
         out_engine_report);
+    /* Preserve the original failure result so the caller can respond to the correct cause. */
     if (status != UMI_STATUS_OK) return status;
     out_snapshot->engine_requirements_ready = out_engine_report->ready;
     return UMI_STATUS_OK;
@@ -116,29 +127,41 @@ UmiStatus umi_trader_capability_centre_view_create(
     UmiEngineRequirementReport engine_report;
     UmiStatus status;
     size_t index;
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (view_id == NULL || view_id[0] == '\0' || out_view == NULL) {
         return UMI_STATUS_INVALID_ARGUMENT;
     }
     *out_view = NULL;
     status = umi_trader_capability_centre_snapshot(&snapshot, &engine_report);
+    /* Preserve the original failure result so the caller can respond to the correct cause. */
     if (status != UMI_STATUS_OK) return status;
     experience = umi_application_experience_trader();
     status = umi_ui_view_model_create(
         view_id, "umicom.trader.capability-centre", UMI_UI_ROLE_PANE, out_view);
+    /* Preserve the original failure result so the caller can respond to the correct cause. */
     if (status == UMI_STATUS_OK) status = set_string(
         *out_view, "title", "Trading Capability Centre");
+    /* Preserve the original failure result so the caller can respond to the correct cause. */
     if (status == UMI_STATUS_OK) status = set_string(
         *out_view, "summary",
         "Available, foundational and planned trading windows and services.");
+    /* Preserve the original failure result so the caller can respond to the correct cause. */
     if (status == UMI_STATUS_OK) status = set_count(
         *out_view, "capability.panel-count", snapshot.panel_count);
+    /* Preserve the original failure result so the caller can respond to the correct cause. */
     if (status == UMI_STATUS_OK) status = set_count(
         *out_view, "capability.layout-count", snapshot.layout_count);
+    /* Preserve the original failure result so the caller can respond to the correct cause. */
     if (status == UMI_STATUS_OK) status = set_count(
         *out_view, "capability.planned-count", snapshot.planned_count);
+    /* Preserve the original failure result so the caller can respond to the correct cause. */
     if (status == UMI_STATUS_OK) status = set_count(
         *out_view, "capability.foundation-count", snapshot.foundation_count);
 
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U; status == UMI_STATUS_OK &&
          index < experience->feature_count; ++index) {
         const UmiExperienceFeatureDefinition *feature =
@@ -152,10 +175,11 @@ UmiStatus umi_trader_capability_centre_view_create(
         row_written = snprintf(row, sizeof(row), "%s — %s — %s",
             feature->title, umi_experience_feature_state_text(feature->state),
             feature->summary);
+        /* Keep the operation inside its valid bounds before reading, writing or adding data. */
         if (key_written < 0 || (size_t)key_written >= sizeof(key) ||
             row_written < 0 || (size_t)row_written >= sizeof(row)) {
             status = UMI_STATUS_CAPACITY_EXCEEDED;
-        } else {
+        } /* Use this fallback path when the earlier condition does not apply. */ else {
             status = set_string(*out_view, key, row);
         }
     }

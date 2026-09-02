@@ -19,6 +19,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ * Represent the trader production readiness data shared with callers of this public
+ * contract.
+ */
 typedef struct UmiTraderProductionReadiness {
     UmiApplicationProductionState state;
     int market_data_ready;

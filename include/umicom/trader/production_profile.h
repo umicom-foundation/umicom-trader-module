@@ -20,6 +20,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ * Represent the trader production profile data shared with callers of this public
+ * contract.
+ */
 typedef struct UmiTraderProductionProfile {
     UmiApplicationProductionBinding binding;
     const char *primary_workspace_id;

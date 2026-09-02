@@ -20,6 +20,10 @@
 extern "C" {
 #endif
 
+/**
+ * Represent the trader test readiness contribution data shared with callers of this public
+ * contract.
+ */
 typedef struct UmiTraderTestReadinessContribution {
     const char *product_id;
     const char *view_id;
@@ -28,6 +32,10 @@ typedef struct UmiTraderTestReadinessContribution {
     size_t command_count;
 } UmiTraderTestReadinessContribution;
 
+/**
+ * Provide the trader test readiness contribution operation used by this module and its
+ * client applications.
+ */
 const UmiTraderTestReadinessContribution *
 umi_trader_test_readiness_contribution(void);
 

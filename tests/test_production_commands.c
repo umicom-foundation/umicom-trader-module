@@ -16,6 +16,10 @@
 /* Umicom Trader production control-plane test | Sammy Hegab | Umicom Foundation | MIT */
 #include <assert.h>
 #include "umicom/trader/production_commands.h"
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void) {
     UmiTraderProductionCommandCatalogue commands;
     assert(umi_trader_production_commands_build(&commands) == UMI_STATUS_OK);
