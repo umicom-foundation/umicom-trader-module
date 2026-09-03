@@ -16,6 +16,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
+#include "umicom/application/presentation/presentation.h"
 #include "umicom/trader/gtk_workstation.h"
 
 /*
@@ -31,6 +32,10 @@ static void on_activate(GtkApplication *application, gpointer user_data) {
   UmiTraderGtkWorkstation *workstation = NULL;
   GtkWidget *content;
   GtkWindow *window;
+  const UmiApplicationPresentationWindowSpec *window_spec;
+  uint32_t default_width = 1180U;
+  uint32_t default_height = 760U;
+  int compact = 0;
   UmiStatus status;
   (void)user_data;
 
@@ -54,9 +59,25 @@ static void on_activate(GtkApplication *application, gpointer user_data) {
 
   window = GTK_WINDOW(gtk_application_window_new(application));
   gtk_window_set_title(window, "Umicom Trader");
-  /* Start at a laptop-friendly size while allowing the user to resize or
-   * maximise the workstation across one or several monitors. */
-  gtk_window_set_default_size(window, 1180, 760);
+  /* Framework owns the window geometry contract. Trader asks it to fit the
+   * standard workspace into a laptop-sized starting area, while the same
+   * catalogue can provide different governed sizes to other frontends. */
+  window_spec = umi_application_presentation_window_catalogue_find(
+      "org.umicom.workspace.trader.standard");
+  if (window_spec != NULL) {
+    status = umi_application_presentation_window_spec_fit(
+        window_spec, default_width, default_height,
+        &default_width, &default_height, &compact);
+    if (status != UMI_STATUS_OK) {
+      default_width = 1180U;
+      default_height = 760U;
+    }
+  }
+  gtk_window_set_default_size(window, (int)default_width, (int)default_height);
+  /* The shared stylesheet can respond to this class by collapsing optional
+   * tools according to their catalogue policies. */
+  if (compact)
+    gtk_widget_add_css_class(GTK_WIDGET(window), "umicom-compact-workspace");
   gtk_window_set_resizable(window, TRUE);
   gtk_window_set_child(window, content);
   g_object_set_data_full(G_OBJECT(window), "umicom-trader-workstation", workstation,

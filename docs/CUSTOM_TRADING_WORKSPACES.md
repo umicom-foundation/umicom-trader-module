@@ -60,6 +60,15 @@ simulation environment, does not arm live routing by itself, and routes order
 actions through the existing guarded trading controller. A window being visible
 never grants an account permission or live-trading capability.
 
+The standard Trader window now receives its starting dimensions from the
+Framework presentation catalogue. Framework fits the preferred size into a
+laptop-friendly area and marks the window as compact when optional panels
+should collapse. Trading surfaces also declare whether they are offline,
+network-assisted or streaming and whether they handle public, internal,
+confidential or restricted data. A live restricted surface must pass both
+checks before activation; visual presence alone never bypasses the trading
+controller.
+
 ## Context-linked panels
 
 The intended default trading link is an Instrument group:
