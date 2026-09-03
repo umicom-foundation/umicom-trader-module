@@ -52,7 +52,7 @@ The status words are intentionally strict:
 | Window family | Status | Current or intended scope |
 |---|---|---|
 | Watchlist and quotes | **Available** | Simulated instruments, selection and linked Instrument source behaviour. |
-| Chart | **Foundation** | Price evidence, scales, annotations and drawing models; native studies and chart interaction need further work. |
+| Chart | **Available** | The workspace retains a bounded chronological candle history per instrument. The native resizable chart renders real candles and lets the user switch between candle-only, simple-average and exponential-average views with a configurable period. Advanced drawing interaction remains a further increment. |
 | Market depth | **Available** | Simulated bid and ask depth with provider-neutral view models. |
 | Order entry | **Available in simulation** | Guarded order ticket and controller; visibility never enables live routing. |
 | Orders and executions | **Foundation** | Order, execution and history projections exist; complete filtering and drill-down remain. |

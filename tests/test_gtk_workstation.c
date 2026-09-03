@@ -67,6 +67,9 @@ int main(void)
     UMI_TEST_REQUIRE(trading.visible_instrument_count == trading.watchlist_count);
     UMI_TEST_REQUIRE(trading.market_data_ready);
     UMI_TEST_REQUIRE(trading.has_selected_instrument);
+    /* The native chart must receive at least the selected instrument's seeded
+     * candle through the shared bounded history contract. */
+    UMI_TEST_REQUIRE(trading.selected_bar_count >= 1U);
 
     snapshot = umi_trader_gtk_workstation_snapshot(workstation);
     UMI_TEST_REQUIRE(strcmp(snapshot.application_id, "org.umicom.trader") == 0);
