@@ -43,11 +43,13 @@ one part is not allowed, no partial arrangement is kept.
 
 The New Window catalogue also contains Framework capabilities shared with other
 applications. Scanner, predictive research, news, context inspection, strategy,
-replay, time-and-sales readiness, economic-event readiness, fundamentals and
-research output now have reusable Framework view models. A view which needs an
-external provider shows an honest unavailable state instead of invented rows.
-Options analysis remains visible unfinished work and may still render a clear
-placeholder.
+replay, Time and Sales, economic-event readiness, fundamentals and research
+output now have reusable Framework view models. Time and Sales retains public
+trades in sequence order, reports feed gaps and dropped history, and supports
+direction, minimum-size and pause filters without stopping ingestion. A view
+which needs an external provider shows an honest unavailable state instead of
+invented rows. Options analysis remains visible unfinished work and may still
+render a clear placeholder.
 
 Trader also exposes portable layout text through thin wrapper functions. The
 Framework validates tools, linked groups and conflict policy, then replaces a
@@ -86,8 +88,8 @@ meaning remain separate fields even though one editor presents both choices.
 
 - Connect the Framework checkpoint text to durable user settings and restore it
   at login.
-- Attach accepted public-trade, economic-event and fundamental-data providers
-  to the existing honest capability views.
+- Attach accepted live public-trade, economic-event and fundamental-data
+  adapters to the existing provider-neutral capability views.
 - Complete the options analysis model and dense native table renderer.
 - Render floating panels as native detached windows and recover monitor changes.
 - Add multi-monitor window recovery and “bring all windows to front”.

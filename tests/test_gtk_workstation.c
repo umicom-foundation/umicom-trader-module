@@ -66,6 +66,8 @@ int main(void)
            UMI_TRADING_SIMULATION_MARKET_DEFAULT_INSTRUMENTS);
     UMI_TEST_REQUIRE(trading.visible_instrument_count == trading.watchlist_count);
     UMI_TEST_REQUIRE(trading.market_data_ready);
+    UMI_TEST_REQUIRE(trading.trade_tape.provider_ready);
+    UMI_TEST_REQUIRE(trading.selected_trade_count >= 1U);
     UMI_TEST_REQUIRE(trading.has_selected_instrument);
     /* The native chart must receive at least the selected instrument's seeded
      * candle through the shared bounded history contract. */
