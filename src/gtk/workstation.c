@@ -431,6 +431,23 @@ UmiStatus umi_trader_gtk_workstation_apply_panel_settings(
         workstation->framework_workstation, settings);
 }
 
+/* Keep Trader's public layout API thin by forwarding batch edits to the
+ * Framework workstation that already owns policy and rollback. */
+UmiStatus umi_trader_gtk_workstation_apply_panel_batch(
+    UmiTraderGtkWorkstation *workstation,
+    const UmiUiWorkspacePanelSettings *settings,
+    size_t setting_count)
+{
+    /* Validate the product wrapper before dereferencing its framework state. */
+    if (workstation == NULL || settings == NULL || setting_count == 0U ||
+        setting_count > UMI_UI_WORKSPACE_MAX_PANEL_BATCH) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+    /* Trader delegates the complete request to the shared Framework contract. */
+    return umi_gtk4_trading_suite_workstation_apply_panel_batch(
+        workstation->framework_workstation, settings, setting_count);
+}
+
 /*
  * Provide the trader gtk workstation application surface snapshot operation used by this
  * module and its client applications.

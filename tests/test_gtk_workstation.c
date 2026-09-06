@@ -156,6 +156,22 @@ int main(void)
     UMI_TEST_REQUIRE(umi_trader_gtk_workstation_restore_checkpoint(workstation) ==
            UMI_STATUS_OK);
 
+    /* A toolbar gesture can reposition related trading panels in one request.
+     * The Trader wrapper owns the short edit transaction and redraws the
+     * shared Framework workstation after both requests are accepted. */
+    {
+        UmiUiWorkspacePanelSettings batch[2];
+
+        batch[0] = umi_ui_workspace_panel_settings_default("watchlist");
+        batch[0].placement_id = "left";
+        batch[0].stack_id = "market-watch";
+        batch[1] = umi_ui_workspace_panel_settings_default("chart");
+        batch[1].placement_id = "centre";
+        batch[1].stack_id = "price-chart";
+        UMI_TEST_REQUIRE(umi_trader_gtk_workstation_apply_panel_batch(
+                   workstation, batch, 2U) == UMI_STATUS_OK);
+    }
+
     status = umi_trader_gtk_workstation_select_layout(workstation, "research");
     UMI_TEST_REQUIRE(status == UMI_STATUS_OK);
     snapshot = umi_trader_gtk_workstation_snapshot(workstation);

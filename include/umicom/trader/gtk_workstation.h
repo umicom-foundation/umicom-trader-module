@@ -14,7 +14,9 @@
  * MIT
  *---------------------------------------------------------------------------*/
 #ifndef UMICOM_TRADER_GTK_WORKSTATION_H
-#define UMICOM_TRADER_GTK_WORKSTATION_H
+#define UMICOM_TRADER_GTK_WORKSTATION_H 
+
+#include <stddef.h>
 
 #include <stdint.h>
 
@@ -114,6 +116,11 @@ UmiStatus umi_trader_gtk_workstation_close_window(
 UmiStatus umi_trader_gtk_workstation_apply_panel_settings(
     UmiTraderGtkWorkstation *workstation,
     const UmiUiWorkspacePanelSettings *settings);
+/** Apply several panel edits together and leave the layout unchanged on failure. */
+UmiStatus umi_trader_gtk_workstation_apply_panel_batch(
+    UmiTraderGtkWorkstation *workstation,
+    const UmiUiWorkspacePanelSettings *settings,
+    size_t setting_count);
 /** Return a value snapshot of layout and rendering state. */
 UmiApplicationSuiteGtk4WorkstationSnapshot
 umi_trader_gtk_workstation_snapshot(
