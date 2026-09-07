@@ -81,10 +81,31 @@ fail:
     return status;
 }
 
+/* Forward explicit native titlebar adoption to the existing Framework owner. */
+UmiStatus umi_trader_gtk_workstation_bind_window(
+    UmiTraderGtkWorkstation *workstation, GtkWindow *window)
+{
+    return workstation != NULL
+        ? umi_gtk4_trading_suite_workstation_bind_window(workstation->framework_workstation, window)
+        : UMI_STATUS_INVALID_ARGUMENT;
+}
+
+/* Delegate explicit persistence to the existing shared layout owner. */
+UmiStatus umi_trader_gtk_workstation_enable_checkpoint_storage(
+    UmiTraderGtkWorkstation *workstation, int restore_saved)
+{
+    return workstation != NULL
+        ? umi_gtk4_trading_suite_workstation_enable_checkpoint_storage(
+            workstation->framework_workstation, restore_saved)
+        : UMI_STATUS_INVALID_ARGUMENT;
+}
+
+
 /*
  * Release or reset state held by trader gtk workstation so the same storage can be reused
  * safely.
  */
+/* Release this composition after its layout-owned storage and widgets. */
 void umi_trader_gtk_workstation_destroy(
     UmiTraderGtkWorkstation *workstation)
 {

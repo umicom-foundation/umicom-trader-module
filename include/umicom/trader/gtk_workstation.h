@@ -40,6 +40,17 @@ typedef struct UmiTraderGtkWorkstation UmiTraderGtkWorkstation;
 /** Create Trader's thin GTK adapter over the shared suite workstation. */
 UmiStatus umi_trader_gtk_workstation_create(
     UmiTraderGtkWorkstation **out_workstation);
+/** Bind the existing shared product identity to a native window before its
+ * first realization. The Framework owns titlebar composition and lifetime;
+ * no application catalogue or appearance state is duplicated. */
+UmiStatus umi_trader_gtk_workstation_bind_window(
+    UmiTraderGtkWorkstation *workstation, GtkWindow *window);
+/** Explicitly enable shared user-local SQLite layout checkpoints.
+ * Native launchers opt in after construction; constructors do no checkpoint I/O.
+ * A failed restore leaves the current layout visible and reports its error. */
+UmiStatus umi_trader_gtk_workstation_enable_checkpoint_storage(
+    UmiTraderGtkWorkstation *workstation, int restore_saved);
+
 /** Release the adapter and every Framework service it owns. */
 void umi_trader_gtk_workstation_destroy(
     UmiTraderGtkWorkstation *workstation);

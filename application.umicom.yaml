@@ -6,6 +6,7 @@ application:
   short_name: Trader
   version: 0.2.0
   executable: umicom-trader
+  native_executable: umicom-trader
   console_executable: umicom-trader-console
   aliases: [utrader, trader]
 
