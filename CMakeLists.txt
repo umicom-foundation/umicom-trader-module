@@ -417,3 +417,7 @@ if(BUILD_TESTING)
                 "umicom-trader-${UMICOM_TRADER_APPLICATION_SURFACE_TARGET}-test")
     endforeach()
 endif()
+
+# Install the public workflow lesson beside this product's other guides.
+install(FILES docs/WORKFLOW_TOOLS.html
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
