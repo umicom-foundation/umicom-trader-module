@@ -16,9 +16,11 @@
 #include "umicom/test_runtime/check.h"
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "umicom/application/experience_catalogue.h"
+#include "umicom/ui/layout_persistence.h"
 #include "umicom/trader/gtk_workstation.h"
 
 /*
@@ -36,6 +38,7 @@ int main(void)
     const UmiApplicationExperienceDefinition *experience;
     const UmiExperienceLayoutDefinition *layout;
     char saved_layout[UMI_UI_LAYOUT_ENCODED_CAPACITY];
+    char saved_layout_id[UMI_UI_WORKSPACE_LAYOUT_ID_CAPACITY];
     UmiStatus status;
 
     UMI_TEST_REQUIRE(snapshot.application_id[0] == '\0');
@@ -117,6 +120,17 @@ int main(void)
                saved_layout,
                sizeof(saved_layout)) == UMI_STATUS_OK);
     UMI_TEST_REQUIRE(strstr(saved_layout, "UMILAYOUT3") != NULL);
+    /* The experience selector uses a short alias; the import report promises
+     * the identity stored in the portable document. Decode that document
+     * before editing, without changing the production importer or its report. */
+    {
+        UmiUiLayoutPersistenceRecord *saved_record = calloc(1U, sizeof(*saved_record));
+        UMI_TEST_REQUIRE(saved_record != NULL);
+        UMI_TEST_REQUIRE(umi_ui_layout_persistence_decode(saved_layout, saved_record) == UMI_STATUS_OK);
+        UMI_TEST_REQUIRE(saved_record->layout.layout_id[0] != '\0');
+        memcpy(saved_layout_id, saved_record->layout.layout_id, sizeof(saved_layout_id));
+        free(saved_record);
+    }
 
     /* Trader remains thin: panel movement, floating and context policy are
      * delegated to the shared Framework workstation. */
@@ -152,7 +166,7 @@ int main(void)
                1,
                &import_report) == UMI_STATUS_OK);
     UMI_TEST_REQUIRE(import_report.replaced);
-    UMI_TEST_REQUIRE(strcmp(import_report.layout_id, "trading") == 0);
+    UMI_TEST_REQUIRE(strcmp(import_report.layout_id, saved_layout_id) == 0);
     UMI_TEST_REQUIRE(umi_trader_gtk_workstation_restore_checkpoint(workstation) ==
            UMI_STATUS_OK);
 
