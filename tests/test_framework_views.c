@@ -14,6 +14,7 @@
  *---------------------------------------------------------------------------*/
 #include <assert.h>
 #include <stddef.h>
+#include <string.h>
 
 #include "umicom/trader/runtime.h"
 
@@ -26,14 +27,16 @@ int main(void)
     UmiTradingWorkspaceConfig config = umi_trading_workspace_config_default();
     UmiTradingWorkspace *workspace = NULL;
     UmiUiViewModel *view = NULL;
+    UmiUiValue title;
 
     assert(umi_trading_workspace_create(&config, &workspace) == UMI_STATUS_OK);
     static const char *const panel_ids[] = {
         "watchlist", "chart", "depth", "order-entry", "blotter",
         "positions", "risk", "account", "scanner", "predictive-lab",
-        "news", "context-inspector", "strategy", "replay", "output",
-        "time-and-sales", "economic-calendar", "fundamentals",
-        "strategy-analysis", "trade-performance", "price-ladder", "alerts"
+        "news", "context-inspector", "strategy", "strategy-development",
+        "replay", "output", "time-and-sales", "economic-calendar",
+        "fundamentals", "strategy-analysis", "trade-performance",
+        "price-ladder", "alerts"
     };
     size_t index;
     /* Visit each bounded item once so every record receives the same rule. */
@@ -44,6 +47,17 @@ int main(void)
         umi_ui_view_model_destroy(view);
         view = NULL;
     }
+
+    assert(umi_trader_runtime_create_strategy_development_view(
+               workspace, &view) == UMI_STATUS_OK);
+    assert(view != NULL);
+    assert(umi_ui_view_model_get_property(
+               view, "title", &title) == UMI_STATUS_OK);
+    assert(title.kind == UMI_UI_VALUE_STRING);
+    assert(strcmp(title.string_value, "Strategy") == 0);
+    umi_ui_view_model_destroy(view);
+    view = NULL;
+
     assert(umi_trader_runtime_create_panel_view(
                "unknown", workspace, &view) == UMI_STATUS_NOT_IMPLEMENTED);
     umi_trading_workspace_destroy(workspace);

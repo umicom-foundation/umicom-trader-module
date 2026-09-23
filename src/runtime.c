@@ -153,6 +153,14 @@ UmiStatus umi_trader_runtime_create_panel_view(
     if (strcmp(panel_id, "strategy") == 0)
         return umi_trading_ui_strategy_view_create(panel_id, workspace,
                                                     out_view);
+    /*
+     * Strategy Development is a Trader product identity over the same
+     * Framework-owned strategy projection.  The alias adds no second strategy
+     * model and cannot bypass the Framework trading safety state.
+     */
+    if (strcmp(panel_id, "strategy-development") == 0)
+        return umi_trading_ui_strategy_view_create(panel_id, workspace,
+                                                    out_view);
     /* Use the stable identifier comparison to choose the matching record or policy. */
     if (strcmp(panel_id, "replay") == 0)
         return umi_trading_ui_replay_view_create(panel_id, workspace, out_view);
@@ -234,4 +242,14 @@ UmiStatus umi_trader_runtime_create_component_view(
      */
     if (panel_id == NULL) return UMI_STATUS_NOT_IMPLEMENTED;
     return umi_trader_runtime_create_panel_view(panel_id, workspace, out_view);
+}
+
+UmiStatus umi_trader_runtime_create_strategy_development_view(
+    UmiTradingWorkspace *workspace,
+    UmiUiViewModel **out_view)
+{
+    if (workspace == NULL || out_view == NULL)
+        return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_trader_runtime_create_panel_view(
+        "strategy-development", workspace, out_view);
 }

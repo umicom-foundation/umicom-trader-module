@@ -70,6 +70,15 @@ UmiStatus umi_trader_runtime_create_component_view(
     UmiTradingWorkspace *workspace,
     UmiUiViewModel **out_view);
 
+/**
+ * Create the Strategy Development projection using the existing Framework
+ * strategy view.  Trader supplies only the product-facing identity; strategy
+ * state, market evidence and trading safety remain Framework-owned.
+ */
+UmiStatus umi_trader_runtime_create_strategy_development_view(
+    UmiTradingWorkspace *workspace,
+    UmiUiViewModel **out_view);
+
 #ifdef __cplusplus
 }
 #endif
