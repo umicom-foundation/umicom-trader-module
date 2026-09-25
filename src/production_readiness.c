@@ -80,3 +80,16 @@ UmiStatus umi_trader_production_workstation_snapshot(
     return umi_trading_professional_workstation_snapshot(
         workspace, out_snapshot);
 }
+
+
+/*
+ * Keep Trader thin by forwarding strategy/backtest/replay readiness to the
+ * Framework research service. The product adds no local research engine.
+ */
+UmiStatus umi_trader_strategy_research_snapshot(
+    UmiTradingWorkspace *workspace,
+    UmiStrategyResearchWorkspaceSnapshot *out_snapshot)
+{
+    return umi_strategy_research_workspace_snapshot(
+        workspace, out_snapshot);
+}

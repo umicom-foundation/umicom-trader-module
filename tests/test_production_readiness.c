@@ -73,6 +73,7 @@ int main(void)
     UmiTradingWorkspaceConfig config;
     UmiTradingWorkspace *workspace = NULL;
     UmiTradingProfessionalWorkstationSnapshot workstation;
+    UmiStrategyResearchWorkspaceSnapshot research;
 
     assert(runtime != NULL);
     assert(umi_application_production_runtime_init(
@@ -96,6 +97,11 @@ int main(void)
                &workstation) == UMI_STATUS_OK);
     assert(workstation.capabilityCount == 10U);
     assert(workstation.revision > 0U);
+
+    assert(umi_trader_strategy_research_snapshot(
+               workspace, &research) == UMI_STATUS_OK);
+    assert(research.revision > 0U);
+    assert(research.marketDataReady);
 
     umi_trading_workspace_destroy(workspace);
     free(runtime);

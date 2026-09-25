@@ -18,6 +18,7 @@
 
 #include "umicom/trader/production_profile.h"
 #include "umicom/trading_workstation/service.h"
+#include "umicom/strategy_research/service.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,6 +55,18 @@ UmiStatus umi_trader_production_readiness_build(
 UmiStatus umi_trader_production_workstation_snapshot(
     UmiTradingWorkspace *workspace,
     UmiTradingProfessionalWorkstationSnapshot *out_snapshot);
+
+
+
+/**
+ * Copy Framework-owned strategy/replay research readiness for Trader.
+ *
+ * This remains research-only: backtest and replay evidence never arm live
+ * execution or bypass the existing order/risk controls.
+ */
+UmiStatus umi_trader_strategy_research_snapshot(
+    UmiTradingWorkspace *workspace,
+    UmiStrategyResearchWorkspaceSnapshot *out_snapshot);
 
 #ifdef __cplusplus
 }
