@@ -15,6 +15,7 @@
  *---------------------------------------------------------------------------*/
 #include "umicom/trader/production_readiness.h"
 
+#include <stdio.h>
 #include <string.h>
 
 /* Provide the feature at least operation used by this module and its client applications. */
@@ -92,4 +93,83 @@ UmiStatus umi_trader_strategy_research_snapshot(
 {
     return umi_strategy_research_workspace_snapshot(
         workspace, out_snapshot);
+}
+
+
+/*
+ * Trader's product defaults identify the canonical paper runtime and the IBKR
+ * adapter boundary. The IBKR configuration stays paper-only until the user
+ * explicitly changes and approves a live profile through governed controls.
+ */
+UmiStatus umi_trader_broker_connectivity_defaults(
+    UmiBrokerProviderRegistry *providers,
+    UmiIbkrAdapterConfig *ibkr)
+{
+    UmiBrokerProviderDescriptor paper = {0};
+    UmiBrokerProviderDescriptor interactiveBrokers = {0};
+    UmiStatus status;
+
+    if (providers == NULL || ibkr == NULL) {
+        return UMI_STATUS_INVALID_ARGUMENT;
+    }
+
+    umi_broker_provider_registry_init(providers);
+    umi_ibkr_adapter_config_init(ibkr);
+
+    (void)snprintf(paper.id, sizeof(paper.id), "%s", "paper");
+    (void)snprintf(
+        paper.displayName, sizeof(paper.displayName),
+        "%s", "Umicom Paper Broker");
+    paper.paperSupported = 1;
+    paper.accountSupported = 1;
+    paper.orderSupported = 1;
+    paper.executionSupported = 1;
+    status = umi_broker_provider_registry_register(providers, &paper);
+
+    if (status == UMI_STATUS_OK) {
+        (void)snprintf(
+            interactiveBrokers.id,
+            sizeof(interactiveBrokers.id),
+            "%s",
+            "ibkr");
+        (void)snprintf(
+            interactiveBrokers.displayName,
+            sizeof(interactiveBrokers.displayName),
+            "%s",
+            "Interactive Brokers");
+        interactiveBrokers.paperSupported = 1;
+        interactiveBrokers.liveSupported = 1;
+        interactiveBrokers.accountSupported = 1;
+        interactiveBrokers.orderSupported = 1;
+        interactiveBrokers.executionSupported = 1;
+        status = umi_broker_provider_registry_register(
+            providers, &interactiveBrokers);
+    }
+    return status;
+}
+
+/* Keep Trader's application boundary thin over Framework-owned connectivity. */
+UmiStatus umi_trader_broker_connectivity_snapshot(
+    const UmiBrokerProviderRegistry *providers,
+    const UmiBrokerSessionSupervisor *session,
+    const UmiBrokerAccountStore *accounts,
+    const UmiBrokerOrderJournal *orders,
+    const UmiBrokerExecutionReconciler *executions,
+    const UmiBrokerPositionStore *positions,
+    const UmiBrokerAuditJournal *audit,
+    const UmiIbkrAdapterConfig *ibkr,
+    int live_approved,
+    UmiBrokerConnectivityPlatformSnapshot *out_snapshot)
+{
+    return umi_broker_connectivity_platform_snapshot(
+        providers,
+        session,
+        accounts,
+        orders,
+        executions,
+        positions,
+        audit,
+        ibkr,
+        live_approved,
+        out_snapshot);
 }

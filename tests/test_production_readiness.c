@@ -74,6 +74,8 @@ int main(void)
     UmiTradingWorkspace *workspace = NULL;
     UmiTradingProfessionalWorkstationSnapshot workstation;
     UmiStrategyResearchWorkspaceSnapshot research;
+    UmiBrokerProviderRegistry providers;
+    UmiIbkrAdapterConfig ibkr;
 
     assert(runtime != NULL);
     assert(umi_application_production_runtime_init(
@@ -102,6 +104,15 @@ int main(void)
                workspace, &research) == UMI_STATUS_OK);
     assert(research.revision > 0U);
     assert(research.marketDataReady);
+
+    assert(umi_trader_broker_connectivity_defaults(
+               &providers, &ibkr) == UMI_STATUS_OK);
+    assert(providers.count == 2U);
+    assert(ibkr.paperOnly);
+    assert(umi_broker_provider_registry_find(
+               &providers, "paper") != NULL);
+    assert(umi_broker_provider_registry_find(
+               &providers, "ibkr") != NULL);
 
     umi_trading_workspace_destroy(workspace);
     free(runtime);

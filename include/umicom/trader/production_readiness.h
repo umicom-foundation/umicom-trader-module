@@ -19,6 +19,8 @@
 #include "umicom/trader/production_profile.h"
 #include "umicom/trading_workstation/service.h"
 #include "umicom/strategy_research/service.h"
+#include "umicom/broker_connectivity/service.h"
+#include "umicom/broker_connectivity/paper_runtime.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,6 +69,31 @@ UmiStatus umi_trader_production_workstation_snapshot(
 UmiStatus umi_trader_strategy_research_snapshot(
     UmiTradingWorkspace *workspace,
     UmiStrategyResearchWorkspaceSnapshot *out_snapshot);
+
+
+/**
+ * Register Trader's provider-neutral paper and IBKR adapter identities using
+ * Framework broker-connectivity contracts. IBKR defaults remain paper-only.
+ */
+UmiStatus umi_trader_broker_connectivity_defaults(
+    UmiBrokerProviderRegistry *providers,
+    UmiIbkrAdapterConfig *ibkr);
+
+/**
+ * Forward broker/account/order/execution/position/audit inspection to Framework.
+ * Trader owns no duplicate broker model or vendor SDK state.
+ */
+UmiStatus umi_trader_broker_connectivity_snapshot(
+    const UmiBrokerProviderRegistry *providers,
+    const UmiBrokerSessionSupervisor *session,
+    const UmiBrokerAccountStore *accounts,
+    const UmiBrokerOrderJournal *orders,
+    const UmiBrokerExecutionReconciler *executions,
+    const UmiBrokerPositionStore *positions,
+    const UmiBrokerAuditJournal *audit,
+    const UmiIbkrAdapterConfig *ibkr,
+    int live_approved,
+    UmiBrokerConnectivityPlatformSnapshot *out_snapshot);
 
 #ifdef __cplusplus
 }
