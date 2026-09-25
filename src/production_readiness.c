@@ -14,7 +14,9 @@
  * MIT
  *---------------------------------------------------------------------------*/
 #include "umicom/trader/production_readiness.h"
+
 #include <string.h>
+
 /* Provide the feature at least operation used by this module and its client applications. */
 static int feature_at_least(
     const UmiApplicationProductionRuntime *runtime, const char *feature_id,
@@ -25,6 +27,7 @@ static int feature_at_least(
             &runtime->features, feature_id);
     return binding != NULL && binding->feature->state >= state;
 }
+
 /*
  * Provide the trader production readiness build operation used by this module and its
  * client applications.
@@ -66,3 +69,14 @@ UmiStatus umi_trader_production_readiness_build(
     return UMI_STATUS_OK;
 }
 
+/*
+ * Keep Trader thin by forwarding professional workstation inspection to the
+ * Framework service that owns the calculations and readiness contracts.
+ */
+UmiStatus umi_trader_production_workstation_snapshot(
+    UmiTradingWorkspace *workspace,
+    UmiTradingProfessionalWorkstationSnapshot *out_snapshot)
+{
+    return umi_trading_professional_workstation_snapshot(
+        workspace, out_snapshot);
+}

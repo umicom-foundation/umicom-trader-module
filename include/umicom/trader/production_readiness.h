@@ -15,10 +15,14 @@
  *---------------------------------------------------------------------------*/
 #ifndef UMICOM_TRADER_PRODUCTION_READINESS_H
 #define UMICOM_TRADER_PRODUCTION_READINESS_H
+
 #include "umicom/trader/production_profile.h"
+#include "umicom/trading_workstation/service.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /**
  * Represent the trader production readiness data shared with callers of this public
  * contract.
@@ -35,12 +39,23 @@ typedef struct UmiTraderProductionReadiness {
     size_t open_adapter_feature_count;
     unsigned readiness_percent;
 } UmiTraderProductionReadiness;
+
 /** Summarise market, order, risk and execution readiness from Framework. */
 UmiStatus umi_trader_production_readiness_build(
     const UmiApplicationProductionRuntime *runtime,
     UmiTraderProductionReadiness *out_readiness);
+
+/**
+ * Copy the professional workstation state calculated by Framework.
+ *
+ * Trader does not calculate spreads, depth, execution risk, P&L, scanner or
+ * linked-context readiness locally; this function is a thin product boundary.
+ */
+UmiStatus umi_trader_production_workstation_snapshot(
+    UmiTradingWorkspace *workspace,
+    UmiTradingProfessionalWorkstationSnapshot *out_snapshot);
+
 #ifdef __cplusplus
 }
 #endif
 #endif
-
