@@ -17,6 +17,11 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
+/* The shared UI target advertises this optional Framework component. */
+#ifdef UMICOM_HAS_MARKET_TAPE_GTK4
+#include "umicom/ui/gtk4/market_tape.h"
+#endif
+
 #include "umicom/trader/gtk_workstation.h"
 #include "umicom/ui/gtk4/workstation/shell_header.h"
 #include "umicom/ui/gtk4/workstation/window_fit.h"
@@ -192,6 +197,11 @@ static gboolean complete_startup(gpointer user_data)
         state->splash, "Trader workspace is ready", "Simulation");
     (void)umi_gtk4_ws_startup_splash_set_progress(
         state->splash, 1.0, 1);
+    /* Attach a separate read-only market-data practice entry without replacing
+     * the existing trading controllers, simulation or layout persistence. */
+#ifdef UMICOM_HAS_MARKET_TAPE_GTK4
+    content = UmiMarketTapeGtkWrap(content, state->window);
+#endif
     gtk_window_set_child(state->window, content);
     finish_startup_window(state, 0);
     umi_gtk4_ws_startup_splash_destroy(state->splash);
