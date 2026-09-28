@@ -17,6 +17,11 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
+/* Framework owns the explicit read-only Paper/Live connection window. */
+#ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
+#include "umicom/broker_connectivity/connection_gtk4.h"
+#endif
+
 /* The shared UI target advertises this optional Framework component. */
 #ifdef UMICOM_HAS_MARKET_TAPE_GTK4
 #include "umicom/ui/gtk4/market_tape.h"
@@ -201,6 +206,10 @@ static gboolean complete_startup(gpointer user_data)
      * the existing trading controllers, simulation or layout persistence. */
 #ifdef UMICOM_HAS_MARKET_TAPE_GTK4
     content = UmiMarketTapeGtkWrap(content, state->window);
+#endif
+    /* Connection inspection is separate from the existing simulation and OMS. */
+#ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
+    content = UmiIbkrGtkWrap(content, state->window);
 #endif
     gtk_window_set_child(state->window, content);
     finish_startup_window(state, 0);
