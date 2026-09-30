@@ -193,6 +193,17 @@ UmiStatus umi_trader_gtk_workstation_bind_checkpoint_storage(
 UmiStatus umi_trader_gtk_workstation_library_preview(
     UmiTraderGtkWorkstation *workstation, UmiUiWorkspaceLibraryPreview *out_preview);
 
+/* Product entry points delegate order browsing to Framework. Search does not
+ * modify the ticket or portfolio. Reviews are owned copies; access on the GTK
+ * owner thread. Failure leaves output unchanged. */
+UmiStatus umi_trader_gtk_workstation_set_order_query(UmiTraderGtkWorkstation *workstation,
+    const UmiTradingOrderQuery *query);
+UmiStatus umi_trader_gtk_workstation_review_order(UmiTraderGtkWorkstation *workstation,
+    const char *client_order_id, UmiTradingOrderReview *out_review);
+
+/* Use Framework-owned profile-specific layout persistence after local sign-in. */
+UmiStatus UmiTraderGtkEnableProfileStorage(UmiTraderGtkWorkstation *workstation, const char *profile, int restore_saved);
+
 #ifdef __cplusplus
 }
 #endif

@@ -437,3 +437,17 @@ install(FILES docs/WORKFLOW_TOOLS.html
 install(FILES docs/ORDERING_WORKSPACE_LAYOUTS.md
     DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs
     COMPONENT Trader)
+
+# The product must expose the same native chart and review controls as Framework.
+if(BUILD_TESTING AND TARGET Umicom::trader_gtk)
+    add_executable(trader-chart-order-review-test tests/test_chart_and_order_review.c)
+    target_link_libraries(trader-chart-order-review-test PRIVATE Umicom::trader_gtk)
+    umicom_apply_warnings(trader-chart-order-review-test)
+    umicom_apply_sanitizers(trader-chart-order-review-test)
+    add_test(NAME trader.module.chart_order_review COMMAND trader-chart-order-review-test)
+    set_tests_properties(trader.module.chart_order_review PROPERTIES
+        TIMEOUT 90 SKIP_RETURN_CODE 77 LABELS "trader;gtk4;chart;orders;regression")
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(trader-chart-order-review-test)
+    endif()
+endif()

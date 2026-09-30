@@ -16,6 +16,7 @@
  *---------------------------------------------------------------------------*/
 #include <gtk/gtk.h>
 #include <stdio.h>
+#include "umicom/security/gtk4/local_profile_gate.h"
 
 /* Framework owns the explicit read-only Paper/Live connection window. */
 #ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
@@ -37,6 +38,7 @@ typedef struct UmiTraderGtkApplicationState {
     UmiTraderGtkWorkstation *workstation;
     UmiGtk4WorkstationStartupSplash *splash;
     guint startup_source_id;
+    UmiLocalProfileGate *profile_gate;
 } UmiTraderGtkApplicationState;
 
 /* Clear the borrowed window pointer when the native window is destroyed. */
@@ -81,6 +83,8 @@ static void release_application_window(UmiTraderGtkApplicationState *state, GtkW
 static void on_application_window_destroy(GtkWidget *widget, gpointer data)
 {
     UmiTraderGtkApplicationState *state = data;
+    UmiLocalProfileGateDestroy(state->profile_gate);
+    state->profile_gate = NULL;
     g_signal_handlers_disconnect_by_data(widget, state);
     g_object_weak_unref(G_OBJECT(widget), on_window_destroyed, state);
     if (state->startup_source_id != 0U) {
@@ -99,6 +103,8 @@ static gboolean on_startup_window_close(GtkWindow *window, gpointer user_data)
 {
     UmiTraderGtkApplicationState *state = user_data;
     (void)window;
+    UmiLocalProfileGateDestroy(state->profile_gate);
+    state->profile_gate = NULL;
     if (state->startup_source_id != 0U) {
         g_source_remove(state->startup_source_id);
         state->startup_source_id = 0U;
@@ -124,6 +130,8 @@ static void finish_startup_window(UmiTraderGtkApplicationState *state, int faile
 }
 
 /* Finish the safe product workspace after GTK has shown the startup surface. */
+/* The original automatic simulator launch is superseded by an explicit local-profile or simulator choice after the splash screen. Shared Framework services own authentication and per-profile persistence. The previous implementation remains for engineering review. */
+#if 0
 static gboolean complete_startup(gpointer user_data)
 {
     UmiTraderGtkApplicationState *state =
@@ -218,6 +226,84 @@ static gboolean complete_startup(gpointer user_data)
     return G_SOURCE_REMOVE;
 }
 
+#endif
+/* The product chooses when to create its workstation. Authentication,
+ * password handling and profile storage remain reusable Framework services. */
+static UmiStatus open_profile_workspace(void *data, const char *profile)
+{
+    UmiTraderGtkApplicationState *state = data;
+    if (state->window == NULL || state->startup_window == NULL) return UMI_STATUS_CANCELLED;
+    UmiStatus status = umi_trader_gtk_workstation_create(&state->workstation);
+    if (status == UMI_STATUS_OK)
+        status = umi_trader_gtk_workstation_bind_window(state->workstation,state->window);
+    if (status != UMI_STATUS_OK) {
+        umi_trader_gtk_workstation_destroy(state->workstation); state->workstation = NULL; return status;
+    }
+    UmiStatus storage_status = profile[0] != '\0'
+        ? UmiTraderGtkEnableProfileStorage(state->workstation,profile,1)
+        : umi_trader_gtk_workstation_enable_checkpoint_storage(state->workstation,1);
+    if (storage_status != UMI_STATUS_OK)
+        (void)fprintf(stderr,"Layout storage unavailable: %s\n",umi_status_text(storage_status));
+    GtkWidget *content = umi_trader_gtk_workstation_widget(state->workstation);
+    if (content == NULL) {
+        umi_trader_gtk_workstation_destroy(state->workstation); state->workstation = NULL;
+        return UMI_STATUS_INTERNAL_ERROR;
+    }
+#ifdef UMICOM_HAS_MARKET_TAPE_GTK4
+    content = UmiMarketTapeGtkWrap(content,state->window);
+#endif
+#ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
+    content = UmiIbkrGtkWrap(content,state->window);
+#endif
+    GtkWidget *host = gtk_box_new(GTK_ORIENTATION_VERTICAL,4);
+    char identity[160];
+    (void)snprintf(identity,sizeof(identity),"%s%s",
+        profile[0] != '\0' ? "Local profile: " : "",profile[0] != '\0' ? profile : "Simulator without a profile");
+    GtkWidget *label = gtk_label_new(identity); gtk_label_set_xalign(GTK_LABEL(label),0.0F);
+    gtk_widget_set_margin_start(label,12); gtk_widget_set_margin_end(label,12);
+    gtk_widget_set_tooltip_text(label,"Local profile identity. Broker connection state is shown separately. Save layouts before closing.");
+    gtk_box_append(GTK_BOX(host),label); gtk_widget_set_vexpand(content,TRUE); gtk_box_append(GTK_BOX(host),content);
+    gtk_window_set_child(state->window,host);
+    /* Close the start window without its close-request callback cancelling the
+     * successfully constructed workspace. The gate's worker holds its own ref. */
+    finish_startup_window(state,0);
+    UmiLocalProfileGateDestroy(state->profile_gate); state->profile_gate = NULL;
+    return UMI_STATUS_OK;
+}
+#ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
+static void open_profile_broker(void *data)
+{
+    UmiTraderGtkApplicationState *state = data;
+    if (state->startup_window != NULL) {
+        GtkWindow *connection = UmiIbkrGtkCreate(state->startup_window);
+        if (connection != NULL) gtk_window_present(connection);
+    }
+}
+#endif
+static gboolean complete_startup(gpointer data)
+{
+    UmiTraderGtkApplicationState *state = data;
+    if (state == NULL) return G_SOURCE_REMOVE;
+    state->startup_source_id = 0U;
+    if (state->window == NULL || state->startup_window == NULL) return G_SOURCE_REMOVE;
+    UmiLocalProfileGateConfig config = {0};
+    config.application_id = "org.umicom.trader"; config.title = "Welcome to Umicom Trader";
+    config.user_data = state; config.open_workspace = open_profile_workspace;
+#ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
+    config.open_broker = open_profile_broker;
+#endif
+    UmiStatus status = UmiLocalProfileGateCreate(&config,&state->profile_gate);
+    if (status != UMI_STATUS_OK) {
+        (void)umi_gtk4_ws_startup_splash_set_status(state->splash,"The local profile screen could not open.","Action required");
+        finish_startup_window(state,1); return G_SOURCE_REMOVE;
+    }
+    gtk_window_set_title(state->startup_window,"Umicom Trader — Local profile or Simulator");
+    (void)umi_gtk4_ws_window_fit(state->startup_window,720,780,480,360);
+    gtk_window_set_child(state->startup_window,UmiLocalProfileGateWidget(state->profile_gate));
+    umi_gtk4_ws_startup_splash_destroy(state->splash); state->splash = NULL;
+    return G_SOURCE_REMOVE;
+}
+
 /* Present the startup surface immediately, then construct the trading
  * composition from the GTK main context. */
 static void on_activate(GtkApplication *application, gpointer user_data)
@@ -297,6 +383,8 @@ static void application_state_dispose(UmiTraderGtkApplicationState *state)
      * used.
      */
     if (state == NULL) return;
+    UmiLocalProfileGateDestroy(state->profile_gate);
+    state->profile_gate = NULL;
     /* Apply this branch only when its contract condition is satisfied. */
     if (state->startup_source_id != 0U) {
         (void)g_source_remove(state->startup_source_id);

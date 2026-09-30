@@ -596,3 +596,27 @@ UmiStatus umi_trader_gtk_workstation_library_preview(
     if (workstation == NULL || out_preview == NULL) return UMI_STATUS_INVALID_ARGUMENT;
     return umi_gtk4_trading_suite_workstation_library_preview(workstation->framework_workstation, out_preview);
 }
+
+
+/* Reusable search and review policy stays in Framework. Trader adds no second
+ * order catalogue, execution cache or cancellation implementation. */
+UmiStatus umi_trader_gtk_workstation_set_order_query(UmiTraderGtkWorkstation *workstation,
+    const UmiTradingOrderQuery *query)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiTradingUiControllerSetOrderQuery(
+        umi_gtk4_trading_suite_workstation_controller(workstation->framework_workstation), query);
+}
+UmiStatus umi_trader_gtk_workstation_review_order(UmiTraderGtkWorkstation *workstation,
+    const char *client_order_id, UmiTradingOrderReview *out_review)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiTradingWorkspaceReviewOrder(workstation->trading, client_order_id, out_review);
+}
+
+/* Keep profile persistence with the established Framework layout owner. */
+UmiStatus UmiTraderGtkEnableProfileStorage(UmiTraderGtkWorkstation *workstation, const char *profile, int restore_saved)
+{
+    return workstation != NULL ? UmiGtk4TradingSuiteEnableProfileStorage(workstation->framework_workstation,profile,restore_saved)
+        : UMI_STATUS_INVALID_ARGUMENT;
+}
