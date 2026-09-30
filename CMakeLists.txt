@@ -286,6 +286,17 @@ if(BUILD_TESTING)
 
     # Configure the optional target only when its feature has created it.
     if(TARGET Umicom::trader_gtk)
+        # Exercise the real product owner and native controls with isolated storage.
+        add_executable(trader-layout-library-order-test tests/test_layout_library_order.c)
+        target_link_libraries(trader-layout-library-order-test PRIVATE Umicom::trader_gtk)
+        umicom_apply_warnings(trader-layout-library-order-test)
+        umicom_apply_sanitizers(trader-layout-library-order-test)
+        add_test(NAME trader.module.layout_library_order COMMAND trader-layout-library-order-test)
+        set_tests_properties(trader.module.layout_library_order PROPERTIES
+            TIMEOUT 120 SKIP_RETURN_CODE 77 LABELS "trader;gtk4;layout-order;regression")
+        if(COMMAND umicom_register_validation_target)
+            umicom_register_validation_target(trader-layout-library-order-test)
+        endif()
         add_executable(trader-gtk-workstation-test
             tests/test_gtk_workstation.c
         )
@@ -421,3 +432,8 @@ endif()
 # Install the public workflow lesson beside this product's other guides.
 install(FILES docs/WORKFLOW_TOOLS.html
     DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# Keep the beginner ordering workflow available with the installed product.
+install(FILES docs/ORDERING_WORKSPACE_LAYOUTS.md
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs
+    COMPONENT Trader)

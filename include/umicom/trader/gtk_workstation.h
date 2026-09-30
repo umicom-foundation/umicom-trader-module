@@ -20,6 +20,8 @@
 
 #include <stdint.h>
 
+#include "umicom/ui/workspace_library.h"
+#include "umicom/ui/workspace_library_checkpoint.h"
 #include <gtk/gtk.h>
 
 #include "umicom/application/suite_layout/gtk4_workstation.h"
@@ -162,6 +164,34 @@ int umi_trader_gtk_workstation_checkpoint_due(
     const UmiTraderGtkWorkstation *workstation,
     uint32_t elapsed_since_checkpoint_seconds,
     int changed);
+
+
+/** Copy the current ordered layout list on the GTK owning thread. No live
+ * pointers escape; a failed read leaves output unchanged. This performs no I/O. */
+UmiStatus umi_trader_gtk_workstation_library_snapshot(
+    UmiTraderGtkWorkstation *workstation, UmiUiWorkspaceLibrarySnapshot *out_snapshot);
+
+/** Apply a revision-checked library action through the same staged native
+ * publication path as Layout Library. Product scope and edit gates remain in
+ * Framework. A move preserves active panels and does not execute trades, save
+ * documents or persist the library. Use explicit Save library for persistence.
+ * Inputs are borrowed for this synchronous owner-thread call only. */
+UmiStatus umi_trader_gtk_workstation_library_apply(
+    UmiTraderGtkWorkstation *workstation, const UmiUiWorkspaceLibraryRequest *request);
+
+/** Bind an existing borrowed Data Server for explicit layout/library saves.
+ * The server outlives the workstation or is unbound with NULL. This probes saved
+ * evidence but never restores automatically, opens a path or enables trading.
+ * Memory backends remain visibly non-durable. Active edits return BUSY. */
+UmiStatus umi_trader_gtk_workstation_bind_checkpoint_storage(
+    UmiTraderGtkWorkstation *workstation, UmiDataServer *server);
+
+/** Read the saved library into owned preview data without changing the live
+ * layout, document/trading state, storage or cached Save revision. Call on the
+ * GTK owner thread. Failure leaves output unchanged. Later Restore rereads the
+ * store; this preview is not a reservation. The connected server is borrowed. */
+UmiStatus umi_trader_gtk_workstation_library_preview(
+    UmiTraderGtkWorkstation *workstation, UmiUiWorkspaceLibraryPreview *out_preview);
 
 #ifdef __cplusplus
 }

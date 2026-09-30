@@ -50,3 +50,9 @@ routing remain Framework responsibilities.
 The Windows suite installer exposes Trader as the optional **Trader**
 component. Its graphical executable is registered with Umicom Desk, allowing
 Trader and Studio or another installed product to run side by side.
+
+## Order your workspace layouts
+
+Trader's shared Layout Library includes **Move up** and **Move down** controls.
+[Arrange your workspace layouts](docs/ORDERING_WORKSPACE_LAYOUTS.md) explains
+how to reorder the list, retain the active workspace and save the order.

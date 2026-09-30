@@ -561,3 +561,38 @@ int umi_trader_gtk_workstation_checkpoint_due(
               elapsed_since_checkpoint_seconds, changed)
         : 0;
 }
+
+/* Keep native publication with the established Framework workspace owner;
+ * copied observations support product acceptance without exposing its model. */
+UmiStatus umi_trader_gtk_workstation_library_snapshot(
+    UmiTraderGtkWorkstation *workstation, UmiUiWorkspaceLibrarySnapshot *out_snapshot)
+{
+    if (workstation == NULL || out_snapshot == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_library_snapshot(workstation->framework_workstation, out_snapshot);
+}
+
+/* Reuse the existing transactional UI path, retaining panel bodies and all
+ * application-specific ownership instead of building another layout manager. */
+UmiStatus umi_trader_gtk_workstation_library_apply(
+    UmiTraderGtkWorkstation *workstation, const UmiUiWorkspaceLibraryRequest *request)
+{
+    if (workstation == NULL || request == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    UmiStatus status = umi_gtk4_trading_suite_workstation_library_apply(workstation->framework_workstation, request);
+    return status;
+}
+
+/* Backend selection stays with the existing Framework storage owner. */
+UmiStatus umi_trader_gtk_workstation_bind_checkpoint_storage(
+    UmiTraderGtkWorkstation *workstation, UmiDataServer *server)
+{
+    return workstation != NULL ? umi_gtk4_trading_suite_workstation_bind_checkpoint_storage(workstation->framework_workstation, server) : UMI_STATUS_INVALID_ARGUMENT;
+}
+
+/* Preview stays with the established Framework storage owner and never
+ * publishes a candidate, changes trade state or adopts a competing Save CAS. */
+UmiStatus umi_trader_gtk_workstation_library_preview(
+    UmiTraderGtkWorkstation *workstation, UmiUiWorkspaceLibraryPreview *out_preview)
+{
+    if (workstation == NULL || out_preview == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_library_preview(workstation->framework_workstation, out_preview);
+}
