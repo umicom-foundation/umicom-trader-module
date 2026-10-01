@@ -63,12 +63,32 @@ int main(void)
     /* Product acceptance traverses the same coordinator used by native chart
      * buttons, with a borrowed test store that cannot touch a real profile. */
     CHECK(Find(root, "trading.chart.save") != NULL && Find(root, "trading.chart.preview") != NULL);
+    /* The review is deliberately collapsed until requested. Inspect its
+     * public expander first; its details join GTK's child tree when opened. */
+    GtkWidget *saved_review = Find(root, "trading.chart.saved-review");
+    CHECK(GTK_IS_EXPANDER(saved_review) && !gtk_expander_get_expanded(GTK_EXPANDER(saved_review)));
+    gtk_expander_set_expanded(GTK_EXPANDER(saved_review), TRUE);
     CHECK(Find(root, "trading.chart.restore") != NULL && Find(root, "trading.chart.saved-details") != NULL);
+    GtkWidget *saved_details = Find(root, "trading.chart.saved-details");
+    CHECK(GTK_IS_TEXT_VIEW(saved_details));
+    gtk_expander_set_expanded(GTK_EXPANDER(saved_review), FALSE);
     UmiDataServer *chart_server = NULL;
     CHECK(umi_data_server_create_memory(&chart_server) == UMI_STATUS_OK);
     CHECK(UmiTraderGtkBindChartStorage(workstation, chart_server, "product.acceptance") == UMI_STATUS_OK);
     UmiChartCheckpointReport report; UmiTradingChartPreview preview;
     CHECK(UmiTraderGtkSaveChart(workstation, exported.selected_instrument_id, 1000U, &report) == UMI_STATUS_OK && !report.durable);
+    /* Use the actual Preview button with this borrowed memory store. The
+     * shared Framework action must reveal the existing review text in Trader. */
+    g_signal_emit_by_name(Find(root, "trading.chart.preview"), "clicked");
+    CHECK(gtk_expander_get_expanded(GTK_EXPANDER(saved_review)));
+    CHECK(Find(root, "trading.chart.saved-details") == saved_details);
+    GtkTextIter review_start, review_end;
+    GtkTextBuffer *review_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(saved_details));
+    gtk_text_buffer_get_bounds(review_buffer, &review_start, &review_end);
+    char *review_text = gtk_text_buffer_get_text(review_buffer, &review_start, &review_end, TRUE);
+    CHECK(review_text != NULL && strstr(review_text, exported.selected_instrument_id) != NULL &&
+        strstr(review_text, "memory only") != NULL);
+    g_free(review_text);
     g_signal_emit_by_name(Find(root, "trading.chart.zoom-in"), "clicked");
     CHECK(UmiTraderGtkPreviewChart(workstation, exported.selected_instrument_id, &preview) == UMI_STATUS_OK);
     CHECK(preview.saved.navigation.visible_bars == 0U && preview.current.navigation.visible_bars != 0U);
