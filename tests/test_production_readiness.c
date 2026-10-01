@@ -103,7 +103,15 @@ int main(void)
     assert(umi_trader_strategy_research_snapshot(
                workspace, &research) == UMI_STATUS_OK);
     assert(research.revision > 0U);
+/* An empty workspace cannot claim market-data readiness merely because the capability catalogue is available. The previous implementation remains for engineering review. */
+#if 0
     assert(research.marketDataReady);
+#endif
+    /* Available capability implementations do not prove that this empty
+     * workspace has market data. Product readiness must report observed state. */
+    assert(!research.marketDataReady);
+    assert(!research.strategyReady && !research.replayReady && !research.studiesReady);
+    assert(!research.optimisationReady);
 
     assert(umi_trader_broker_connectivity_defaults(
                &providers, &ibkr) == UMI_STATUS_OK);
