@@ -7,6 +7,8 @@
  *---------------------------------------------------------------------------*/
 
 #include "umicom/trader/gtk_workstation.h"
+#include "umicom/chart/drawing_tools.h"
+#include "umicom/trading_ui/gtk4/interactive_chart.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,5 +52,70 @@ int main(void)
     CHECK(after.environment == UMI_TRADING_SIMULATION && !after.live_armed);
     UmiTradingOrderReview *review = calloc(1, sizeof *review); CHECK(review != NULL);
     CHECK(umi_trader_gtk_workstation_review_order(workstation, "missing-order", review) == UMI_STATUS_NOT_FOUND);
+    CHECK(Find(root, "trading.orders.copy-csv") != NULL);
+    UmiCsvDocument *csv = NULL;
+    CHECK(UmiTraderGtkExportOrdersCsv(workstation, &csv) == UMI_STATUS_OK);
+    CHECK(UmiCsvDocumentRows(csv) == 2 && strstr(UmiCsvDocumentData(csv), "missing-order") != NULL);
+    UmiTradingWorkspaceSnapshot exported;
+    CHECK(umi_trader_gtk_workstation_trading_snapshot(workstation, &exported) == UMI_STATUS_OK);
+    CHECK(exported.revision == after.revision && exported.order_count == after.order_count);
+    UmiCsvDocumentDestroy(csv);
+    /* Product acceptance traverses the same coordinator used by native chart
+     * buttons, with a borrowed test store that cannot touch a real profile. */
+    CHECK(Find(root, "trading.chart.save") != NULL && Find(root, "trading.chart.preview") != NULL);
+    CHECK(Find(root, "trading.chart.restore") != NULL && Find(root, "trading.chart.saved-details") != NULL);
+    UmiDataServer *chart_server = NULL;
+    CHECK(umi_data_server_create_memory(&chart_server) == UMI_STATUS_OK);
+    CHECK(UmiTraderGtkBindChartStorage(workstation, chart_server, "product.acceptance") == UMI_STATUS_OK);
+    UmiChartCheckpointReport report; UmiTradingChartPreview preview;
+    CHECK(UmiTraderGtkSaveChart(workstation, exported.selected_instrument_id, 1000U, &report) == UMI_STATUS_OK && !report.durable);
+    g_signal_emit_by_name(Find(root, "trading.chart.zoom-in"), "clicked");
+    CHECK(UmiTraderGtkPreviewChart(workstation, exported.selected_instrument_id, &preview) == UMI_STATUS_OK);
+    CHECK(preview.saved.navigation.visible_bars == 0U && preview.current.navigation.visible_bars != 0U);
+    CHECK(UmiTraderGtkRestoreChart(workstation, exported.selected_instrument_id, preview.preview_id) == UMI_STATUS_OK);
+    CHECK(UmiTraderGtkPreviewChart(workstation, exported.selected_instrument_id, &preview) == UMI_STATUS_OK && preview.current.navigation.visible_bars == 0U);
+    /* Import a genuine saved chart through the public product workflow, then
+     * use real native object actions. No private product model is substituted. */
+    const char *toolTags[]={"range","liquidity-zone","ray","move-drawing","lock-drawing","duplicate-drawing"};
+    for(size_t i=0;i<6;++i){char tag[80];(void)snprintf(tag,sizeof(tag),"trading.chart.%s",toolTags[i]);CHECK(Find(root,tag)!=NULL);}
+    UmiChartDrawingSnapshot toolDrawings[3];
+    const UmiChartDrawingKind kinds[]={UMI_CHART_DRAWING_RANGE,UMI_CHART_DRAWING_LIQUIDITY_ZONE,UMI_CHART_DRAWING_RAY};
+    for(size_t i=0;i<3;++i){char id[32];(void)snprintf(id,sizeof(id),"product.drawing.%zu",i);
+        CHECK(UmiChartDrawingInitialize(id,exported.selected_instrument_id,kinds[i],(UmiChartPoint){1000,1.1},(UmiChartPoint){2000,1.2},&toolDrawings[i])==UMI_STATUS_OK);}
+    UmiChartNavigation toolNavigation={0};UmiChartDocument *toolDocument=NULL;
+    CHECK(UmiChartDocumentCreate(exported.selected_instrument_id,&toolNavigation,toolDrawings,3,0,&toolDocument)==UMI_STATUS_OK);
+    CHECK(UmiChartCheckpointSave(chart_server,"product.acceptance",toolDocument,report.storage_revision,2000,&report)==UMI_STATUS_OK);
+    UmiChartDocumentDestroy(toolDocument);toolDocument=NULL;
+    CHECK(UmiTraderGtkPreviewChart(workstation,exported.selected_instrument_id,&preview)==UMI_STATUS_OK);
+    CHECK(UmiTraderGtkRestoreChart(workstation,exported.selected_instrument_id,preview.preview_id)==UMI_STATUS_OK);
+    UmiGtk4TradingInteractiveChartRefresh(Find(root,"trading.chart.panel"));
+    GtkWidget *drawingList=Find(root,"trading.chart.drawings");CHECK(GTK_IS_DROP_DOWN(drawingList));
+    CHECK(g_list_model_get_n_items(gtk_drop_down_get_model(GTK_DROP_DOWN(drawingList)))==3);
+    gtk_drop_down_set_selected(GTK_DROP_DOWN(drawingList),2);
+    g_signal_emit_by_name(Find(root,"trading.chart.lock-drawing"),"clicked");
+    g_signal_emit_by_name(Find(root,"trading.chart.duplicate-drawing"),"clicked");
+    /* Visibility travels through the actual product control and saved chart.
+     * The hidden copy remains present, with its original anchors and tool. */
+    CHECK(Find(root,"trading.chart.hide-drawing")!=NULL);
+    g_signal_emit_by_name(Find(root,"trading.chart.hide-drawing"),"clicked");
+    CHECK(UmiTraderGtkSaveChart(workstation,exported.selected_instrument_id,3000,&report)==UMI_STATUS_OK);
+    CHECK(UmiChartCheckpointLoad(chart_server,"product.acceptance",exported.selected_instrument_id,&toolDocument,&report)==UMI_STATUS_OK);
+    UmiChartDocumentSummary toolSummary;CHECK(UmiChartDocumentGetSummary(toolDocument,&toolSummary)==UMI_STATUS_OK&&toolSummary.drawing_count==4);
+    UmiChartDrawingSnapshot original,copy;CHECK(UmiChartDocumentDrawingAt(toolDocument,2,&original)==UMI_STATUS_OK);
+    CHECK(UmiChartDocumentDrawingAt(toolDocument,3,&copy)==UMI_STATUS_OK);
+    CHECK(original.locked&&!copy.locked&&strcmp(original.id,copy.id)!=0&&strcmp(copy.tool,"ray")==0);
+    CHECK(original.visibility_flags==0U&&copy.visibility_flags==UMI_CHART_DRAWING_VISIBILITY_HIDDEN);
+    CHECK(original.time1==copy.time1&&original.time2==copy.time2&&original.value1==copy.value1&&original.value2==copy.value2);
+    UmiChartDocumentDestroy(toolDocument);
+    CHECK(umi_trader_gtk_workstation_trading_snapshot(workstation,&after)==UMI_STATUS_OK);
+    CHECK(after.order_count==exported.order_count&&after.environment==exported.environment&&after.live_armed==exported.live_armed);
+    CHECK(memcmp(&after.draft_order,&exported.draft_order,sizeof(after.draft_order))==0);
+    CHECK(UmiTraderGtkBindChartStorage(workstation, NULL, NULL) == UMI_STATUS_OK);
+/* The product case now writes several chart revisions. Persistence retains a manifest and each drawing for both current and previous valid checkpoints. The previous implementation remains for engineering review. */
+#if 0
+    CHECK(umi_data_server_count(chart_server) == 1U); umi_data_server_destroy(chart_server);
+#endif
+    /* Current: one manifest and four drawings. Previous: one and three. */
+    CHECK(umi_data_server_count(chart_server) == 9U); umi_data_server_destroy(chart_server);
     free(review); umi_trader_gtk_workstation_destroy(workstation); return 0;
 }

@@ -56,3 +56,24 @@ Trader and Studio or another installed product to run side by side.
 Trader's shared Layout Library includes **Move up** and **Move down** controls.
 [Arrange your workspace layouts](docs/ORDERING_WORKSPACE_LAYOUTS.md) explains
 how to reorder the list, retain the active workspace and save the order.
+
+## Copy reports for review
+
+Follow the applied order search through a copied report in [Copy an order report](docs/COPYING_ORDER_REPORTS.md).
+
+- [Save, preview and restore drawings for one instrument](docs/SAVING_CHARTS.md).
+
+## Review orders, executions and positions together
+
+[Review a retained trading session](docs/REVIEWING_A_TRADING_SESSION.md) explains the native session report, consistency issues, instrument filters and captured CSV export.
+
+## Mark and edit chart objects
+
+[Draw ranges, zones and rays](docs/CHART_DRAWING_OBJECTS.md) explains the shared
+chart tools, moving anchors, locks, duplication and explicit chart saves.
+
+
+[Choose each drawing's colour, width and box fill](docs/DRAWING_APPEARANCE.md)
+explains explicit appearance edits, tool defaults and saving the result.
+
+- [Drawing undo and redo](docs/DRAWING_HISTORY.md)

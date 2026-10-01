@@ -620,3 +620,92 @@ UmiStatus UmiTraderGtkEnableProfileStorage(UmiTraderGtkWorkstation *workstation,
     return workstation != NULL ? UmiGtk4TradingSuiteEnableProfileStorage(workstation->framework_workstation,profile,restore_saved)
         : UMI_STATUS_INVALID_ARGUMENT;
 }
+
+/* Product reporting delegates ownership, filtering and escaping to Framework. */
+UmiStatus UmiTraderGtkExportOrdersCsv(UmiTraderGtkWorkstation *workstation,
+    UmiCsvDocument **outDocument)
+{
+    if (outDocument == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    *outDocument = NULL;
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiTradingWorkspaceExportOrdersCsv(workstation->trading, outDocument);
+}
+
+/* Product entry points reuse Framework ownership, format and revision checks;
+ * Trader keeps no second drawing store or restore implementation. */
+UmiStatus UmiTraderGtkBindChartStorage(UmiTraderGtkWorkstation *workstation,
+    UmiDataServer *server, const char *scope)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiGtk4TradingSuiteBindChartStorage(workstation->framework_workstation, server, scope);
+}
+UmiStatus UmiTraderGtkSaveChart(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentId, uint64_t savedAtMs, UmiChartCheckpointReport *outReport)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiTradingChartPersistenceSave(UmiGtk4TradingSuiteChartPersistence(workstation->framework_workstation),
+        instrumentId, savedAtMs, outReport);
+}
+UmiStatus UmiTraderGtkPreviewChart(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentId, UmiTradingChartPreview *outPreview)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiTradingChartPersistencePreview(UmiGtk4TradingSuiteChartPersistence(workstation->framework_workstation),
+        instrumentId, outPreview);
+}
+UmiStatus UmiTraderGtkRestoreChart(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentId, uint64_t previewId)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiTradingChartPersistenceRestore(UmiGtk4TradingSuiteChartPersistence(workstation->framework_workstation),
+        instrumentId, previewId);
+}
+
+/* Trader supplies its canonical owner; Framework performs capture, checking,
+ * filtering and export without creating a second product ledger. */
+UmiStatus UmiTraderGtkCaptureSessionReport(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentFilter, UmiTradingSessionReport **outReport)
+{
+    if (outReport == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    *outReport = NULL;
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiTradingSessionReportCapture(workstation->trading, instrumentFilter, outReport);
+}
+
+/* Framework owns retained data and interval compatibility. Trader forwards
+ * explicit product intent without duplicating aggregation or persistence. */
+#include "umicom/trading/chart_timeframe.h"
+UmiStatus UmiTraderGtkSetChartTimeframe(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentId, uint32_t intervalMs)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiTradingWorkspaceSetChartTimeframe(workstation->trading, instrumentId, intervalMs);
+}
+UmiStatus UmiTraderGtkGetChartTimeframe(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentId, uint32_t *outIntervalMs)
+{
+    if (workstation == NULL || outIntervalMs == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    UmiChartNavigation navigation;
+    UmiStatus status = UmiTradingWorkspaceGetChartNavigation(workstation->trading, instrumentId, &navigation);
+    if (status == UMI_STATUS_OK) *outIntervalMs = navigation.interval_ms;
+    return status;
+}
+
+
+/* Product calls preserve canonical Framework ownership and stale-action guards. */
+#include "umicom/trading/chart_history.h"
+UmiStatus UmiTraderGtkDrawingHistory(UmiTraderGtkWorkstation *workstation, UmiChartDrawingHistorySnapshot *out)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiTradingWorkspaceDrawingHistory(workstation->trading, out);
+}
+UmiStatus UmiTraderGtkUndoDrawing(UmiTraderGtkWorkstation *workstation, const char *instrument, uint64_t expectedRevision)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiTradingWorkspaceUndoDrawing(workstation->trading, instrument, expectedRevision);
+}
+UmiStatus UmiTraderGtkRedoDrawing(UmiTraderGtkWorkstation *workstation, const char *instrument, uint64_t expectedRevision)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return UmiTradingWorkspaceRedoDrawing(workstation->trading, instrument, expectedRevision);
+}

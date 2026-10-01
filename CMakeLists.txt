@@ -451,3 +451,84 @@ if(BUILD_TESTING AND TARGET Umicom::trader_gtk)
         umicom_register_validation_target(trader-chart-order-review-test)
     endif()
 endif()
+
+# Keep the beginner report workflow with the installed documentation.
+install(FILES docs/COPYING_ORDER_REPORTS.md
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# Install the educational chart persistence workflow with the product.
+install(FILES docs/SAVING_CHARTS.md
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# Qualify the actual product layout and shared report lifetime, not a mock view.
+if(BUILD_TESTING AND TARGET Umicom::trader_gtk)
+    add_executable(trader-session-review-test tests/test_session_review.c)
+    target_link_libraries(trader-session-review-test PRIVATE Umicom::trader_gtk)
+    umicom_apply_warnings(trader-session-review-test)
+    umicom_apply_sanitizers(trader-session-review-test)
+    add_test(NAME trader.module.session_review COMMAND trader-session-review-test)
+    set_tests_properties(trader.module.session_review PROPERTIES TIMEOUT 90 SKIP_RETURN_CODE 77 LABELS "trader;report;gtk4;regression")
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(trader-session-review-test)
+    endif()
+endif()
+install(FILES docs/REVIEWING_A_TRADING_SESSION.md
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# Install the beginner chart annotation workflow beside saved-chart guidance.
+install(FILES docs/CHART_DRAWING_OBJECTS.md
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+
+# Product qualification uses the real chart controls and borrowed test storage.
+if(BUILD_TESTING AND TARGET Umicom::trader_gtk)
+    add_executable(trader-drawing-appearance-test tests/test_drawing_appearance.c)
+    target_link_libraries(trader-drawing-appearance-test PRIVATE Umicom::trader_gtk)
+    umicom_apply_warnings(trader-drawing-appearance-test)
+    umicom_apply_sanitizers(trader-drawing-appearance-test)
+    foreach(case save restore retained)
+        add_test(NAME "trader.drawing_appearance.${case}" COMMAND trader-drawing-appearance-test "${case}")
+        set_tests_properties("trader.drawing_appearance.${case}" PROPERTIES
+            TIMEOUT 90 SKIP_RETURN_CODE 77 LABELS "trader;chart;gtk4;regression")
+    endforeach()
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(trader-drawing-appearance-test)
+    endif()
+endif()
+install(FILES docs/DRAWING_APPEARANCE.md
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# Qualify the real native chart and public product facade together.
+if(BUILD_TESTING AND TARGET Umicom::trader_gtk)
+    add_executable(trader-chart-timeframes-test tests/test_chart_timeframes.c)
+    target_link_libraries(trader-chart-timeframes-test PRIVATE Umicom::trader_gtk)
+    umicom_apply_warnings(trader-chart-timeframes-test)
+    umicom_apply_sanitizers(trader-chart-timeframes-test)
+    foreach(case save restore invalid retained)
+        add_test(NAME "trader.chart_timeframe.${case}" COMMAND trader-chart-timeframes-test "${case}")
+        set_tests_properties("trader.chart_timeframe.${case}" PROPERTIES
+            TIMEOUT 90 SKIP_RETURN_CODE 77 LABELS "trader;chart;gtk4;regression")
+    endforeach()
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(trader-chart-timeframes-test)
+    endif()
+endif()
+install(FILES docs/CHART_TIMEFRAMES.md DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# Product qualification uses the real chart controls and borrowed test storage.
+if(BUILD_TESTING AND TARGET Umicom::trader_gtk)
+    add_executable(trader-drawing-history-test tests/test_drawing_history.c)
+    target_link_libraries(trader-drawing-history-test PRIVATE Umicom::trader_gtk)
+    umicom_apply_warnings(trader-drawing-history-test)
+    umicom_apply_sanitizers(trader-drawing-history-test)
+    foreach(case facade native restore retained)
+        add_test(NAME "trader.drawing_history.${case}" COMMAND trader-drawing-history-test "${case}")
+        set_tests_properties("trader.drawing_history.${case}" PROPERTIES
+            TIMEOUT 90 SKIP_RETURN_CODE 77 LABELS "trader;chart;gtk4;regression")
+    endforeach()
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(trader-drawing-history-test)
+    endif()
+endif()
+install(FILES docs/DRAWING_HISTORY.md
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)

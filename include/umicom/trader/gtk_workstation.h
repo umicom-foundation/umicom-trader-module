@@ -30,6 +30,11 @@
 #include "umicom/trader/runtime.h"
 #include "umicom/trading_ui/gtk4/trading_suite_workstation.h"
 
+#include "umicom/trading/order_csv.h"
+#include "umicom/trading/session_report.h"
+
+#include "umicom/chart/drawing_history.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -203,6 +208,41 @@ UmiStatus umi_trader_gtk_workstation_review_order(UmiTraderGtkWorkstation *works
 
 /* Use Framework-owned profile-specific layout persistence after local sign-in. */
 UmiStatus UmiTraderGtkEnableProfileStorage(UmiTraderGtkWorkstation *workstation, const char *profile, int restore_saved);
+
+/* Capture the applied order query through Framework. Caller destroys the
+ * returned document. No broker request or selection change occurs. */
+UmiStatus UmiTraderGtkExportOrdersCsv(UmiTraderGtkWorkstation *workstation,
+    UmiCsvDocument **outDocument);
+
+/* Chart persistence delegates to Framework. The server is borrowed until
+ * unbound or the workstation closes. These synchronous GTK-owner-thread calls
+ * never submit orders. Preview returns the identity required by Restore. */
+UmiStatus UmiTraderGtkBindChartStorage(UmiTraderGtkWorkstation *workstation,
+    UmiDataServer *server, const char *scope);
+UmiStatus UmiTraderGtkSaveChart(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentId, uint64_t savedAtMs, UmiChartCheckpointReport *outReport);
+/* Thin product access to per-instrument chart timeframes. No orders are sent.
+ * Supported fixed durations are source=0, 1m, 5m, 15m, 1h, 4h and 1d UTC. */
+UmiStatus UmiTraderGtkSetChartTimeframe(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentId, uint32_t intervalMs);
+UmiStatus UmiTraderGtkGetChartTimeframe(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentId, uint32_t *outIntervalMs);
+UmiStatus UmiTraderGtkPreviewChart(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentId, UmiTradingChartPreview *outPreview);
+UmiStatus UmiTraderGtkRestoreChart(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentId, uint64_t previewId);
+
+/* Copy session evidence through the canonical Framework owner. The report is
+ * independent of the workstation lifetime and must be destroyed by its caller.
+ * The instrument filter does not change chart or order selection. */
+UmiStatus UmiTraderGtkCaptureSessionReport(UmiTraderGtkWorkstation *workstation,
+    const char *instrumentFilter, UmiTradingSessionReport **outReport);
+
+/* Drawing-only history delegates to Framework; revision must come from the
+ * displayed snapshot. Restore starts a new history; save retains the current one. */
+UmiStatus UmiTraderGtkDrawingHistory(UmiTraderGtkWorkstation *workstation, UmiChartDrawingHistorySnapshot *out);
+UmiStatus UmiTraderGtkUndoDrawing(UmiTraderGtkWorkstation *workstation, const char *instrument, uint64_t expectedRevision);
+UmiStatus UmiTraderGtkRedoDrawing(UmiTraderGtkWorkstation *workstation, const char *instrument, uint64_t expectedRevision);
 
 #ifdef __cplusplus
 }
