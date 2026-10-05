@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read subscribed IBKR quotes</title><style>
+body{font:17px/1.6 system-ui,sans-serif;max-width:960px;margin:3rem auto;padding:0 24px;color:#193341;background:#f8fbfc}
+h1,h2{line-height:1.25}h2{margin-top:2rem}pre{background:#eaf1f4;padding:18px;overflow:auto}code{font-family:Consolas,monospace}
+table{border-collapse:collapse;width:100%}td,th{padding:10px;border:1px solid #c8d7df;text-align:left;vertical-align:top}a{color:#075c89}
+</style></head><body><main>
+<h1>Read subscribed IBKR quotes</h1>
+<p>Trader's broker connection window can inspect a streaming bid, ask and last price for one explicitly identified contract. It uses Framework's read-only connection to a local TWS or IB Gateway session. Its values are separate from the simulation chart and order-entry models.</p>
+<h2>Connect and choose the contract</h2>
+<ol><li>Open and authenticate TWS or IB Gateway. Keep <strong>Read-Only API</strong> enabled and check the configured API port. Authentication stays in the provider's application.</li>
+<li>In Trader, choose <strong>Open Paper / Live broker connections</strong>. Select the intended environment and provider, check the port and choose a unique client ID. Live inspection also requires the displayed acknowledgement.</li>
+<li>Choose <strong>Connect read-only</strong> and wait for API readiness. Check the account and environment in TWS itself; a port number does not prove which login is active.</li>
+<li>In TWS, open <strong>Contract Description</strong> for the instrument. Copy its contract ID and exchange into the quote inspector. The contract ID identifies the exact security, including its asset and expiry where relevant. A ticker alone can be ambiguous.</li>
+<li>Choose <strong>Subscribe to quote</strong>. The inspector requests ordinary streaming subscribed data. It does not request a regulatory snapshot or automatically switch to a paid service. API market-data permissions still depend on the provider session. See IBKR's <a href="https://www.interactivebrokers.com/docs/tws-api/doc/quick-start/requesting-market-data">market-data workflow</a>.</li>
+<li>Read the bid, ask, last price and their sizes. Each value shows its reported data type and local receipt age. Waiting means no supported observation has arrived for that field.</li>
+<li>Choose <strong>Cancel quote stream</strong> before inspecting another contract. Cancellation stops market data only. It cannot cancel an order. Disconnecting or closing the window closes the socket.</li></ol>
+<h2>Understand the evidence</h2>
+<table><tr><th>Label</th><th>Meaning</th></tr>
+<tr><td>Real-time</td><td>The provider reported the real-time data type. This is still a received observation, not a guarantee of an executable price.</td></tr>
+<tr><td>Frozen, delayed, delayed frozen</td><td>These provider types remain visible and are never silently relabelled real-time. The inspector requests subscribed real-time data; it does not enable a delayed fallback itself.</td></tr>
+<tr><td>Unconfirmed</td><td>The provider type has not been established. The observation remains stale until a compatible newly received value establishes its type.</td></tr>
+<tr><td>STALE</td><td>The value is more than 15 seconds old, missing, unavailable, associated with another data type, cancelled, failed or disconnected. An unchanged market can produce no new tick; the label describes observation age.</td></tr>
+<tr><td>Unavailable</td><td>The provider sent a missing-value sentinel. It is not presented as a usable price. A negative price with a nonzero size remains an observation.</td></tr></table>
+<p>Receipt time is measured on this computer. It is not an exchange timestamp. Bid and ask arrive independently: a new ask does not make an old bid fresh. Decimal text is retained without converting it into rounded binary money.</p>
+<h2>If no quote arrives</h2>
+<p>Check the exact contract ID and exchange, market hours, the TWS login and its API market-data permissions. A quote-specific refusal appears in the quote panel while account observations remain available. Cancel the failed subscription and correct the cause before trying again. Global connection failures require reconnecting.</p>
+<p>The current native C connection negotiates the legacy framed protocol supported by the component; it does not decode the newer protobuf protocol. Authenticated provider compatibility and subscribed-data behaviour need local acceptance. The inspector currently shows one contract; Framework can own up to 16 subscriptions for future watchlist consumers. There is no contract search, historical candle loading, automatic rerouting, chart feed or order transmission in this inspector.</p>
+<p>IBKR explains contract identity in <a href="https://www.interactivebrokers.com/campus/trading-lessons/defining-contracts-in-the-tws-api/">Defining contracts</a>. Use the provider's actual contract description rather than a sample identifier from a tutorial.</p>
+</main><footer><p>Umicom Foundation · Sammy Hegab · MIT</p></footer></body></html>

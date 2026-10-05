@@ -532,3 +532,54 @@ if(BUILD_TESTING AND TARGET Umicom::trader_gtk)
 endif()
 install(FILES docs/DRAWING_HISTORY.md
     DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# The thin product must consume the real Framework session codec and preserve
+# its active value when imported data is damaged or its review is stale.
+if(BUILD_TESTING)
+    add_executable(umicom-trader-session-transfer-test tests/test_session_transfer.c)
+    target_link_libraries(umicom-trader-session-transfer-test PRIVATE Umicom::trader_module)
+    umicom_apply_warnings(umicom-trader-session-transfer-test)
+    umicom_apply_sanitizers(umicom-trader-session-transfer-test)
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(umicom-trader-session-transfer-test)
+    endif()
+    add_test(NAME trader.workspace.session_transfer COMMAND umicom-trader-session-transfer-test)
+    set_tests_properties(trader.workspace.session_transfer PROPERTIES
+        TIMEOUT 60 LABELS "trader;workspace;value-archive;regression")
+endif()
+
+install(FILES docs/WORKSPACE_SESSION_EXCHANGE.html DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# Exercise the product identity boundary against the shared transaction owner.
+if(BUILD_TESTING)
+    add_executable(umicom_trader_module-context-review-test tests/test_context_review.c)
+    target_link_libraries(umicom_trader_module-context-review-test PRIVATE umicom_trader_module)
+    umicom_apply_warnings(umicom_trader_module-context-review-test)
+    umicom_apply_sanitizers(umicom_trader_module-context-review-test)
+    foreach(context_case publication stale foreign clear divergent_ui)
+        add_test(NAME trader.context_review.${context_case}
+            COMMAND umicom_trader_module-context-review-test ${context_case})
+        set_tests_properties(trader.context_review.${context_case} PROPERTIES
+            LABELS "application;context-review;trader")
+    endforeach()
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(umicom_trader_module-context-review-test)
+    endif()
+endif()
+
+# Verify the product host stores exact coordinates through shared chart persistence.
+if(BUILD_TESTING AND TARGET Umicom::trader_gtk)
+    add_executable(trader-drawing-coordinates-test tests/test_drawing_coordinates.c)
+    target_link_libraries(trader-drawing-coordinates-test PRIVATE Umicom::trader_gtk)
+    umicom_apply_warnings(trader-drawing-coordinates-test)
+    umicom_apply_sanitizers(trader-drawing-coordinates-test)
+    foreach(case save restore invalid retained)
+        add_test(NAME trader.drawing_coordinates.${case} COMMAND trader-drawing-coordinates-test ${case})
+        set_tests_properties(trader.drawing_coordinates.${case} PROPERTIES
+            TIMEOUT 90 SKIP_RETURN_CODE 77 LABELS "trader;chart;gtk4;regression")
+    endforeach()
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(trader-drawing-coordinates-test)
+    endif()
+endif()
+install(FILES docs/DRAWING_COORDINATES.html DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)

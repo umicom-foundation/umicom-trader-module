@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- Sammy Hegab, Umicom Foundation. Licensed under MIT. -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Set exact chart drawing coordinates</title><style>body{font:17px/1.6 system-ui,sans-serif;max-width:900px;margin:2rem auto;padding:0 1.5rem;color:#172337}h1,h2{line-height:1.25}code,pre{background:#eef2f6}pre{padding:1rem;overflow:auto}li{margin:.6rem 0}table{border-collapse:collapse;width:100%}th,td{padding:.6rem;border:1px solid #cbd5e1;text-align:left;vertical-align:top}</style></head><body>
+<h1>Set exact chart drawing coordinates</h1>
+
+<p>Use the chart's Drawing coordinates section when dragging is not precise enough. You can edit the anchors of a trend line, ray, range or zone, or set an exact support or resistance price. An anchor is a point defined by its time and price.</p>
+<h2>Edit a selected drawing</h2>
+<ol><li>Open the instrument's chart and select a drawing in its object list.</li>
+<li>Expand <strong>Drawing coordinates</strong> and select <strong>Load coordinates</strong>. This copies the selected drawing's current values into the form.</li>
+<li>Edit the first anchor's time and price. For a line, ray, range or zone, edit the second anchor as needed. Support and resistance use a single level; their second price follows the first, their existing second timestamp is retained, and the second-anchor fields are disabled.</li>
+<li>Select <strong>Apply coordinates</strong>. A changed drawing creates one drawing Undo step. Applying identical coordinates leaves history unchanged.</li>
+<li>Inspect the result. Use drawing Undo if needed. Select <strong>Save chart</strong> separately when you want to store the current chart using the configured chart storage.</li></ol>
+<h2>Enter time and price</h2>
+<p>Time fields use whole milliseconds since 1 January 1970 at 00:00 UTC. They accept nonnegative decimal digits only. Keep the loaded timestamp when you only want to adjust a price. Adding 60,000 milliseconds moves an anchor forward by one minute. The form keeps all timestamp digits instead of converting them through a floating-point spin control.</p>
+<p>Prices use a decimal point, such as <code>102.5</code>. Scientific notation such as <code>1.025e2</code> means the same value. Do not include currency symbols, grouping commas or spaces. Non-finite values and values outside the supported numeric range are rejected. Loading and applying normal finite values uses enough decimal digits to preserve the stored value.</p>
+<p>Lines and rays need different anchor times. Boxes also need different prices so they have visible area. Drawing coordinates describe chart annotations; applying them does not submit orders, change an order draft or arm live trading.</p>
+<h2>Recover from a rejected edit</h2>
+<table><thead><tr><th>Message or situation</th><th>What to do</th></tr></thead><tbody>
+<tr><td>The selection, drawing or lock changed.</td><td>Review the selected object and choose Load coordinates again. Your typed fields remain visible until you reload; copy any values you still need first.</td></tr>
+<tr><td>The drawing is locked.</td><td>Unlock it through the existing object controls, then load its coordinates again.</td></tr>
+<tr><td>A number is rejected.</td><td>Check for spaces, commas, signs in the time field, or an out-of-range number. A rejected edit leaves the drawing unchanged.</td></tr>
+<tr><td>Coordinates form a flat or zero-width box.</td><td>Use distinct time and price anchors, then apply again.</td></tr>
+<tr><td>The instrument changed while editing.</td><td>Select the intended instrument and drawing, then reload. An old form cannot redirect an edit to another instrument.</td></tr>
+</tbody></table>
+<p>Normal chart refreshes preserve typed fields. Selecting another object does not automatically load it: the explicit Load step makes the object being edited clear. Save and restore keep their existing chart-storage workflow.</p>
+<h2>For contributors</h2>
+<p>The controls live in Framework's interactive chart adapter. They delegate to <code>UmiTradingWorkspaceMoveChartDrawing</code>, which checks drawing and instrument identity and records the existing drawing history transaction. Trader hosts the shared control and storage facade. Extend that shared operation when adding geometry rules so mouse movement and exact entry keep the same behavior.</p>
+</body></html>

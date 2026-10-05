@@ -16,6 +16,7 @@
 #ifndef UMICOM_TRADER_GTK_WORKSTATION_H
 #define UMICOM_TRADER_GTK_WORKSTATION_H 
 
+#include "umicom/ui/workspace_library_exchange.h"
 #include <stddef.h>
 
 #include <stdint.h>
@@ -243,6 +244,26 @@ UmiStatus UmiTraderGtkCaptureSessionReport(UmiTraderGtkWorkstation *workstation,
 UmiStatus UmiTraderGtkDrawingHistory(UmiTraderGtkWorkstation *workstation, UmiChartDrawingHistorySnapshot *out);
 UmiStatus UmiTraderGtkUndoDrawing(UmiTraderGtkWorkstation *workstation, const char *instrument, uint64_t expectedRevision);
 UmiStatus UmiTraderGtkRedoDrawing(UmiTraderGtkWorkstation *workstation, const char *instrument, uint64_t expectedRevision);
+
+/* Portable library exchange uses the same owner and scope as the native
+ * Layout Library. Review owns copied bytes; apply refuses a stale workspace.
+ * Calls run on the GTK owner thread. They never save storage or place orders.
+ * The caller destroys the review after apply or cancellation. */
+UmiStatus umi_trader_gtk_workstation_library_export(
+    UmiTraderGtkWorkstation *workstation, char *bytes, size_t capacity, size_t *out_size);
+UmiStatus umi_trader_gtk_workstation_library_import_review(
+    UmiTraderGtkWorkstation *workstation, const void *bytes, size_t size, UmiUiWorkspaceLibraryImport **out_review);
+UmiStatus umi_trader_gtk_workstation_library_import_apply(
+    UmiTraderGtkWorkstation *workstation, const UmiUiWorkspaceLibraryImport *review);
+
+/* Layout recovery stays with Framework. This owner-thread call neither
+ * saves product data nor runs a trade, payment or project command. */
+UmiStatus umi_trader_gtk_workstation_library_history_read(UmiTraderGtkWorkstation *workstation,
+    UmiUiWorkspaceLibraryHistoryState *out_state);
+/* Layout recovery stays with Framework. This owner-thread call neither
+ * saves product data nor runs a trade, payment or project command. */
+UmiStatus umi_trader_gtk_workstation_library_history_navigate(UmiTraderGtkWorkstation *workstation,
+    UmiUiWorkspaceLibraryHistoryDirection direction, uint64_t expected_revision);
 
 #ifdef __cplusplus
 }

@@ -134,6 +134,79 @@ cleanup:
     return failed;
 }
 
+/* Product import uses the existing native publisher. An earlier review is
+ * refused after a rename, while a fresh review restores the exported list.
+ * The enclosing test checks that order/execution/account observations survive. */
+static int VerifyPortableLibrary(UmiTraderGtkWorkstation *workstation, GtkWidget *popover)
+{
+    UmiUiWorkspaceLibrarySnapshot original, renamed, restored;
+    UmiUiWorkspaceLibraryImport *review = NULL;
+    char *bytes = NULL;
+    size_t size = 0U;
+    int failed = 0;
+    CHECK(Find(popover, "workstation.layout-library.export") != NULL);
+    CHECK(Find(popover, "workstation.layout-library.import") != NULL);
+    CHECK(Find(popover, "workstation.layout-library.import-details") != NULL);
+    CHECK(umi_trader_gtk_workstation_library_snapshot(workstation, &original) == UMI_STATUS_OK);
+    CHECK(original.layout_count != 0U);
+    CHECK(umi_trader_gtk_workstation_library_export(workstation, NULL, 0U, &size) == UMI_STATUS_OK);
+    bytes = g_try_malloc(size + 1U); CHECK(bytes != NULL);
+    CHECK(umi_trader_gtk_workstation_library_export(workstation, bytes, size + 1U, &size) == UMI_STATUS_OK);
+    CHECK(umi_trader_gtk_workstation_library_import_review(workstation, bytes, size, &review) == UMI_STATUS_OK);
+    UmiUiWorkspaceLibraryRequest rename = {UMI_UI_WORKSPACE_LIBRARY_RENAME,
+        original.rows[0].layout_id, NULL, "Layout changed after review", original.customisation_revision, false};
+    CHECK(umi_trader_gtk_workstation_library_apply(workstation, &rename) == UMI_STATUS_OK);
+    CHECK(umi_trader_gtk_workstation_library_snapshot(workstation, &renamed) == UMI_STATUS_OK);
+    CHECK(umi_trader_gtk_workstation_library_import_apply(workstation, review) == UMI_STATUS_INVALID_STATE);
+    CHECK(umi_trader_gtk_workstation_library_snapshot(workstation, &restored) == UMI_STATUS_OK);
+    CHECK(restored.customisation_revision == renamed.customisation_revision);
+    CHECK(strcmp(restored.rows[0].name, renamed.rows[0].name) == 0);
+    umi_ui_workspace_library_import_destroy(review); review = NULL;
+    CHECK(umi_trader_gtk_workstation_library_import_review(workstation, bytes, size, &review) == UMI_STATUS_OK);
+    /* Product reviews expose Framework's copied geometry while retaining
+     * the product's existing publisher and document/business state checks. */
+    CHECK(umi_ui_workspace_library_import_layout_count(review, true) == original.layout_count);
+    for (size_t index = 0U; index < original.layout_count; ++index) {
+        const UmiUiWorkspaceLayout *before = umi_ui_workspace_library_import_layout(review, false, index);
+        const UmiUiWorkspaceLayout *after = umi_ui_workspace_library_import_layout(review, true, index);
+        CHECK(before && after && !strcmp(after->layout_id, original.rows[index].layout_id));
+        CHECK(!strcmp(before->name, renamed.rows[index].name));
+        CHECK(!strcmp(after->name, original.rows[index].name));
+        CHECK(after->window_count == original.rows[index].window_count);
+    }
+    bytes[0] = '!';
+    CHECK(umi_trader_gtk_workstation_library_import_apply(workstation, review) == UMI_STATUS_OK);
+    CHECK(umi_trader_gtk_workstation_library_snapshot(workstation, &restored) == UMI_STATUS_OK);
+    CHECK(restored.layout_count == original.layout_count && restored.customisation_revision == renamed.customisation_revision + 1U);
+    for (size_t index = 0U; index < original.layout_count; ++index) {
+        CHECK(strcmp(restored.rows[index].layout_id, original.rows[index].layout_id) == 0);
+        CHECK(strcmp(restored.rows[index].name, original.rows[index].name) == 0);
+        CHECK(restored.rows[index].active == original.rows[index].active);
+        CHECK(restored.rows[index].window_count == original.rows[index].window_count);
+    }
+    /* Undo the imported arrangement, then redo it through the real button.
+     * The surrounding fixture verifies document/trading state remains intact. */
+    UmiUiWorkspaceLibraryHistoryState history;
+    CHECK(umi_trader_gtk_workstation_library_history_read(workstation, &history) == UMI_STATUS_OK);
+    CHECK(history.undo_count != 0U && history.redo_count == 0U && !history.stale);
+    CHECK(umi_trader_gtk_workstation_library_history_navigate(workstation, UMI_UI_WORKSPACE_LIBRARY_HISTORY_UNDO,
+        renamed.customisation_revision) == UMI_STATUS_INVALID_STATE);
+    GtkWidget *undo = Find(popover, "workstation.layout-library.undo");
+    GtkWidget *redo = Find(popover, "workstation.layout-library.redo");
+    CHECK(GTK_IS_BUTTON(undo) && GTK_IS_BUTTON(redo) && gtk_widget_get_sensitive(undo));
+    g_signal_emit_by_name(undo, "clicked"); Drain();
+    CHECK(umi_trader_gtk_workstation_library_snapshot(workstation, &restored) == UMI_STATUS_OK);
+    CHECK(strcmp(restored.rows[0].name, renamed.rows[0].name) == 0);
+    CHECK(gtk_widget_get_sensitive(redo));
+    g_signal_emit_by_name(redo, "clicked"); Drain();
+    CHECK(umi_trader_gtk_workstation_library_snapshot(workstation, &restored) == UMI_STATUS_OK);
+    CHECK(strcmp(restored.rows[0].name, original.rows[0].name) == 0);
+    CHECK(umi_trader_gtk_workstation_library_history_read(workstation, &history) == UMI_STATUS_OK && history.redo_count == 0U);
+
+cleanup:
+    umi_ui_workspace_library_import_destroy(review); g_free(bytes); return failed;
+}
+
 int main(void)
 {
     UmiTraderGtkWorkstation *workstation = NULL;
@@ -238,6 +311,7 @@ int main(void)
     CHECK(!gtk_check_button_get_active(GTK_CHECK_BUTTON(confirm)));
     CHECK(VerifyAutomaticLayoutCopy(workstation, popover) == 0);
     CHECK(VerifyKeyboardLayouts(workstation, popover) == 0);
+    CHECK(VerifyPortableLibrary(workstation, popover) == 0);
     CHECK(umi_trader_gtk_workstation_trading_snapshot(workstation, &trading_after) == UMI_STATUS_OK);
     CHECK(trading_after.environment == trading_before.environment && trading_after.live_armed == trading_before.live_armed);
     CHECK(trading_after.order_count == trading_before.order_count && trading_after.execution_count == trading_before.execution_count);

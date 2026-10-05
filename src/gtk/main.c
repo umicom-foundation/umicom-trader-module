@@ -14,6 +14,7 @@
  * LICENCE:
  * MIT
  *---------------------------------------------------------------------------*/
+#include "umicom/ui/gtk4/cash_plan.h"
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include "umicom/security/gtk4/local_profile_gate.h"
@@ -263,6 +264,9 @@ static UmiStatus open_profile_workspace(void *data, const char *profile)
     gtk_widget_set_margin_start(label,12); gtk_widget_set_margin_end(label,12);
     gtk_widget_set_tooltip_text(label,"Local profile identity. Broker connection state is shown separately. Save layouts before closing.");
     gtk_box_append(GTK_BOX(host),label); gtk_widget_set_vexpand(content,TRUE); gtk_box_append(GTK_BOX(host),content);
+    /* Cash assumptions use the shared planner. This does not draw buying power
+     * from the broker or turn a projection into an order or payment. */
+    gtk_box_prepend(GTK_BOX(host),UmiGtk4CashPlanLauncherCreate());
     gtk_window_set_child(state->window,host);
     /* Close the start window without its close-request callback cancelling the
      * successfully constructed workspace. The gate's worker holds its own ref. */

@@ -709,3 +709,45 @@ UmiStatus UmiTraderGtkRedoDrawing(UmiTraderGtkWorkstation *workstation, const ch
     if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
     return UmiTradingWorkspaceRedoDrawing(workstation->trading, instrument, expectedRevision);
 }
+
+/* Keep archive ownership and native publication in the shared layout host. */
+UmiStatus umi_trader_gtk_workstation_library_export(
+    UmiTraderGtkWorkstation *workstation, char *bytes, size_t capacity, size_t *out_size)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_library_export(workstation->framework_workstation, bytes, capacity, out_size);
+}
+
+/* Keep archive ownership and native publication in the shared layout host. */
+UmiStatus umi_trader_gtk_workstation_library_import_review(
+    UmiTraderGtkWorkstation *workstation, const void *bytes, size_t size, UmiUiWorkspaceLibraryImport **out_review)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_library_import_review(workstation->framework_workstation, bytes, size, out_review);
+}
+
+/* Keep archive ownership and native publication in the shared layout host. */
+UmiStatus umi_trader_gtk_workstation_library_import_apply(
+    UmiTraderGtkWorkstation *workstation, const UmiUiWorkspaceLibraryImport *review)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_library_import_apply(workstation->framework_workstation, review);
+}
+
+/* Layout recovery stays with Framework. This owner-thread call neither
+ * saves product data nor runs a trade, payment or project command. */
+UmiStatus umi_trader_gtk_workstation_library_history_read(UmiTraderGtkWorkstation *workstation,
+    UmiUiWorkspaceLibraryHistoryState *out_state)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_library_history_read(workstation->framework_workstation, out_state);
+}
+
+/* Layout recovery stays with Framework. This owner-thread call neither
+ * saves product data nor runs a trade, payment or project command. */
+UmiStatus umi_trader_gtk_workstation_library_history_navigate(UmiTraderGtkWorkstation *workstation,
+    UmiUiWorkspaceLibraryHistoryDirection direction, uint64_t expected_revision)
+{
+    if (workstation == NULL) return UMI_STATUS_INVALID_ARGUMENT;
+    return umi_gtk4_trading_suite_workstation_library_history_navigate(workstation->framework_workstation, direction, expected_revision);
+}
