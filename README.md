@@ -132,3 +132,108 @@ inspector for separate review and subscription. It does not request positions
 again, attest the Paper/Live environment, or place trades. Missing exchanges
 must be obtained from TWS Contract Description. These controls require
 Framework's GTK frontend. The full account display and CSV report stay unfiltered.
+
+
+### Full-quantity intent and local liquidity watches
+
+The Paper / Live broker connection window includes a full-quantity policy panel.
+It describes FOK or AON fields and can watch the subscribed quote for five minutes
+using your quantity, limit, optional size buffer and separate price/size freshness
+limits. Reaching the displayed threshold does not submit an order or establish
+that the contract and route support the instruction. Contract/route support stays
+unconfirmed, and minimum quantity is not used as a substitute for full execution.
+See the Framework guide at `docs/learning/full-quantity-orders.html` for the workflow
+and its limits. Shared Framework services own the policy and watch; Trader uses
+the existing connection window without a separate order engine.
+
+### Inspect the instrument behind a quote
+
+The IBKR connection window includes **Instrument description and route metadata**.
+Subscribe to the intended contract and exchange, then select **Read current quote's contract description**.
+Wait for the provider's end marker before treating the description as complete. The view shows identity,
+reported order types and exchanges, size increments, minimum tick and market-rule identifiers.
+These fields do not certify FOK or AON support. They do not change prices or submit orders.
+See Framework's [instrument inspection guide](../../framework/docs/learning/ibkr-contract-inspection.html)
+for the supported protocol range, response limits and recovery steps.
+
+After the description completes, expand **Route price bands and limit review** to retrieve the selected
+route's rule. The full-quantity limit is checked against the applicable price band's increment without
+rounding or changing the entered price. Captured rules are historical metadata; reconnect for a fresh
+capture. This review does not approve an order or establish FOK/AON support.
+
+Recent execution capture is also available in the broker connection window. It retains distinct reports, ignores exact replays and compares ordinary stock fills by permanent order ID, contract and side. See the Framework [execution review guide](../../framework/docs/learning/review-broker-executions.html) for the workflow and its limits. This observation does not submit orders or infer final order status.
+
+The execution view also displays matching commission reports and totals consistent exact fees in a single currency. Missing fees remain unavailable, and conflicting amounts retain their first and latest reported text for review. Consult the same execution guide for capture-window and correction limits.
+
+## Find instruments and inspect live broker observations
+
+The shared broker window includes symbol and company-name search, account or position P&L,
+and direct or SMART market-depth subscriptions. Each view retains its own request identity;
+cancelled or disconnected observations remain historical. Depth reset messages clear both sides
+before new entries are applied.
+
+Follow [Find instruments and read P&L and market depth](../../framework/docs/learning/broker-market-observations.html)
+for the controls, broker prerequisites, exact-decimal limits and recovery steps. These observation
+panels do not place orders, certify complete liquidity or guarantee full-quantity execution.
+
+## Recover currently open broker orders
+
+In the shared broker connection window, expand **Open orders and broker identity**
+and choose client-only or all-visible-client recovery. The report retains broker
+identities, contract/order summaries and cumulative status quantities. Duplicate
+callbacks do not create additional fills, and disconnected or old observations
+remain marked as historical.
+
+Follow [Recover and review broker orders](../../framework/docs/learning/recover-broker-orders.html)
+for connection settings, scope, timeout recovery and raw-field limits. This is a
+point-in-time observation workflow; it does not submit, bind, modify or cancel orders.
+
+## Review completed broker orders
+
+The shared broker window includes **Completed orders and execution review**.
+It retains the broker's final status, completion time, reported filled quantity
+and permanent order ID separately from the open-order capture. Matching stock
+executions can be compared with the reported filled quantity, while missing or
+inconsistent commission reports remain unavailable.
+
+Follow [Review completed orders and fills](../../framework/docs/learning/review-completed-orders.html)
+for capture scope, freshness, account selection and recovery. A completed order
+may have been cancelled after partial fills; this view does not imply that its
+original quantity traded or enable order submission.
+
+The same completed-order section can write a new local CSV report. Every row
+carries the capture scope and completeness/freshness flags. The report owns
+its bytes before the background write begins, and existing files are refused.
+
+
+The shared broker connection window also includes finite historical candlestick captures.
+Use the existing Contract ID and Exchange fields, open **Historical candlestick chart**,
+and request an intraday range. The zoom and pan controls explore the captured bars without
+another network request. This view is read-only and does not stream updates or place orders.
+See the Framework [historical chart guide](../../framework/docs/learning/broker-historical-charts.html)
+for supported intervals, request limits and recovery steps.
+
+### Streaming broker charts
+
+The shared broker workbench includes an explicit five-second bar subscription,
+a rolling candlestick view with zoom and pan, and an owned CSV export. It keeps
+up to 512 bars, reports discarded bars and time gaps, and clears stale charts.
+Cancellation and broker corrections retain the original observations for review.
+See Framework's docs/learning/broker-streaming-charts.html for the workflow,
+market-data requirements and current protocol limits.
+
+## Discover contracts with scanners and option chains
+
+The shared broker connection window includes a market scanner and option-chain browser.
+Start a scan with explicit market and filter settings, inspect its ranked contracts, and copy a selected
+contract ID into the quote controls. Quotes require a separate subscription.
+
+For options, request definitions for a resolved underlying, choose an expiry, strike and right,
+then resolve that candidate with the broker. Only a completed, unambiguous result can supply the
+option contract ID. Discovery does not place orders. Both panels can save a frozen CSV report with
+their completeness and stale-state flags.
+
+See [the discovery walkthrough](../../framework/docs/learning/broker-discovery.html) for the
+controls, storage bounds and recovery steps.
+
+The connection window also provides a searchable scanner parameter catalogue from TWS. It displays the broker's XML as read-only text, so you can inspect available scan codes, locations and generic filter names before entering a subscription. Read the catalogue once per connection; reconnect to refresh it.
