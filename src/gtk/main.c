@@ -18,6 +18,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include "umicom/security/gtk4/local_profile_gate.h"
+#include "umicom/security/local_profile_database.h"
 
 /* Framework owns the explicit read-only Paper/Live connection window. */
 #ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
@@ -230,6 +231,8 @@ static gboolean complete_startup(gpointer user_data)
 #endif
 /* The product chooses when to create its workstation. Authentication,
  * password handling and profile storage remain reusable Framework services. */
+/* The shared launchers let this application keep one compact toolbar. The earlier stacked wrappers are retained for review; all three tool workflows remain reachable. The previous implementation is retained for engineering review. */
+#if 0
 static UmiStatus open_profile_workspace(void *data, const char *profile)
 {
     UmiTraderGtkApplicationState *state = data;
@@ -274,7 +277,82 @@ static UmiStatus open_profile_workspace(void *data, const char *profile)
     UmiLocalProfileGateDestroy(state->profile_gate); state->profile_gate = NULL;
     return UMI_STATUS_OK;
 }
+#endif
+static UmiStatus open_profile_workspace(void *data, const char *profile)
+{
+    UmiTraderGtkApplicationState *state = data;
+    if (state->window == NULL || state->startup_window == NULL) return UMI_STATUS_CANCELLED;
+    UmiStatus status = umi_trader_gtk_workstation_create(&state->workstation);
+    if (status == UMI_STATUS_OK)
+        status = umi_trader_gtk_workstation_bind_window(state->workstation,state->window);
+    if (status != UMI_STATUS_OK) {
+        umi_trader_gtk_workstation_destroy(state->workstation); state->workstation = NULL; return status;
+    }
+    UmiStatus storage_status = profile[0] != '\0'
+        ? UmiTraderGtkEnableProfileStorage(state->workstation,profile,1)
+        : umi_trader_gtk_workstation_enable_checkpoint_storage(state->workstation,1);
+    if (storage_status != UMI_STATUS_OK)
+        (void)fprintf(stderr,"Layout storage unavailable: %s\n",umi_status_text(storage_status));
+    GtkWidget *content = umi_trader_gtk_workstation_widget(state->workstation);
+    if (content == NULL) {
+        umi_trader_gtk_workstation_destroy(state->workstation); state->workstation = NULL;
+        return UMI_STATUS_INTERNAL_ERROR;
+    }
+    /* Keep the chart at the centre of the workstation. Secondary tools share
+     * one horizontally scrollable row instead of consuming one full row each. */
+    GtkWidget *host = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *tools = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    gtk_widget_set_margin_start(tools, 12);
+    gtk_widget_set_margin_end(tools, 12);
+    gtk_widget_set_margin_top(tools, 4);
+    gtk_widget_set_margin_bottom(tools, 4);
+    char identity[160];
+    (void)snprintf(identity, sizeof(identity), "%s%s",
+        profile[0] != '\0' ? "Local profile: " : "",
+        profile[0] != '\0' ? profile : "Simulator without a profile");
+    GtkWidget *label = gtk_label_new(identity);
+    gtk_label_set_xalign(GTK_LABEL(label), 0.0F);
+    gtk_widget_set_tooltip_text(label,
+        "Local identity; broker connection state is shown separately.");
+    gtk_box_append(GTK_BOX(tools), label);
 #ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
+    GtkWidget *broker = UmiIbkrGtkLauncherCreate(state->window);
+    if (broker != NULL) {
+        gtk_button_set_label(GTK_BUTTON(broker), "Interactive Brokers");
+        gtk_box_append(GTK_BOX(tools), broker);
+    }
+#endif
+#ifdef UMICOM_HAS_MARKET_TAPE_GTK4
+    GtkWidget *tape = UmiMarketTapeGtkLauncherCreate(state->window);
+    if (tape != NULL) gtk_box_append(GTK_BOX(tools), tape);
+#endif
+    /* Cash assumptions are reviewed locally and never create an order or payment. */
+    gtk_box_append(GTK_BOX(tools), UmiGtk4CashPlanLauncherCreate());
+    GtkWidget *tool_scroll = gtk_scrolled_window_new();
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(tool_scroll),
+        GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER);
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(tool_scroll), tools);
+    gtk_box_append(GTK_BOX(host), tool_scroll);
+    gtk_widget_set_vexpand(content, TRUE);
+    gtk_box_append(GTK_BOX(host), content);
+    gtk_window_set_child(state->window,host);
+    /* Close the start window without its close-request callback cancelling the
+     * successfully constructed workspace. The gate's worker holds its own ref. */
+    finish_startup_window(state,0);
+    UmiLocalProfileGateDestroy(state->profile_gate); state->profile_gate = NULL;
+    return UMI_STATUS_OK;
+}
+#ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
+/* The welcome screen selects intent; Framework still requires the broker
+ * session and explicit connection before it reads any account information. */
+static void open_profile_broker_environment(void *data, int live)
+{
+    UmiTraderGtkApplicationState *state = data;
+    if (state->startup_window != NULL) {
+        GtkWindow *connection = UmiIbkrGtkCreateForEnvironment(state->startup_window, live);
+        if (connection != NULL) gtk_window_present(connection);
+    }
+}
 static void open_profile_broker(void *data)
 {
     UmiTraderGtkApplicationState *state = data;
@@ -296,14 +374,56 @@ static gboolean complete_startup(gpointer data)
 #ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
     config.open_broker = open_profile_broker;
 #endif
+/* Local account persistence now prefers the shared database adapter. The earlier native-only gate construction is retained for review. The previous implementation is retained for engineering review. */
+#if 0
     UmiStatus status = UmiLocalProfileGateCreate(&config,&state->profile_gate);
+#endif
+    /* Framework owns verification and persistence. The application chooses its
+     * private local data directory, which is never a source repository or broker
+     * credential cache. Existing vault profiles remain accessible. */
+    UmiLocalProfileStore *local_store = NULL;
+    char *profile_directory = g_build_filename(g_get_user_data_dir(), "umicom", "trader", NULL);
+    char *profile_database = g_build_filename(profile_directory, "local-accounts.sqlite", NULL);
+    UmiStatus database_status = g_mkdir_with_parents(profile_directory, 0700) == 0
+        ? UmiLocalProfileStoreDatabase(profile_database, config.application_id, &local_store)
+        : UMI_STATUS_IO_ERROR;
+    config.store = local_store;
+    UmiStatus status = UmiLocalProfileGateCreate(&config, &state->profile_gate);
+    UmiLocalProfileStoreRelease(local_store);
+    /* The established native store remains a visible fallback when SQLite is
+     * not built or cannot open. No password is ever written as plaintext. */
+    if (database_status != UMI_STATUS_OK)
+        (void)fprintf(stderr, "Local database unavailable; native profile storage will be used if available: %s\n",
+            umi_status_text(database_status));
+    g_free(profile_directory);
+    g_free(profile_database);
     if (status != UMI_STATUS_OK) {
         (void)umi_gtk4_ws_startup_splash_set_status(state->splash,"The local profile screen could not open.","Action required");
         finish_startup_window(state,1); return G_SOURCE_REMOVE;
     }
-    gtk_window_set_title(state->startup_window,"Umicom Trader — Local profile or Simulator");
+#ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
+    UmiLocalProfileGateSetBrokerEnvironmentAction(state->profile_gate, open_profile_broker_environment);
+#endif
+    /* Preserve the old title as a description of the supported offline path:
+     * "Umicom Trader — Local profile or Simulator". */
+    gtk_window_set_title(state->startup_window, "Umicom Trader — Sign in");
     (void)umi_gtk4_ws_window_fit(state->startup_window,720,780,480,360);
+/* The startup surface now explains whether local database persistence is available. The original single-widget composition is retained for review. The previous implementation is retained for engineering review. */
+#if 0
     gtk_window_set_child(state->startup_window,UmiLocalProfileGateWidget(state->profile_gate));
+#endif
+    GtkWidget *welcome = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *storage_note = gtk_label_new(database_status == UMI_STATUS_OK
+        ? "Local accounts are saved on this computer. Passwords are stored only as salted verifiers."
+        : "Local database unavailable. Existing secure native profile storage is used where supported.");
+    gtk_label_set_wrap(GTK_LABEL(storage_note), TRUE);
+    gtk_widget_set_margin_start(storage_note, 16);
+    gtk_widget_set_margin_end(storage_note, 16);
+    GtkWidget *gate_widget = UmiLocalProfileGateWidget(state->profile_gate);
+    gtk_widget_set_vexpand(gate_widget, TRUE);
+    gtk_box_append(GTK_BOX(welcome), gate_widget);
+    gtk_box_append(GTK_BOX(welcome), storage_note);
+    gtk_window_set_child(state->startup_window, welcome);
     umi_gtk4_ws_startup_splash_destroy(state->splash); state->splash = NULL;
     return G_SOURCE_REMOVE;
 }

@@ -7,12 +7,17 @@
  *---------------------------------------------------------------------------*/
 
 
+#include "umicom/ui/gtk4/automation.h"
 #include "umicom/trader/gtk_workstation.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #define CHECK(x) do { if (!(x)) { fprintf(stderr,"%s:%d: %s\n",__FILE__,__LINE__,#x);exit(1); } } while(0)
 #define OK(x) CHECK((x)==UMI_STATUS_OK)
+/* The rendered-child walk omitted controls owned by collapsed expanders. The shared bounded logical-tree lookup replaces it; retain the earlier traversal for review. */
+#if 0
+/* Rendered-child traversal missed controls owned by collapsed inspectors. The Framework logical lookup preserves those controls and rejects ambiguous identities. The original fixture traversal is retained for review. The previous implementation is retained for engineering review. */
+#if 0
 static GtkWidget *Find(GtkWidget *root,const char *id)
 {
     const char *tag=g_object_get_data(G_OBJECT(root),"umicom-automation-id");
@@ -21,6 +26,19 @@ static GtkWidget *Find(GtkWidget *root,const char *id)
         GtkWidget *found=Find(child,id);if(found!=NULL)return found;
     }
     return NULL;
+}
+#endif
+static GtkWidget *Find(GtkWidget *root,const char *id)
+{
+    /* Inspect logical children without expanding or activating a panel. */
+    return umi_gtk4_automation_find_tagged_widget(root, id);
+}
+#endif
+/* Use the Framework logical tree so a collapsed panel can be inspected
+ * without changing the user's layout or overlooking an ambiguous identifier. */
+static GtkWidget *Find(GtkWidget *root, const char *id)
+{
+    return umi_gtk4_automation_find_tagged_widget(root, id);
 }
 int main(void)
 {

@@ -583,3 +583,7 @@ if(BUILD_TESTING AND TARGET Umicom::trader_gtk)
     endif()
 endif()
 install(FILES docs/DRAWING_COORDINATES.html DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# Explain local account storage and the broker-owned authentication boundary.
+install(FILES docs/sign-in-and-broker-access.html
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/umicom/trader/docs")

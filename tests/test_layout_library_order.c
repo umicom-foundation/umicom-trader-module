@@ -5,6 +5,7 @@
  * AUTHOR AND ORGANISATION: Sammy Hegab, Umicom Foundation
  * LICENCE: MIT
  *---------------------------------------------------------------------------*/
+#include "umicom/ui/gtk4/automation.h"
 #include "umicom/trader/gtk_workstation.h"
 #include <stdio.h>
 #include <string.h>
@@ -12,6 +13,8 @@
 #define CHECK(x) do { if (!(x)) { fprintf(stderr, "%s:%d: %s\n", __FILE__, __LINE__, #x); failed = 1; goto cleanup; } } while (0)
 
 /* Locate the public automation tag on native controls, including popovers. */
+/* The chart inspector owns controls while collapsed. Shared logical lookup replaces the rendered-child walk, retained here for review. The previous implementation is retained for engineering review. */
+#if 0
 static GtkWidget *Find(GtkWidget *root, const char *id)
 {
     if (root == NULL) return NULL;
@@ -21,6 +24,12 @@ static GtkWidget *Find(GtkWidget *root, const char *id)
         if (found != NULL) return found;
     }
     return NULL;
+}
+#endif
+static GtkWidget *Find(GtkWidget *root, const char *id)
+{
+    /* Read controls owned by collapsed chart inspectors without changing layout. */
+    return umi_gtk4_automation_find_tagged_widget(root, id);
 }
 
 static void Drain(void)
