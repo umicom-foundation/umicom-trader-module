@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Saved route rules in Umicom Trader</title><style>body{max-width:860px;margin:2rem auto;padding:1rem;font:17px/1.6 system-ui;color:#162e42}</style></head><body>
+<h1>Review saved route rules in Umicom Trader</h1>
+<p>The broker inspector can read the JSON report produced by an IBKR stock route-rule checker. This adds evidence to a full-quantity policy review without changing the trading connection.</p>
+<ol><li>Open <strong>Paper / Live broker connections</strong>.</li>
+<li>Expand <strong>Full-quantity policy and local liquidity watch</strong>, then <strong>Saved contract and route rules</strong>.</li>
+<li>Browse to your saved JSON file and choose <strong>Import rule report</strong>. Select each route to see its raw TIF entries and order types.</li>
+<li>Select and subscribe to the intended quote in the inspector. Set the policy's side, quantity and limit, then press <strong>Review policy</strong> to compare the saved contract, side and route with that quote identity.</li>
+<li>Check the timestamp and currency yourself. A match means identity equality only. FOK advertisement is not proof of order acceptance, account permission, exchange enforcement or a particular commission.</li>
+<li>Use <strong>Clear imported report</strong> to remove the imported evidence from the panel.</li></ol>
+<p>Unknown flags remain uninterpreted. Missing or failed metadata stays inconclusive. No AON or minimum-fill support is inferred from size increments. Imported summary booleans cannot override the original rule lists.</p>
+<p>The file stays local and is read under explicit size and structure limits. The optional panel requires Framework's complete JSON service. If import fails, confirm that you selected the checker's complete report, not an authentication response or a raw endpoint response. Passwords and authenticator codes belong in IBKR's own login flow. This panel does not open the Client Portal Gateway, run a Python script, submit an order or enable live trading.</p>
+<p>The report reader is shared Framework code. Its source and regression coverage live with the broker-connectivity components, so other Umicom products can reuse the same interpretation.</p>
+<p><a href="https://www.interactivebrokers.com/docs/web-api/v1/endpoints/contract/search-contract-rules">IBKR contract-rules reference</a></p></body></html>

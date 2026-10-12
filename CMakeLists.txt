@@ -587,3 +587,36 @@ install(FILES docs/DRAWING_COORDINATES.html DESTINATION ${CMAKE_INSTALL_DATADIR}
 # Explain local account storage and the broker-owned authentication boundary.
 install(FILES docs/sign-in-and-broker-access.html
     DESTINATION "${CMAKE_INSTALL_DATADIR}/umicom/trader/docs")
+
+# Product acceptance exercises the shared chart through Trader's actual shell.
+if(BUILD_TESTING AND TARGET Umicom::trader_gtk)
+    add_executable(trader-candle-measurements-test tests/test_candle_measurements.c)
+    target_link_libraries(trader-candle-measurements-test PRIVATE Umicom::trader_gtk)
+    umicom_apply_warnings(trader-candle-measurements-test)
+    umicom_apply_sanitizers(trader-candle-measurements-test)
+    foreach(case visible clear timeframe retained)
+        add_test(NAME trader.candle_measurement.${case}
+            COMMAND trader-candle-measurements-test ${case})
+        set_tests_properties(trader.candle_measurement.${case} PROPERTIES
+            TIMEOUT 90 SKIP_RETURN_CODE 77 LABELS "trader;chart;gtk4;regression")
+    endforeach()
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(trader-candle-measurements-test)
+    endif()
+endif()
+
+# Keep chart analysis and original broker-report guidance with installed Trader.
+install(FILES docs/MEASURING_CHART_CANDLES.html docs/BROKER_REPORTS.html
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# Install the user workflow beside the product, keeping provider evidence separate from trading authority.
+install(FILES docs/CONTRACT_RULE_REPORTS.html DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# Keep the bank import and account-report workflow available after installation.
+install(FILES docs/BANK_AND_ACCOUNT_REPORTS.html
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+
+# Install the shared workflow explanation beside this product's existing guides.
+install(FILES docs/STATEMENT_RECONCILIATION.html
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)

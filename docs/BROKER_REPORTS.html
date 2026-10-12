@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saving broker reports in Umicom Trader</title>
+<style>body{font:18px/1.6 system-ui,sans-serif;max-width:900px;margin:3rem auto;padding:0 1.2rem;color:#172b3a}h1,h2{line-height:1.25}code{background:#edf2f6;padding:.15em .3em}li{margin:.65rem 0}</style></head><body>
+<h1>Saving broker reports in Umicom Trader</h1>
+<p>The Interactive Brokers connection window can save received observations as CSV files.
+CSV is a table format that you can inspect in a text editor or spreadsheet.
+Each report records the scope and completeness available when you select its export action.</p>
+<h2>Save a captured report</h2>
+<ol>
+<li>Open the broker connection window. Connect through your configured TWS or IB Gateway session
+and request the account or market information you want to inspect.</li>
+<li>Open the matching report section: account observations, completed orders, historical bars,
+streaming bars, scanner results or option definitions.</li>
+<li>Select <strong>Choose new location...</strong>. Choose a folder and a new filename.
+The selected absolute path appears in the field. You can also type it directly.</li>
+<li>Check the selected account, contract and request status, then select the section's
+<strong>Write</strong> report button.</li>
+<li>Wait for the report status to show success and the destination. Open that file using your preferred viewer.</li>
+</ol>
+<h2>Understand what was saved</h2>
+<p>Browsing for a filename does not contact Interactive Brokers, place orders, start subscriptions
+or write a report. The Write action captures the observations then available.
+Historical reports are historical data; streaming reports are a captured portion of the stream.
+Old or incomplete observations retain their flags.</p>
+<p>The completed-order report can contain multiple accounts in the captured request scope,
+even when a different account is selected elsewhere in the window. Account observations are
+separate provider responses and do not form an atomic portfolio or an official broker statement.
+Keep exported account files in a location you control.</p>
+<h2>Recover from a problem</h2>
+<ul>
+<li><strong>The chooser was cancelled:</strong> the path stays unchanged.</li>
+<li><strong>The path was edited while browsing:</strong> your newer text wins; choose again if necessary.</li>
+<li><strong>The filename already exists:</strong> choose another name. Reports never replace existing files.</li>
+<li><strong>The report could not be written:</strong> inspect any partial new file and retry with a new filename.
+A failure does not claim that all bytes reached storage.</li>
+<li><strong>The window was closed during a write:</strong> closing does not undo the write already requested.
+Inspect its destination before retrying.</li>
+</ul>
+<p>The connection inspector and these exports are read-only broker workflows. Exporting a report does not enable order transmission.</p>
+<section><h2>Read chart timestamp coverage</h2>
+<p>The historical and streaming chart summaries now describe the timestamps retained by the connection.
+A gap is a forward step longer than the requested bar interval. Unobserved intervals count the expected
+steps strictly between adjacent timestamps. Irregular steps are not exact multiples of the bar interval.
+Duplicate or backward steps are reported separately.</p>
+<ol><li>Connect through the existing Interactive Brokers workflow and request a historical capture or
+five-second streaming bars for a selected contract.</li>
+<li>Read the retained-coverage line beside the chart summary. For streaming data this covers only the
+rolling retained records, not all bars received earlier.</li>
+<li>Check the contract, requested interval, regular-hours choice and market session before interpreting a gap.
+The existing freshness and completion messages remain relevant.</li></ol>
+<p>Closed sessions and sparse trading can produce gaps. The counts do not prove a feed failure,
+request extra market data, fill missing candles or authorise trading. Exported broker records retain
+their reported values and order.</p></section>
+<section><h2>Inspect chart values</h2>
+<ol><li>Open a chart with retained observations and move the pointer across its price area.</li>
+<li>Read the data line below the toolbar. <strong>O</strong> is the opening price,
+<strong>H</strong> the highest price, <strong>L</strong> the lowest price and
+<strong>C</strong> the closing price. Volume is the value supplied for that candle.</li>
+<li>Read the candle time and the offset. The offset is the distance in milliseconds
+between the cursor time and the nearest visible candle's opening time.
+The line shows an observed candle; it does not estimate a trade between candles.</li>
+<li>Change the timeframe to inspect the same aggregated candles that the chart draws.
+Pan or zoom to limit selection to visible candles. Move outside the price plot
+to clear the observation.</li></ol>
+<p>The inspector uses a copy captured when the scene refreshes. A newly received bar
+appears at the next chart refresh. Zero reported volume stays zero. A gap between
+timestamps may represent closed sessions or sparse data; the inspector does not fill it.
+The last candle can still be forming.</p>
+<p>Other frontends can use <code>UmiChartCandleInspect</code> from
+<code>umicom/chart/candle_inspection.h</code> with <code>Umicom::chart</code>.
+Supply the captured candles and the visible range; check the returned status
+before using the copied observation. Duplicate timestamps and malformed values
+are rejected, and an empty range returns no observation. This read operation
+does not place, amend or cancel orders.</p></section>
+<section><h2>Review a selected price move</h2>
+<p>Historical and streaming chart summaries include measurements for the selected visible bars when their data is fresh. Adjust visible count and offset to compare another range. Missing volume is labelled unavailable; it is never silently replaced with a partial total. These measurements use display values and do not change the original broker report.</p>
+<p>The workspace Chart also supports a two-click captured measurement and copying its evidence. Read <a href="MEASURING_CHART_CANDLES.html">Measure candles in Umicom Trader</a> for both workflows and their limits.</p></section>
+</body></html>

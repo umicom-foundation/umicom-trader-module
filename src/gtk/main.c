@@ -15,6 +15,7 @@
  * MIT
  *---------------------------------------------------------------------------*/
 #include "umicom/ui/gtk4/cash_plan.h"
+#include "umicom/ui/gtk4/bank_feed.h"
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include "umicom/security/gtk4/local_profile_gate.h"
@@ -328,6 +329,9 @@ static UmiStatus open_profile_workspace(void *data, const char *profile)
 #endif
     /* Cash assumptions are reviewed locally and never create an order or payment. */
     gtk_box_append(GTK_BOX(tools), UmiGtk4CashPlanLauncherCreate());
+    /* Bank imports use Framework's private file review, shared with future
+     * finance applications; Trader owns only the launch location. */
+    gtk_box_append(GTK_BOX(tools), UmiBankFeedGtk4LauncherCreate());
     GtkWidget *tool_scroll = gtk_scrolled_window_new();
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(tool_scroll),
         GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER);

@@ -1,0 +1,24 @@
+<!doctype html>
+<!-- Umicom Trader | Sammy Hegab, Umicom Foundation | MIT -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Measure candles in Umicom Trader</title><style>body{font-family:system-ui,sans-serif;max-width:850px;margin:3rem auto;padding:0 1rem;line-height:1.65}h1,h2{line-height:1.2}</style></head><body>
+<h1>Measure candles in Umicom Trader</h1>
+<p>The Chart panel includes a captured measurement workflow supplied by Umicom Framework. Use it to inspect a price move and copy the observations behind the result.</p>
+<ol><li>Select an instrument, choose its timeframe and make the required candles visible.</li>
+<li>Choose <strong>M — Measure candles</strong> on the drawing rail, then click the first and last candles. Clicks snap to the nearest observed opening time.</li>
+<li>Read <strong>Candle measurement</strong>. It shows open, close, change, high, low, volume and the time between the first and last candle openings.</li>
+<li>For keyboard selection, expand the same section and use <strong>Measure visible</strong> or enter visible candle numbers and choose <strong>Measure rows</strong>.</li>
+<li>Choose <strong>Copy CSV</strong> to copy the summary and individual candles. Paste into an editor and save in your chosen folder.</li></ol>
+<h2>Keep captured and current prices distinct</h2><p>The first click copies the visible data. New provider updates do not alter the result. Capture again when you need newer observations. Completed measurements survive pan and zoom, while changing instrument or timeframe clears them. Escape cancels an unfinished selection; a changed chart projection also cancels it.</p>
+<p>This is analysis of chart observations. It neither changes an order nor enables brokerage access. Volume uses the provider's units, and a gap between candles does not prove missing feed data. The opening-time span excludes the final candle's duration. Percent change is unavailable for zero or negative starting prices.</p>
+<p>Measurements are temporary. <strong>Save chart</strong> saves the existing chart configuration and drawings, not this analysis. Use the CSV before closing.</p>
+<p>For calculations, limits, troubleshooting and contributor APIs, open the shared <strong>Measure chart candles</strong> guide. In an Applications checkout it is at <code>framework/docs/learning/measure-chart-candles.html</code>; in an installed distribution it is at <code>share/umicom/learning/measure-chart-candles.html</code> under the installation folder.</p>
+<h2>Measure the visible Interactive Brokers bars</h2>
+<ol><li>Open the Interactive Brokers connection window and connect through your configured TWS or IB Gateway session.</li>
+<li>Open <strong>Historical candlestick chart</strong> or the five-second streaming chart. Request observations for the resolved contract and route using the existing controls.</li>
+<li>Adjust the visible-bar count and offset. Read <strong>Visible-bar measurement</strong> in the summary. It describes precisely that selected range, rather than all retained rows.</li>
+<li>Compare open, close, high, low, price change and candle direction counts. A volume total appears only when every selected bar has a usable value. A genuine reported zero remains zero.</li>
+<li>Check the capture status and contract beside the result. The summary updates as the visible range or retained stream changes. Use the existing broker report export when you need the original reported decimal values.</li></ol>
+<p>These broker summaries require a fresh observation according to the connection panel's age limit; a historical response must also be complete. Stale, cancelled or disconnected observations do not receive a new measurement. Response freshness does not establish current market activity, and a complete response can include a final candle that is still forming.</p>
+<p>The broker summary uses floating-point display values. Unrepresentable price decimals leave it unavailable; missing or unrepresentable volume leaves the total unavailable while valid price measurements remain visible. It cannot replace exact-decimal order calculations. The two-click measurement and its Copy CSV action belong to the separate workspace Chart panel.</p>
+</body></html>

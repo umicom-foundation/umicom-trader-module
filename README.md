@@ -237,3 +237,20 @@ See [the discovery walkthrough](../../framework/docs/learning/broker-discovery.h
 controls, storage bounds and recovery steps.
 
 The connection window also provides a searchable scanner parameter catalogue from TWS. It displays the broker's XML as read-only text, so you can inspect available scan codes, locations and generic filter names before entering a subscription. Read the catalogue once per connection; reconnect to refresh it.
+
+## Measure a chart interval
+
+[Measure chart candles](docs/MEASURING_CHART_CANDLES.html) explains two-point and keyboard selection, captured price and volume statistics, and copying the underlying observations as CSV. Measurements use shared Framework services and do not change orders.
+
+Saved IBKR route-rule reports can be reviewed in the broker inspector. See [Review saved route rules](docs/CONTRACT_RULE_REPORTS.html) for import, identity comparison and interpretation limits.
+
+The [bank and account report guide](docs/BANK_AND_ACCOUNT_REPORTS.html) explains local Open Banking transaction review and selectable TWS account reports. Live bank authentication is not provided by the file importer.
+
+
+### Statement balance comparison
+Open **Bank transaction reports**, import a saved Open Banking JSON response,
+select an account and currency, then choose **Reconcile selected account**.
+The shared Framework review compares dated booked activity with opening and
+closing balances you supply. Pending entries remain separate, and edits
+invalidate the previous export. This does not connect to a bank or post money.
+See [the statement review guide](docs/STATEMENT_RECONCILIATION.html).
