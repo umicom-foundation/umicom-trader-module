@@ -1,0 +1,51 @@
+# Keep generated output separate from source so this module can be built on its
+# own or inside a parent application. Root-anchored paths avoid hiding source
+# fixtures that happen to use names such as build, testing or data.
+/build/
+/build-*/
+/build_*/
+/cmake-build-*/
+/out/
+/dist/
+/install/
+/_CPack_Packages/
+/CMakeFiles/
+/CMakeCache.txt
+/CTestTestfile.cmake
+/Testing/
+/build.ninja
+/rules.ninja
+/.ninja_deps
+/.ninja_log
+/cmake_install.cmake
+/install_manifest.txt
+/compile_commands.json
+
+# These files describe one workstation, not the shared project configuration.
+# CMakePresets.json remains tracked; only its user-specific companion is local.
+/CMakeUserPresets.json
+/.cache/
+/.clangd/
+/.vs/
+/.vscode/*.local.json
+/.idea/workspace.xml
+/.idea/shelf/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# Keep credentials and runtime state in explicit local locations. Synthetic test
+# fixtures elsewhere in the repository remain visible for review and publication.
+/.umicom/
+/runtime/
+/secrets/
+/local-only/
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+!.env.dist
