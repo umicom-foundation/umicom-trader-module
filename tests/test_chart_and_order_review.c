@@ -38,6 +38,14 @@ int main(void)
     UmiTraderGtkWorkstation *workstation = NULL;
     CHECK(umi_trader_gtk_workstation_create(&workstation) == UMI_STATUS_OK);
     GtkWidget *root = umi_trader_gtk_workstation_widget(workstation);
+    /* The chart's public click boundary refuses detached widget trees.
+     * Host the genuine product widget in a native window before simulating
+     * input, matching the established Framework chart-checkpoint fixture. */
+    GtkWidget *host = gtk_window_new();
+    CHECK(host != NULL);
+    g_object_ref_sink(host);
+    gtk_window_set_child(GTK_WINDOW(host), root);
+    CHECK(gtk_widget_get_root(root) == GTK_ROOT(host));
     const char *ids[] = {"trading.chart.canvas", "trading.chart.zoom-in", "trading.chart.zoom-out", "trading.chart.fit",
         "trading.chart.trend", "trading.chart.support", "trading.chart.resistance", "trading.chart.buy-limit", "trading.chart.sell-limit",
         "trading.chart.drawings", "trading.orders.search", "trading.orders.review"};
@@ -147,5 +155,16 @@ int main(void)
 #endif
     /* Current: one manifest and four drawings. Previous: one and three. */
     CHECK(umi_data_server_count(chart_server) == 9U); umi_data_server_destroy(chart_server);
+    /* Superseded: detached fixture cleanup had no native host to release.
+     * The original owner-before-return sequence is retained for review. */
+#if 0
     free(review); umi_trader_gtk_workstation_destroy(workstation); return 0;
+#endif
+    free(review);
+    /* Stop product and Framework callbacks before releasing the GTK window,
+     * whose child may still be retained by the native application shell. */
+    umi_trader_gtk_workstation_destroy(workstation);
+    gtk_window_destroy(GTK_WINDOW(host));
+    g_object_unref(host);
+    return 0;
 }
