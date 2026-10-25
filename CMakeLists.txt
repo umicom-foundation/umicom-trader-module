@@ -620,3 +620,34 @@ install(FILES docs/BANK_AND_ACCOUNT_REPORTS.html
 # Install the shared workflow explanation beside this product's existing guides.
 install(FILES docs/STATEMENT_RECONCILIATION.html
     DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)
+
+# Use the shared synthetic financial-message workflow; older SDKs retain the
+# original console and report an unavailable optional command explicitly.
+if(TARGET umicom-trader-console AND TARGET Umicom::finance)
+    target_link_libraries(umicom-trader-console PRIVATE Umicom::finance)
+    get_target_property(_trader_ufmp_definitions Umicom::finance INTERFACE_COMPILE_DEFINITIONS)
+    if(BUILD_TESTING AND "UMICOM_HAS_UFMP_FOUNDATION=1" IN_LIST _trader_ufmp_definitions)
+        add_test(NAME trader.ufmp.simulation COMMAND umicom-trader-console --ufmp-simulate)
+        set_tests_properties(trader.ufmp.simulation PROPERTIES TIMEOUT 30
+            PASS_REGULAR_EXPRESSION "Changed payload refused: yes"
+            LABELS "application;trader;ufmp;synthetic;regression")
+        if(COMMAND umicom_test_impact_owners)
+            umicom_test_impact_owners(trader.ufmp.simulation TARGETS umicom-trader-console)
+        endif()
+    endif()
+    unset(_trader_ufmp_definitions)
+endif()
+
+# The preview is calculated by Framework; a product host never nets money itself.
+if(TARGET umicom-trader-console AND TARGET Umicom::finance)
+    get_target_property(_trader_clearing_definitions Umicom::finance INTERFACE_COMPILE_DEFINITIONS)
+    if(BUILD_TESTING AND "UMICOM_HAS_UFMP_CLEARING=1" IN_LIST _trader_clearing_definitions)
+        add_test(NAME trader.ufmp.clearing-preview COMMAND umicom-trader-console --clearing-preview)
+        set_tests_properties(trader.ufmp.clearing-preview PROPERTIES TIMEOUT 30
+            PASS_REGULAR_EXPRESSION "Net receive: -8500" LABELS "application;trader;ufmp;synthetic;regression")
+        if(COMMAND umicom_test_impact_owners)
+            umicom_test_impact_owners(trader.ufmp.clearing-preview TARGETS umicom-trader-console)
+        endif()
+    endif()
+    unset(_trader_clearing_definitions)
+endif()
