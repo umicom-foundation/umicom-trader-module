@@ -651,3 +651,19 @@ if(TARGET umicom-trader-console AND TARGET Umicom::finance)
     endif()
     unset(_trader_clearing_definitions)
 endif()
+
+# Delivery recovery is a shared service; this host supplies only presentation.
+if(TARGET umicom-trader-console AND TARGET Umicom::financial_inbox)
+    target_link_libraries(umicom-trader-console PRIVATE Umicom::financial_inbox)
+    get_target_property(_trader_outbox_definitions Umicom::financial_inbox INTERFACE_COMPILE_DEFINITIONS)
+    if(BUILD_TESTING AND "UMICOM_HAS_UFMP_OUTBOX=1" IN_LIST _trader_outbox_definitions)
+        add_test(NAME trader.ufmp.outbox-recovery COMMAND umicom-trader-console --outbox-recovery)
+        set_tests_properties(trader.ufmp.outbox-recovery PROPERTIES TIMEOUT 30
+            PASS_REGULAR_EXPRESSION "Automatic retry after ambiguity: no"
+            LABELS "application;trader;ufmp;synthetic;regression")
+        if(COMMAND umicom_test_impact_owners)
+            umicom_test_impact_owners(trader.ufmp.outbox-recovery TARGETS umicom-trader-console)
+        endif()
+    endif()
+    unset(_trader_outbox_definitions)
+endif()
