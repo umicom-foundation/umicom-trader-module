@@ -20,6 +20,10 @@
 #include <stdio.h>
 #include "umicom/security/gtk4/local_profile_gate.h"
 #include "umicom/security/local_profile_database.h"
+#ifdef UMICOM_HAS_BROKER_WELCOME_GTK4
+#include "umicom/broker_connectivity/welcome_gtk4.h"
+#include "umicom/broker_connectivity/access_gtk4.h"
+#endif
 
 /* Framework owns the explicit read-only Paper/Live connection window. */
 #ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
@@ -42,7 +46,23 @@ typedef struct UmiTraderGtkApplicationState {
     UmiGtk4WorkstationStartupSplash *splash;
     guint startup_source_id;
     UmiLocalProfileGate *profile_gate;
+#ifdef UMICOM_HAS_BROKER_WELCOME_GTK4
+    UmiBrokerWelcomeGtk *broker_welcome;
+    UmiBrokerAccessPlan access_plan;
+#endif
 } UmiTraderGtkApplicationState;
+
+/* Retire mode callbacks before the application owner or start window goes away. */
+static void close_mode_welcome(UmiTraderGtkApplicationState *state)
+{
+#ifdef UMICOM_HAS_BROKER_WELCOME_GTK4
+    UmiBrokerWelcomeGtk *welcome = state->broker_welcome;
+    state->broker_welcome = NULL;
+    UmiBrokerWelcomeGtkDestroy(welcome);
+#else
+    (void)state;
+#endif
+}
 
 /* Clear the borrowed window pointer when the native window is destroyed. */
 static void on_window_destroyed(gpointer data, GObject *where_the_object_was)
@@ -86,6 +106,7 @@ static void release_application_window(UmiTraderGtkApplicationState *state, GtkW
 static void on_application_window_destroy(GtkWidget *widget, gpointer data)
 {
     UmiTraderGtkApplicationState *state = data;
+    close_mode_welcome(state);
     UmiLocalProfileGateDestroy(state->profile_gate);
     state->profile_gate = NULL;
     g_signal_handlers_disconnect_by_data(widget, state);
@@ -106,6 +127,7 @@ static gboolean on_startup_window_close(GtkWindow *window, gpointer user_data)
 {
     UmiTraderGtkApplicationState *state = user_data;
     (void)window;
+    close_mode_welcome(state);
     UmiLocalProfileGateDestroy(state->profile_gate);
     state->profile_gate = NULL;
     if (state->startup_source_id != 0U) {
@@ -311,13 +333,25 @@ static UmiStatus open_profile_workspace(void *data, const char *profile)
     (void)snprintf(identity, sizeof(identity), "%s%s",
         profile[0] != '\0' ? "Local profile: " : "",
         profile[0] != '\0' ? profile : "Simulator without a profile");
+#ifdef UMICOM_HAS_BROKER_WELCOME_GTK4
+    if (profile[0] == '\0')
+        (void)snprintf(identity, sizeof(identity), "%s selected - simulation workspace; broker window is read-only",
+            UmiBrokerAccessModeName(state->access_plan.mode));
+#endif
     GtkWidget *label = gtk_label_new(identity);
     gtk_label_set_xalign(GTK_LABEL(label), 0.0F);
     gtk_widget_set_tooltip_text(label,
         "Local identity; broker connection state is shown separately.");
     gtk_box_append(GTK_BOX(tools), label);
 #ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
+#ifdef UMICOM_HAS_BROKER_WELCOME_GTK4
+    UmiBrokerAccessPlan selected_plan = state->access_plan;
+    GtkWidget *broker = state->access_plan.mode == UMI_BROKER_ACCESS_GUEST
+        ? UmiIbkrGtkLauncherCreate(state->window)
+        : UmiIbkrGtkLauncherCreateForPlan(state->window, &selected_plan);
+#else
     GtkWidget *broker = UmiIbkrGtkLauncherCreate(state->window);
+#endif
     if (broker != NULL) {
         gtk_button_set_label(GTK_BUTTON(broker), "Interactive Brokers");
         gtk_box_append(GTK_BOX(tools), broker);
@@ -342,6 +376,7 @@ static UmiStatus open_profile_workspace(void *data, const char *profile)
     gtk_window_set_child(state->window,host);
     /* Close the start window without its close-request callback cancelling the
      * successfully constructed workspace. The gate's worker holds its own ref. */
+    close_mode_welcome(state);
     finish_startup_window(state,0);
     UmiLocalProfileGateDestroy(state->profile_gate); state->profile_gate = NULL;
     return UMI_STATUS_OK;
@@ -366,7 +401,7 @@ static void open_profile_broker(void *data)
     }
 }
 #endif
-static gboolean complete_startup(gpointer data)
+static gboolean complete_local_profiles(gpointer data)
 {
     UmiTraderGtkApplicationState *state = data;
     if (state == NULL) return G_SOURCE_REMOVE;
@@ -403,6 +438,14 @@ static gboolean complete_startup(gpointer data)
     g_free(profile_database);
     if (status != UMI_STATUS_OK) {
         (void)umi_gtk4_ws_startup_splash_set_status(state->splash,"The local profile screen could not open.","Action required");
+        /* The broker welcome may already have retired the splash. Keep a
+         * readable failure on the final window instead of presenting it empty. */
+        if (state->splash == NULL) {
+            GtkWidget *notice = gtk_label_new("Local workspace profiles could not open. Close Trader and try Guest, or check the local application log.");
+            gtk_label_set_wrap(GTK_LABEL(notice), TRUE);
+            gtk_window_set_child(state->window, notice);
+        }
+        (void)fprintf(stderr, "Local profile startup failed: %s\n", umi_status_text(status));
         finish_startup_window(state,1); return G_SOURCE_REMOVE;
     }
 #ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
@@ -432,6 +475,9 @@ static gboolean complete_startup(gpointer data)
     return G_SOURCE_REMOVE;
 }
 
+/* The shared welcome is composed here after existing local-profile helpers. */
+#include "broker_startup.inc"
+
 /* Present the startup surface immediately, then construct the trading
  * composition from the GTK main context. */
 static void on_activate(GtkApplication *application, gpointer user_data)
@@ -452,6 +498,10 @@ static void on_activate(GtkApplication *application, gpointer user_data)
         return;
     }
 
+    /* Each activation begins with Guest intent until a new explicit choice. */
+#ifdef UMICOM_HAS_BROKER_WELCOME_GTK4
+    (void)UmiBrokerAccessPlanCreate(UMI_BROKER_ACCESS_GUEST, &state->access_plan);
+#endif
     /* A prior closed window may leave its owned controllers until activation. */
     umi_gtk4_ws_startup_splash_destroy(state->splash);
     state->splash = NULL;
@@ -511,6 +561,7 @@ static void application_state_dispose(UmiTraderGtkApplicationState *state)
      * used.
      */
     if (state == NULL) return;
+    close_mode_welcome(state);
     UmiLocalProfileGateDestroy(state->profile_gate);
     state->profile_gate = NULL;
     /* Apply this branch only when its contract condition is satisfied. */

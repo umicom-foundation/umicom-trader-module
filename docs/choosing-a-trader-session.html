@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Choosing a session in Umicom Trader</title><style>
+body{font:18px/1.65 system-ui,sans-serif;max-width:960px;margin:3rem auto;padding:0 1.5rem;color:#203441}
+h1,h2{line-height:1.25}code,pre{background:#edf2f5}pre{padding:1rem;overflow:auto}a{color:#165d91}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #b8c9d4;padding:.7rem;text-align:left}
+.note{padding:1rem;border-left:4px solid #176378;background:#edf5f7}svg{max-width:100%;height:auto}
+</style></head><body><main>
+<h1>Choosing a session in Umicom Trader</h1>
+<p>The first screen offers Guest, Paper and Live. These choices select a workspace and a local broker connection.
+They do not prove that a broker has authenticated you. A local workspace profile is a separate option for saved settings.</p>
+<p class="note"><strong>Current capability:</strong> the main chart workspace uses simulation. The separate broker window
+can inspect accounts and market information through a local broker session. It is read-only: Umicom Trader does not
+send, change or cancel IBKR orders through this connection.</p>
+<h2>Where sign-in happens</h2>
+<svg viewBox="0 0 900 180" role="img" aria-label="Umicom Trader connects locally to TWS or IB Gateway, which authenticates with the broker.">
+<rect x="8" y="30" width="250" height="110" rx="12" fill="#e9f3f5" stroke="#176378"/>
+<text x="133" y="70" text-anchor="middle" font-size="20">Umicom Trader</text>
+<text x="133" y="102" text-anchor="middle" font-size="16">Guest / Paper / Live</text>
+<path d="M260 85H318m-10-7 10 7-10 7" fill="none" stroke="#176378" stroke-width="3"/>
+<rect x="322" y="30" width="270" height="110" rx="12" fill="#e9f3f5" stroke="#176378"/>
+<text x="457" y="66" text-anchor="middle" font-size="20">TWS or IB Gateway</text>
+<text x="457" y="95" text-anchor="middle" font-size="16">Username, password,</text>
+<text x="457" y="120" text-anchor="middle" font-size="16">authentication approval</text>
+<path d="M594 85H652m-10-7 10 7-10 7" fill="none" stroke="#176378" stroke-width="3"/>
+<rect x="656" y="30" width="236" height="110" rx="12" fill="#e9f3f5" stroke="#176378"/>
+<text x="774" y="80" text-anchor="middle" font-size="20">Broker services</text>
+<text x="288" y="165" text-anchor="middle" font-size="15">Local computer</text>
+<text x="625" y="165" text-anchor="middle" font-size="15">Broker network</text></svg>
+<p>Enter broker usernames, passwords and authentication codes in TWS or IB Gateway. The Umicom mode screen
+has no password or authentication-code field. Its connection plan contains only a mode, program, port and client identifier.
+The socket API connects to the already authenticated broker program on your computer.</p>
+<h2>1. Explore without an account</h2>
+<ol><li>Start Umicom Trader and choose <strong>Continue as Guest</strong>.</li>
+<li>The simulation workspace opens without local registration or broker credentials.</li>
+<li>Practise moving panels and reading charts. Sample prices and simulated fills are fictional.</li>
+<li>Choosing Guest does not open a broker socket. The separate broker button remains available if you later want to inspect a connection.</li></ol>
+<h2>2. Prepare a Paper connection</h2>
+<ol><li>Open TWS or IB Gateway and select your Paper session. Enter your Paper credentials and complete any authentication requested there.</li>
+<li>Enable socket API access in that program. Keep its API access read-only for the current Umicom inspector.</li>
+<li>Start Umicom Trader. Select the broker program on the welcome screen, then choose <strong>Open Paper account</strong>.</li>
+<li>The simulation workspace and a separate, disconnected Paper broker window appear. Check the program and API port against the broker program's settings.</li>
+<li>Choose a client ID that is not already used by another socket client. A client ID identifies a software connection; it is not your username or account number.</li>
+<li>Choose <strong>Connect read-only</strong>. If connected, expand <strong>Account, market data and order review</strong>.
+Choose an account reported by this connection before reading its values.</li></ol>
+<h2>3. Inspect a Live connection</h2>
+<ol><li>Sign in to the intended Live session in TWS or IB Gateway.</li>
+<li>Choose the matching broker program and <strong>Open Live account</strong> in Umicom Trader.</li>
+<li>Check the environment in the broker program itself. A port number, account prefix or local mode label cannot prove the environment.</li>
+<li>Read and select the Live acknowledgement in the broker window, then choose <strong>Connect read-only</strong>.</li>
+<li>Reopening a window does not preserve acknowledgement or automatically reconnect. Confirm the session again.</li></ol>
+<p>The Live option does not turn the simulated chart workspace into a live execution terminal. Use the broker window's
+own status and account observations to understand what it has received.</p>
+<h2>Connection defaults</h2>
+<table><thead><tr><th>Program</th><th>Paper port</th><th>Live port</th></tr></thead><tbody>
+<tr><td>TWS</td><td>7497</td><td>7496</td></tr><tr><td>IB Gateway</td><td>4002</td><td>4001</td></tr></tbody></table>
+<p>A port is a numbered endpoint used by programs to exchange messages. These are defaults, not a reason to override
+a deliberately changed broker setting. Umicom connects to <code>127.0.0.1</code>, the same computer.
+Changing the broker-program selection resets the default port; check any custom port afterwards.</p>
+<h2>Local workspace profiles</h2>
+<p>Choose <strong>Local workspace profiles</strong> to use the existing saved-profile flow.
+Its password is a local Umicom password, separate from your broker password.
+See <a href="sign-in-and-broker-access.html">local profile storage and chart controls</a>.</p>
+<h2>If a connection does not work</h2>
+<ul><li><strong>Cannot connect:</strong> check that the broker program is running, authenticated, allows socket API clients,
+and uses the displayed port. Another machine's address is not accepted by this adapter.</li>
+<li><strong>Client ID already in use:</strong> disconnect the other client or choose a different positive ID.</li>
+<li><strong>No account displayed:</strong> wait for a ready session and inspect the broker's API messages. Do not invent an account identifier.</li>
+<li><strong>No prices:</strong> account permissions, subscriptions, the contract and exchange, and market hours can affect data.
+Paper access does not promise real-time data for every instrument.</li>
+<li><strong>Order buttons do not send to IBKR:</strong> this is the current capability boundary. Order review and simulation are not broker execution.</li></ul>
+<p>Keep account reports and connection logs private. Review them before sharing; they can contain account identifiers,
+positions and balances even though the welcome screen does not collect credentials.</p>
+<p>Provider reference: <a href="https://www.interactivebrokers.com/docs/tws-api/doc/download-tws">TWS API setup and authentication</a>
+and <a href="https://www.interactivebrokers.com/campus/trading-lessons/installing-configuring-tws-for-the-api/">API configuration</a>.</p>
+</main></body></html>

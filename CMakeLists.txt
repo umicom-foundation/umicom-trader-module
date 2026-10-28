@@ -667,3 +667,31 @@ if(TARGET umicom-trader-console AND TARGET Umicom::financial_inbox)
     endif()
     unset(_trader_outbox_definitions)
 endif()
+
+# Resolve the optional welcome after Framework deferred composition completes.
+# Older installed SDKs keep the existing local-profile and simulator entry.
+function(umicom_trader_link_broker_welcome)
+    if(TARGET umicom-trader AND TARGET Umicom::ibkr_connection_gtk4)
+        target_link_libraries(umicom-trader PRIVATE Umicom::ibkr_connection_gtk4)
+
+        get_target_property(_trader_welcome_definitions Umicom::ibkr_connection_gtk4 INTERFACE_COMPILE_DEFINITIONS)
+        if(BUILD_TESTING AND "UMICOM_HAS_BROKER_WELCOME_GTK4=1" IN_LIST _trader_welcome_definitions)
+            add_executable(trader-broker-startup-test
+                "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tests/test_broker_startup.c")
+            target_link_libraries(trader-broker-startup-test PRIVATE
+                Umicom::trader_gtk Umicom::ibkr_connection_gtk4)
+            umicom_apply_warnings(trader-broker-startup-test)
+            umicom_apply_sanitizers(trader-broker-startup-test)
+            foreach(case guest paper live gateway cancel)
+                add_test(NAME trader.startup.${case} COMMAND trader-broker-startup-test ${case})
+                set_tests_properties(trader.startup.${case} PROPERTIES
+                    TIMEOUT 120 SKIP_RETURN_CODE 77 LABELS "trader;broker;startup;gtk4;regression")
+            endforeach()
+            if(COMMAND umicom_register_validation_target)
+                umicom_register_validation_target(trader-broker-startup-test)
+            endif()
+        endif()
+
+    endif()
+endfunction()
+cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}" CALL umicom_trader_link_broker_welcome)
