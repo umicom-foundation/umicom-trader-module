@@ -57,6 +57,10 @@ own status and account observations to understand what it has received.</p>
 <p>A port is a numbered endpoint used by programs to exchange messages. These are defaults, not a reason to override
 a deliberately changed broker setting. Umicom connects to <code>127.0.0.1</code>, the same computer.
 Changing the broker-program selection resets the default port; check any custom port afterwards.</p>
+<h2>Remember Paper and Live connection settings</h2>
+<p>While disconnected, expand <strong>Saved Paper and Live settings</strong> in the broker window. Review the local settings path, then choose <strong>Save selected mode</strong>. This stores the program, port and client ID for that mode while preserving the other mode.</p>
+<p>Next time, select Paper or Live and choose <strong>Load selected mode</strong>. Review the restored fields before connecting. Loading clears Live acknowledgement and never opens a socket. Passwords and authentication codes are not saved.</p>
+<p>A missing file leaves the current fields unchanged. A damaged or unknown file is refused and preserved; choose another filename to save fresh settings. If settings are in use, wait before trying again. The persistent <code>.umi-guard</code> file coordinates writers and must not be removed.</p>
 <h2>Local workspace profiles</h2>
 <p>Choose <strong>Local workspace profiles</strong> to use the existing saved-profile flow.
 Its password is a local Umicom password, separate from your broker password.
