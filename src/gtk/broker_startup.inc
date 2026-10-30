@@ -73,7 +73,12 @@ static gboolean complete_startup(gpointer data)
         return G_SOURCE_REMOVE;
     }
     gtk_window_set_title(state->startup_window, "Umicom Trader - Choose account mode");
+    /* Compact account pages replace the tall mode list while retaining scrolling
+     * on smaller displays. The earlier window dimensions remain for review. */
+#if 0
     (void)umi_gtk4_ws_window_fit(state->startup_window, 760, 780, 480, 360);
+#endif
+    (void)umi_gtk4_ws_window_fit(state->startup_window, 720, 580, 480, 360);
     GtkWidget *scroll = gtk_scrolled_window_new();
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
         GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);

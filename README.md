@@ -51,6 +51,31 @@ The Windows suite installer exposes Trader as the optional **Trader**
 component. Its graphical executable is registered with Umicom Desk, allowing
 Trader and Studio or another installed product to run side by side.
 
+## Choose an account when starting Trader
+
+The account screen has **IBKR Live**, **IBKR Paper** and **Umicom Demo** tabs.
+It initially selects Paper. Changing a tab does not connect to a broker or place
+an order.
+
+1. For local practice, select **Umicom Demo**, then **Start Umicom Demo**.
+   The workspace uses simulated prices and orders; no broker credentials are needed.
+2. For an IBKR account, sign in to the matching Live or Paper session in the
+   locally installed TWS or IB Gateway and complete its authentication.
+3. Select the matching Trader tab and choose that local broker application.
+   Continue to the connection window and review its host, API port and account
+   environment before connecting. Umicom Trader does not ask for or store the
+   broker password or authentication code.
+4. Review broker observations in the connection window. Current broker access
+   is read-only: chart-workspace orders are simulated and are not transmitted
+   to Interactive Brokers.
+5. Use **Open saved workspace** to choose a local workspace profile. A saved
+   layout is not a saved broker login.
+
+The welcome screen uses Framework's transparent SVG brand artwork and remains
+scrollable in a small window. If it reports that a workspace could not open,
+keep the application log and check the local connection settings; selecting Live
+does not by itself establish a broker session.
+
 ## Order your workspace layouts
 
 Trader's shared Layout Library includes **Move up** and **Move down** controls.
