@@ -695,3 +695,7 @@ function(umicom_trader_link_broker_welcome)
     endif()
 endfunction()
 cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}" CALL umicom_trader_link_broker_welcome)
+
+# Keep the calendar workflow guide available beside the installed Trader.
+install(FILES docs/ECONOMIC_AND_EARNINGS_CALENDAR.html
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/umicom/trader/docs)

@@ -1,0 +1,16 @@
+<!doctype html>
+<!--
+Umicom Trader
+File: applications/trader/docs/ECONOMIC_AND_EARNINGS_CALENDAR.html
+
+PURPOSE:
+  Guide the native calendar review and its current provider limits.
+
+AUTHOR AND ORGANISATION:
+Sammy Hegab
+Umicom Foundation
+
+LICENCE:
+MIT
+-->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Economic and earnings calendars | Umicom Trader</title><style>body{font:17px/1.65 system-ui,sans-serif;color:#203247;background:#fafcfe;margin:0}main{max-width:980px;margin:auto;padding:2rem}h1,h2{line-height:1.25}a{color:#006481}pre{overflow:auto;padding:1rem;background:#eaf0f5}table{border-collapse:collapse;width:100%}td,th{padding:.65rem;text-align:left;border-bottom:1px solid #c6d1dd}code{font-size:.9em}.note{border-left:4px solid #007fa3;padding:1rem;background:#edf8fc}</style></head><body><main><p>Umicom Trader</p><h1>Economic and earnings calendars</h1><p>Trader uses the calendar model and native controls owned by Umicom Framework. Start in guest mode for a file-only review; no brokerage credentials are needed.</p><ol><li>Add <strong>Economic Calendar</strong> from the workspace's tool catalogue, or select the Market Analysis layout.</li><li>Choose <strong>Import calendar CSV</strong>. Use a file in the documented Framework schema, up to 4 MiB and 4096 events.</li><li>Search a symbol, company, event or source and apply the filter. Expand Event filters for dates, event type, country, currency and importance.</li><li>Select an event to inspect its timezone, reporting period, units, source and observation time.</li><li>Resize the event/details divider or dock and float the whole panel using workspace controls. Market quotes do not replace the imported snapshot.</li></ol><p>An empty actual or estimate means “Not supplied”. Before/after-market labels do not imply a clock time. The calendar does not connect to a live provider, validate source accuracy or place an order. Snapshot/filter persistence across panel closure is not provided.</p><p>The complete CSV schema, a fictional practice file, ownership rules and troubleshooting are in the Framework guide <code>share/umicom/framework/docs/learning/economic-earnings-calendar.html</code> in a full installation, or <code>framework/docs/learning/economic-earnings-calendar.html</code> in Umicom Applications source.</p><h2>Use date and search shortcuts</h2><p>Press Enter in the search field to apply it. Choose <strong>Today (local date)</strong> to set both date limits to your computer’s current date, keeping the other filters. This compares source calendar dates; it does not convert events to your timezone. <strong>Clear filters</strong> restores all imported events, including when a date or country field contains invalid text.</p><h2>Cancel a file import</h2><p>While a file is being read, choose <strong>Cancel import</strong> to keep the current calendar. Cancellation takes effect before a late result can replace your rows. You can then import another file. Closing the workspace also retires an outstanding import.</p><footer><p>Sammy Hegab · Umicom Foundation · MIT</p></footer></main></body></html>

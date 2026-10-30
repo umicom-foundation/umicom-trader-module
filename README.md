@@ -254,3 +254,7 @@ The shared Framework review compares dated booked activity with opening and
 closing balances you supply. Pending entries remain separate, and edits
 invalidate the previous export. This does not connect to a bank or post money.
 See [the statement review guide](docs/STATEMENT_RECONCILIATION.html).
+
+## Review economic events and earnings
+
+The [calendar guide](docs/ECONOMIC_AND_EARNINGS_CALENDAR.html) explains importing a saved calendar, filtering economic and earnings events, and inspecting source dates and reporting units. The Framework-owned panel retains its data during market quote refreshes. It is a local snapshot viewer; automatic feeds and calendar alerts are not provided.
