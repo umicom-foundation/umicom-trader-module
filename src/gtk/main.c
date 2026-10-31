@@ -38,11 +38,17 @@
 #include "umicom/trader/gtk_workstation.h"
 #include "umicom/ui/gtk4/workstation/shell_header.h"
 #include "umicom/ui/gtk4/workstation/window_fit.h"
+#ifdef UMICOM_HAS_BROKER_WORKSPACE_GTK4
+#include "umicom/broker_connectivity/workspace_gtk4.h"
+#endif
 
 typedef struct UmiTraderGtkApplicationState {
     GtkWindow *window;
     GtkWindow *startup_window;
     UmiTraderGtkWorkstation *workstation;
+#ifdef UMICOM_HAS_BROKER_WORKSPACE_GTK4
+    UmiBrokerWorkspaceGtk *broker_workspace;
+#endif
     UmiGtk4WorkstationStartupSplash *splash;
     guint startup_source_id;
     UmiLocalProfileGate *profile_gate;
@@ -301,6 +307,10 @@ static UmiStatus open_profile_workspace(void *data, const char *profile)
     return UMI_STATUS_OK;
 }
 #endif
+/* The earlier simulation-first composition is retained for engineering review.
+ * The replacement makes broker intent visible through Framework account pages
+ * while preserving access to the original demo workstation. */
+#if 0
 static UmiStatus open_profile_workspace(void *data, const char *profile)
 {
     UmiTraderGtkApplicationState *state = data;
@@ -374,6 +384,132 @@ static UmiStatus open_profile_workspace(void *data, const char *profile)
     gtk_widget_set_vexpand(content, TRUE);
     gtk_box_append(GTK_BOX(host), content);
     gtk_window_set_child(state->window,host);
+    /* Close the start window without its close-request callback cancelling the
+     * successfully constructed workspace. The gate's worker holds its own ref. */
+    close_mode_welcome(state);
+    finish_startup_window(state,0);
+    UmiLocalProfileGateDestroy(state->profile_gate); state->profile_gate = NULL;
+    return UMI_STATUS_OK;
+}
+#endif
+static UmiStatus open_profile_workspace(void *data, const char *profile)
+{
+    UmiTraderGtkApplicationState *state = data;
+    if (state->window == NULL || state->startup_window == NULL) return UMI_STATUS_CANCELLED;
+    UmiStatus status = umi_trader_gtk_workstation_create(&state->workstation);
+    if (status == UMI_STATUS_OK)
+        status = umi_trader_gtk_workstation_bind_window(state->workstation,state->window);
+    if (status != UMI_STATUS_OK) {
+        umi_trader_gtk_workstation_destroy(state->workstation); state->workstation = NULL; return status;
+    }
+    UmiStatus storage_status = profile[0] != '\0'
+        ? UmiTraderGtkEnableProfileStorage(state->workstation,profile,1)
+        : umi_trader_gtk_workstation_enable_checkpoint_storage(state->workstation,1);
+    if (storage_status != UMI_STATUS_OK)
+        (void)fprintf(stderr,"Layout storage unavailable: %s\n",umi_status_text(storage_status));
+    GtkWidget *content = umi_trader_gtk_workstation_widget(state->workstation);
+    if (content == NULL) {
+        umi_trader_gtk_workstation_destroy(state->workstation); state->workstation = NULL;
+        return UMI_STATUS_INTERNAL_ERROR;
+    }
+    /* The simulation retains its existing tools. Broker observations have a
+     * distinct Framework-owned page so Paper/Live entry cannot imply that
+     * synthetic chart prices or demo balances came from an authenticated account. */
+    /* Keep the chart at the centre of the workstation. Secondary tools share
+     * one horizontally scrollable row instead of consuming one full row each. */
+    GtkWidget *host = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *tools = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    gtk_widget_set_margin_start(tools, 12);
+    gtk_widget_set_margin_end(tools, 12);
+    gtk_widget_set_margin_top(tools, 4);
+    gtk_widget_set_margin_bottom(tools, 4);
+    char identity[160];
+    (void)snprintf(identity, sizeof(identity), "%s%s",
+        profile[0] != '\0' ? "Local profile: " : "",
+        profile[0] != '\0' ? profile : "Simulator without a profile");
+#ifdef UMICOM_HAS_BROKER_WELCOME_GTK4
+    if (profile[0] == '\0')
+        (void)snprintf(identity, sizeof(identity), "%s selected — this page is the Umicom Demo simulator",
+            UmiBrokerAccessModeName(state->access_plan.mode));
+#endif
+    GtkWidget *label = gtk_label_new(identity);
+    gtk_label_set_xalign(GTK_LABEL(label), 0.0F);
+    gtk_widget_set_tooltip_text(label,
+        "Local identity; broker connection state is shown separately.");
+    gtk_box_append(GTK_BOX(tools), label);
+#ifdef UMICOM_HAS_IBKR_CONNECTION_GTK4
+#ifdef UMICOM_HAS_BROKER_WORKSPACE_GTK4
+    /* Guest retains the optional inspector launcher. Broker-mode sessions use
+     * the owned account-page connection, avoiding a second client ID session. */
+    if (state->access_plan.mode == UMI_BROKER_ACCESS_GUEST) {
+        GtkWidget *broker = UmiIbkrGtkLauncherCreate(state->window);
+        if (broker != NULL) gtk_box_append(GTK_BOX(tools), broker);
+    }
+#else
+#ifdef UMICOM_HAS_BROKER_WELCOME_GTK4
+    UmiBrokerAccessPlan selected_plan = state->access_plan;
+    GtkWidget *broker = state->access_plan.mode == UMI_BROKER_ACCESS_GUEST
+        ? UmiIbkrGtkLauncherCreate(state->window)
+        : UmiIbkrGtkLauncherCreateForPlan(state->window, &selected_plan);
+#else
+    GtkWidget *broker = UmiIbkrGtkLauncherCreate(state->window);
+#endif
+    if (broker != NULL) {
+        gtk_button_set_label(GTK_BUTTON(broker), "Interactive Brokers");
+        gtk_box_append(GTK_BOX(tools), broker);
+    }
+#endif
+#endif
+#ifdef UMICOM_HAS_MARKET_TAPE_GTK4
+    GtkWidget *tape = UmiMarketTapeGtkLauncherCreate(state->window);
+    if (tape != NULL) gtk_box_append(GTK_BOX(tools), tape);
+#endif
+    /* Cash assumptions are reviewed locally and never create an order or payment. */
+    gtk_box_append(GTK_BOX(tools), UmiGtk4CashPlanLauncherCreate());
+    /* Bank imports use Framework's private file review, shared with future
+     * finance applications; Trader owns only the launch location. */
+    gtk_box_append(GTK_BOX(tools), UmiBankFeedGtk4LauncherCreate());
+    GtkWidget *tool_scroll = gtk_scrolled_window_new();
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(tool_scroll),
+        GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER);
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(tool_scroll), tools);
+    gtk_box_append(GTK_BOX(host), tool_scroll);
+    gtk_widget_set_vexpand(content, TRUE);
+    gtk_box_append(GTK_BOX(host), content);
+    /* The application composes pages; Framework owns broker transport,
+     * observation rendering and the one reusable connection window. */
+#ifdef UMICOM_HAS_BROKER_WORKSPACE_GTK4
+    if (state->access_plan.mode != UMI_BROKER_ACCESS_GUEST) {
+        status = UmiBrokerWorkspaceGtkCreate(state->window, &state->access_plan,
+            &state->broker_workspace);
+        if (status != UMI_STATUS_OK) {
+            g_object_ref_sink(host);
+            g_object_unref(host);
+            umi_trader_gtk_workstation_destroy(state->workstation);
+            state->workstation = NULL;
+            return status;
+        }
+        GtkWidget *pages = gtk_stack_new();
+        gtk_widget_set_name(pages, "trader-session-pages");
+        gtk_stack_set_hhomogeneous(GTK_STACK(pages), FALSE);
+        gtk_stack_set_vhomogeneous(GTK_STACK(pages), FALSE);
+        gtk_widget_set_vexpand(pages, TRUE);
+        gtk_stack_add_titled(GTK_STACK(pages),
+            UmiBrokerWorkspaceGtkWidget(state->broker_workspace), "broker", "Broker account");
+        gtk_stack_add_titled(GTK_STACK(pages), host, "demo", "Umicom Demo");
+        GtkWidget *switcher = gtk_stack_switcher_new();
+        gtk_stack_switcher_set_stack(GTK_STACK_SWITCHER(switcher), GTK_STACK(pages));
+        gtk_widget_set_halign(switcher, GTK_ALIGN_START);
+        GtkWidget *shell = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+        gtk_box_append(GTK_BOX(shell), switcher);
+        gtk_box_append(GTK_BOX(shell), pages);
+        gtk_stack_set_visible_child_name(GTK_STACK(pages), "broker");
+        gtk_window_set_child(state->window, shell);
+    } else
+#endif
+    {
+        gtk_window_set_child(state->window,host);
+    }
     /* Close the start window without its close-request callback cancelling the
      * successfully constructed workspace. The gate's worker holds its own ref. */
     close_mode_welcome(state);
@@ -521,10 +657,22 @@ static void on_activate(GtkApplication *application, gpointer user_data)
         "org.umicom.trader", "Umicom Trader");
     splash_config.subtitle =
         "Markets, charts, execution, positions and risk";
+    /* Account selection follows loading. Keep the earlier simulation-labelled
+     * startup for review; it must not describe a mode before one is chosen. */
+#if 0
     splash_config.status = "Starting safe trading services…";
     splash_config.mode_badge = "Simulation";
+#endif
+    splash_config.status = "Loading Umicom Trader…";
+    splash_config.mode_badge = "";
+#ifdef UMICOM_HAS_BRANDED_STARTUP_SPLASH
+    status = umi_gtk4_ws_startup_splash_create_branded(
+        &splash_config, &state->splash);
+#else
+    /* Older Framework SDKs retain their existing startup implementation. */
     status = umi_gtk4_ws_startup_splash_create(
         &splash_config, &state->splash);
+#endif
     /* Preserve the original failure result so the caller can respond to the correct cause. */
     if (status != UMI_STATUS_OK) {
         (void)fprintf(
@@ -569,6 +717,10 @@ static void application_state_dispose(UmiTraderGtkApplicationState *state)
         (void)g_source_remove(state->startup_source_id);
         state->startup_source_id = 0U;
     }
+#ifdef UMICOM_HAS_BROKER_WORKSPACE_GTK4
+    UmiBrokerWorkspaceGtkDestroy(state->broker_workspace);
+    state->broker_workspace = NULL;
+#endif
     release_application_window(state, &state->startup_window);
     release_application_window(state, &state->window);
     umi_gtk4_ws_startup_splash_destroy(state->splash);

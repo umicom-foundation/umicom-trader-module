@@ -7,8 +7,8 @@ table{border-collapse:collapse;width:100%}th,td{border:1px solid #b8c9d4;padding
 .note{padding:1rem;border-left:4px solid #176378;background:#edf5f7}svg{max-width:100%;height:auto}
 </style></head><body><main>
 <h1>Choosing a session in Umicom Trader</h1>
-<p>The first screen offers Guest, Paper and Live. These choices select a workspace and a local broker connection.
-They do not prove that a broker has authenticated you. A local workspace profile is a separate option for saved settings.</p>
+<p>After the loading screen, choose <strong>Live Trading</strong>, <strong>Paper Trading (Demo)</strong> or <strong>Guest</strong>. Paper is selected initially. The window has a branded panel beside the account controls. Drag the divider to resize the panels; each panel can scroll when space is limited.</p>
+<p>These choices select a workspace and a local broker connection. They do not prove that a broker has authenticated you. <strong>Open saved workspace</strong> provides the separate local-profile route for saved settings.</p>
 <p class="note"><strong>Current capability:</strong> the main chart workspace uses simulation. The separate broker window
 can inspect accounts and market information through a local broker session. It is read-only: Umicom Trader does not
 send, change or cancel IBKR orders through this connection.</p>
@@ -31,26 +31,30 @@ send, change or cancel IBKR orders through this connection.</p>
 has no password or authentication-code field. Its connection plan contains only a mode, program, port and client identifier.
 The socket API connects to the already authenticated broker program on your computer.</p>
 <h2>1. Explore without an account</h2>
-<ol><li>Start Umicom Trader and choose <strong>Continue as Guest</strong>.</li>
+<ol><li>Start Umicom Trader, select <strong>Guest</strong>, then choose <strong>Start Umicom Demo</strong>.</li>
 <li>The simulation workspace opens without local registration or broker credentials.</li>
 <li>Practise moving panels and reading charts. Sample prices and simulated fills are fictional.</li>
 <li>Choosing Guest does not open a broker socket. The separate broker button remains available if you later want to inspect a connection.</li></ol>
 <h2>2. Prepare a Paper connection</h2>
 <ol><li>Open TWS or IB Gateway and select your Paper session. Enter your Paper credentials and complete any authentication requested there.</li>
 <li>Enable socket API access in that program. Keep its API access read-only for the current Umicom inspector.</li>
-<li>Start Umicom Trader. Select the broker program on the welcome screen, then choose <strong>Open Paper account</strong>.</li>
-<li>The simulation workspace and a separate, disconnected Paper broker window appear. Check the program and API port against the broker program's settings.</li>
+<li>Start Umicom Trader. Select <strong>Paper Trading (Demo)</strong> and the local broker program, then choose <strong>Continue</strong>.</li>
+<li>The next page explains where to sign in. Complete sign-in in the broker program, then choose <strong>Continue to Trader</strong>. This button opens the workspace; it does not authenticate or connect.</li>
+<li>In the account workspace, open the connection controls and check the program and API port against the broker settings. Builds using the older inspector show a separate connection window. See <a href="broker-account-workspace.html">the account workspace guide</a> for its tabs and account observations.</li>
 <li>Choose a client ID that is not already used by another socket client. A client ID identifies a software connection; it is not your username or account number.</li>
 <li>Choose <strong>Connect read-only</strong>. If connected, expand <strong>Account, market data and order review</strong>.
 Choose an account reported by this connection before reading its values.</li></ol>
 <h2>3. Inspect a Live connection</h2>
 <ol><li>Sign in to the intended Live session in TWS or IB Gateway.</li>
-<li>Choose the matching broker program and <strong>Open Live account</strong> in Umicom Trader.</li>
+<li>Select <strong>Live Trading</strong> and the matching broker program in Umicom Trader. Choose <strong>Continue</strong>, follow the sign-in guidance, then choose <strong>Continue to Trader</strong>. <strong>Back to account selection</strong> lets you change your choice without opening a connection.</li>
 <li>Check the environment in the broker program itself. A port number, account prefix or local mode label cannot prove the environment.</li>
 <li>Read and select the Live acknowledgement in the broker window, then choose <strong>Connect read-only</strong>.</li>
 <li>Reopening a window does not preserve acknowledgement or automatically reconnect. Confirm the session again.</li></ol>
 <p>The Live option does not turn the simulated chart workspace into a live execution terminal. Use the broker window's
 own status and account observations to understand what it has received.</p>
+<h2>Does this connection need application registration?</h2>
+<p>The local TWS socket connection does not need an OAuth application registration. Enable socket clients in the broker program and sign in there. OAuth is a different authorization mechanism used by the Web API: the broker approves an application and returns authorization after the user signs in on its own page. This release does not provide that Web API authorization flow.</p>
+<p>A username and password cannot be sent to the TWS socket connection to replace broker sign-in. If a future deployment uses the Web API, its application registration and authorization setup are separate from the socket settings below.</p>
 <h2>Connection defaults</h2>
 <table><thead><tr><th>Program</th><th>Paper port</th><th>Live port</th></tr></thead><tbody>
 <tr><td>TWS</td><td>7497</td><td>7496</td></tr><tr><td>IB Gateway</td><td>4002</td><td>4001</td></tr></tbody></table>
@@ -62,7 +66,7 @@ Changing the broker-program selection resets the default port; check any custom 
 <p>Next time, select Paper or Live and choose <strong>Load selected mode</strong>. Review the restored fields before connecting. Loading clears Live acknowledgement and never opens a socket. Passwords and authentication codes are not saved.</p>
 <p>A missing file leaves the current fields unchanged. A damaged or unknown file is refused and preserved; choose another filename to save fresh settings. If settings are in use, wait before trying again. The persistent <code>.umi-guard</code> file coordinates writers and must not be removed.</p>
 <h2>Local workspace profiles</h2>
-<p>Choose <strong>Local workspace profiles</strong> to use the existing saved-profile flow.
+<p>Choose <strong>Open saved workspace</strong> to use the existing saved-profile flow.
 Its password is a local Umicom password, separate from your broker password.
 See <a href="sign-in-and-broker-access.html">local profile storage and chart controls</a>.</p>
 <h2>If a connection does not work</h2>
@@ -75,6 +79,6 @@ Paper access does not promise real-time data for every instrument.</li>
 <li><strong>Order buttons do not send to IBKR:</strong> this is the current capability boundary. Order review and simulation are not broker execution.</li></ul>
 <p>Keep account reports and connection logs private. Review them before sharing; they can contain account identifiers,
 positions and balances even though the welcome screen does not collect credentials.</p>
-<p>Provider reference: <a href="https://www.interactivebrokers.com/docs/tws-api/doc/download-tws">TWS API setup and authentication</a>
+<p>Provider reference: <a href="https://www.interactivebrokers.com/docs/tws-api/doc/api-settings">TWS API setup and authentication</a>
 and <a href="https://www.interactivebrokers.com/campus/trading-lessons/installing-configuring-tws-for-the-api/">API configuration</a>.</p>
 </main></body></html>

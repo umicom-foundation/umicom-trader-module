@@ -14,6 +14,10 @@
  *---------------------------------------------------------------------------*/
 
 #ifdef UMICOM_HAS_BROKER_WELCOME_GTK4
+/* Older Framework packages retain the separate inspector startup below.
+ * With account workspace support, the user explicitly opens connection tools
+ * from the broker page; entry itself neither opens a socket nor hides the demo. */
+#ifndef UMICOM_HAS_BROKER_WORKSPACE_GTK4
 static UmiStatus open_selected_broker_mode(void *data, const UmiBrokerAccessPlan *plan)
 {
     UmiTraderGtkApplicationState *state = data;
@@ -42,6 +46,22 @@ static UmiStatus open_selected_broker_mode(void *data, const UmiBrokerAccessPlan
     }
     return status;
 }
+
+#else
+static UmiStatus open_selected_broker_mode(void *data, const UmiBrokerAccessPlan *plan)
+{
+    UmiTraderGtkApplicationState *state = data;
+    if (state == NULL || state->window == NULL || state->startup_window == NULL)
+        return UMI_STATUS_CANCELLED;
+    UmiStatus status = UmiBrokerAccessPlanValidate(plan);
+    if (status != UMI_STATUS_OK) return status;
+    UmiBrokerAccessPlan previous = state->access_plan;
+    state->access_plan = *plan;
+    status = open_profile_workspace(state, "");
+    if (status != UMI_STATUS_OK) state->access_plan = previous;
+    return status;
+}
+#endif
 
 static UmiStatus open_local_workspace_profiles(void *data)
 {
@@ -78,7 +98,11 @@ static gboolean complete_startup(gpointer data)
 #if 0
     (void)umi_gtk4_ws_window_fit(state->startup_window, 760, 780, 480, 360);
 #endif
+    /* Two independently scrollable panes replace the tall account dialog. */
+#if 0
     (void)umi_gtk4_ws_window_fit(state->startup_window, 720, 580, 480, 360);
+#endif
+    (void)umi_gtk4_ws_window_fit(state->startup_window, 960, 600, 640, 420);
     GtkWidget *scroll = gtk_scrolled_window_new();
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
         GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
