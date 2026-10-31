@@ -588,6 +588,10 @@ install(FILES docs/DRAWING_COORDINATES.html DESTINATION ${CMAKE_INSTALL_DATADIR}
 install(FILES docs/sign-in-and-broker-access.html
     DESTINATION "${CMAKE_INSTALL_DATADIR}/umicom/trader/docs")
 
+# Keep the account-reading and reviewed-order workflows available offline.
+install(FILES docs/broker-account-workspace.html docs/watchlists-and-orders.html
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/umicom/trader/docs")
+
 # Product acceptance exercises the shared chart through Trader's actual shell.
 if(BUILD_TESTING AND TARGET Umicom::trader_gtk)
     add_executable(trader-candle-measurements-test tests/test_candle_measurements.c)

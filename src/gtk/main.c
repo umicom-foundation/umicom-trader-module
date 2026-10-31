@@ -495,7 +495,13 @@ static UmiStatus open_profile_workspace(void *data, const char *profile)
         gtk_stack_set_vhomogeneous(GTK_STACK(pages), FALSE);
         gtk_widget_set_vexpand(pages, TRUE);
         gtk_stack_add_titled(GTK_STACK(pages),
+            /* Preserve the earlier account-only page label. Framework now hosts
+             * instrument discovery, watchlists and reviewed execution here. */
+#if 0
             UmiBrokerWorkspaceGtkWidget(state->broker_workspace), "broker", "Broker account");
+#else
+            UmiBrokerWorkspaceGtkWidget(state->broker_workspace), "broker", "Broker trading");
+#endif
         gtk_stack_add_titled(GTK_STACK(pages), host, "demo", "Umicom Demo");
         GtkWidget *switcher = gtk_stack_switcher_new();
         gtk_stack_switcher_set_stack(GTK_STACK_SWITCHER(switcher), GTK_STACK(pages));
@@ -638,7 +644,13 @@ static void on_activate(GtkApplication *application, gpointer user_data)
 #ifdef UMICOM_HAS_BROKER_WELCOME_GTK4
     (void)UmiBrokerAccessPlanCreate(UMI_BROKER_ACCESS_GUEST, &state->access_plan);
 #endif
-    /* A prior closed window may leave its owned controllers until activation. */
+    /* A prior closed window may leave its owned controllers until activation.
+     * Retire the Framework broker page before replacing its pointer, including
+     * retained connection callbacks and ticket authority from that window. */
+#ifdef UMICOM_HAS_BROKER_WORKSPACE_GTK4
+    UmiBrokerWorkspaceGtkDestroy(state->broker_workspace);
+    state->broker_workspace = NULL;
+#endif
     umi_gtk4_ws_startup_splash_destroy(state->splash);
     state->splash = NULL;
     umi_trader_gtk_workstation_destroy(state->workstation);

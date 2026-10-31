@@ -6,7 +6,10 @@
 <p><a href="sign-in-and-broker-access.html">Sign-in guide</a> · <a href="BROKER_REPORTS.html">Broker reports</a></p>
 <h1>Read a broker account in Umicom Trader</h1>
 <p>A broker account page displays information received from the local Trader Workstation or IB Gateway application. A connection is the local communication channel between that application and Umicom Trader. Your broker username, password and two-factor approval belong in the broker application.</p>
+<!-- The earlier read-only integration description is retained for review. The separate reviewed ticket now owns order submission; account viewing still starts read-only.
 <p class="note">This integration reads account information. It cannot submit, change or cancel broker orders. The Umicom Demo page uses simulated data. Its prices and funds do not become broker data when you open a connection.</p>
+-->
+<p class="note">The account-reading workflow starts read-only. A separate <a href="watchlists-and-orders.html">reviewed Order ticket</a> provides explicitly enabled DAY limit orders for supported shares and futures. The Umicom Demo page uses simulated data; its prices and funds do not become broker data when you open a connection.</p>
 <h2>Refresh or change accounts</h2>
 <p>After connecting, choose an advertised account and select <strong>Read account</strong>. Wait for both the summary and positions to finish. The button then becomes <strong>Refresh account</strong>, and the account selector becomes available again. Choose another account or refresh the same one without disconnecting. The new request clears the displayed account observations, so export the preceding report first if you need to keep it.</p>
 <p>The account summary and positions arrive independently. Missing rows are not proof of a zero balance or an empty portfolio. Opening a tab or repainting the window does not send another request. A failed or stale connection requires explicit reconnection before another capture.</p>
@@ -21,11 +24,11 @@
 <p>The current adapter uses <code>127.0.0.1</code>, meaning this computer. It does not discover a broker session elsewhere on your network. Choose a positive client ID that is not already used by another API client. This number identifies the API connection; it is not your broker account number or username.</p>
 <h2>Connect and select an account</h2>
 <ol>
-<li>Launch Umicom Trader and choose <strong>Paper</strong> or <strong>Live</strong>. Select the matching broker program. The main window opens on <strong>Broker account</strong>.</li>
+<li>Launch Umicom Trader and choose <strong>Paper</strong> or <strong>Live</strong>. Select the matching broker program. The main window opens on <strong>Broker trading</strong>.</li>
 <li>Choose <strong>Connection and account tools</strong>. Check the requested environment, program, port and client ID. Opening this window does not connect automatically.</li>
 <li>For Live mode, review and select the explicit Live acknowledgement. It permits a read-only connection; it does not enable orders.</li>
 <li>Choose the connection window's <strong>Connect</strong> action. Complete any local API-connection approval shown by your broker application.</li>
-<li>Wait for <strong>Read-only API ready</strong>. The connection waits for the API readiness message, account list and broker clock. If it remains waiting or fails, use the recovery steps below.</li>
+<li>Wait for <strong>API ready</strong>. Order entry remains disabled until separately enabled. The connection waits for the API readiness message, account list and broker clock. If it remains waiting or fails, use the recovery steps below.</li>
 <li>Return to the main broker account page. Choose an account from the list and select <strong>Read account</strong>. This requests an overview and positions through the same connection.</li>
 <li>Wait for both <strong>Account values: complete</strong> and <strong>Positions: complete</strong>. These are independent responses; one may arrive before the other. An empty, incomplete table does not establish that the account has no money or positions.</li>
 </ol>
